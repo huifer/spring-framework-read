@@ -1,0 +1,369 @@
+# Spring JDBC
+- Author: [HuiFer](https://github.com/huifer)
+- 源码阅读仓库: [huifer-spring](https://github.com/huifer/spring-framework)
+
+
+
+## 环境搭建
+
+- 依赖
+
+  ```gradle
+      compile(project(":spring-jdbc"))
+      compile group: 'com.alibaba', name: 'druid', version: '1.1.21'
+      compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
+  ```
+
+- db配置
+
+  ```properties
+  jdbc.url=
+  jdbc.driverClass=
+  jdbc.username=
+  jdbc.password=
+  ```
+
+- 实体对象
+
+  ```JAVA
+  public class HsLog {
+      private Integer id;
+  
+      private String source;
+  
+      public Integer getId() {
+          return id;
+      }
+  
+      public void setId(Integer id) {
+          this.id = id;
+      }
+  
+      public String getSource() {
+          return source;
+      }
+  
+      public void setSource(String source) {
+          this.source = source;
+      }
+  }
+  ```
+
+  
+
+- DAO
+
+  ```JAVA
+  public interface HsLogDao {
+      List<HsLog> findAll();
+  
+      void save(HsLog hsLog);
+  }
+  
+  ```
+
+  
+
+- 实现类
+
+  ```JAVA
+  public class HsLogDaoImpl extends JdbcDaoSupport implements HsLogDao {
+  
+  
+      @Override
+      public List<HsLog> findAll() {
+          return this.getJdbcTemplate().query("select * from hs_log", new HsLogRowMapper());
+  
+      }
+  
+      @Override
+      public void save(HsLog hsLog) {
+          this.getJdbcTemplate().update("insert into hs_log (SOURCE) values(?)"
+                  , new Object[]{
+                          hsLog.getSource(),
+                        }
+  
+          );
+      }
+  
+      class HsLogRowMapper implements RowMapper<HsLog> {
+  
+          public HsLog mapRow(ResultSet rs, int rowNum) throws SQLException {
+  
+              HsLog log = new HsLog();
+              log.setId(rs.getInt("id"));
+              log.setSource(rs.getString("source"));
+              return log;
+          }
+  
+      }
+  }
+  
+  ```
+
+  
+
+- xml
+
+  ```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.springframework.org/schema/beans"
+         xmlns:context="http://www.springframework.org/schema/context"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
+  >
+  
+      <context:property-placeholder location="classpath:db.properties"/>
+  
+  
+      <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+          <property name="url"
+                    value="${jdbc.url}"/>
+          <property name="driverClassName" value="${jdbc.driverClass}"/>
+          <property name="username" value="${jdbc.username}"/>
+          <property name="password" value="${jdbc.password}"/>
+          <!-- 配置监控统计拦截的filters -->
+          <property name="filters" value="stat"/>
+  
+          <!-- 配置初始化大小、最小、最大 -->
+          <property name="maxActive" value="20"/>
+          <property name="initialSize" value="1"/>
+          <property name="minIdle" value="1"/>
+  
+          <!-- 配置获取连接等待超时的时间 -->
+          <property name="maxWait" value="60000"/>
+  
+          <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+          <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+  
+          <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+          <property name="minEvictableIdleTimeMillis" value="300000"/>
+  
+          <property name="testWhileIdle" value="true"/>
+          <property name="testOnBorrow" value="false"/>
+          <property name="testOnReturn" value="false"/>
+  
+          <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+          <property name="poolPreparedStatements" value="true"/>
+          <property name="maxOpenPreparedStatements" value="20"/>
+      </bean>
+      <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+          <property name="dataSource" ref="dataSource"></property>
+      </bean>
+  
+      <bean id="hsLogDao" class="com.huifer.source.spring.dao.impl.HsLogDaoImpl">
+          <property name="jdbcTemplate" ref="jdbcTemplate"/>
+      </bean>
+  </beans>
+  ```
+
+- 运行方法
+
+  ```JAVA
+  
+  public class SpringJDBCSourceCode {
+      public static void main(String[] args) {
+          ApplicationContext applicationContext = new ClassPathXmlApplicationContext("JDBC-demo.xml");
+          HsLogDaoImpl bean = applicationContext.getBean(HsLogDaoImpl.class);
+          System.out.println(bean.findAll());
+          HsLog hsLog = new HsLog();
+          hsLog.setSource("jlkjll");
+          bean.save(hsLog);
+  
+      }
+  }
+  
+  ```
+
+  
+
+
+
+
+
+## 查询解析
+
+### org.springframework.jdbc.core.JdbcTemplate
+
+```XML
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+```
+- 从配置中可以知道 JdbcTemplate 需要 dataSource 属性, 就从这里开始讲起
+- `org.springframework.jdbc.support.JdbcAccessor.setDataSource`, 这段代码就只做了赋值操作(依赖注入) 
+```java
+public void setDataSource(@Nullable DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+```
+- 下面`hsLogDao`也是依赖注入本篇不做详细讲述。
+
+
+
+### org.springframework.jdbc.core.JdbcTemplate#query(java.lang.String, org.springframework.jdbc.core.RowMapper<T>)
+
+```java
+    @Override
+    public List<HsLog> findAll() {
+        return this.getJdbcTemplate().query("select * from hs_log", new HsLogRowMapper());
+    }
+
+```
+
+```java
+    @Override
+    @Nullable
+    public <T> T query(final String sql, final ResultSetExtractor<T> rse) throws DataAccessException {
+        Assert.notNull(sql, "SQL must not be null");
+        Assert.notNull(rse, "ResultSetExtractor must not be null");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing SQL query [" + sql + "]");
+        }
+
+        /**
+         * Callback to execute the query.
+         */
+        class QueryStatementCallback implements StatementCallback<T>, SqlProvider {
+            @Override
+            @Nullable
+            public T doInStatement(Statement stmt) throws SQLException {
+                ResultSet rs = null;
+                try {
+                    // 执行sql
+                    rs = stmt.executeQuery(sql);
+                    // 1. org.springframework.jdbc.core.RowMapperResultSetExtractor.extractData
+                    return rse.extractData(rs);
+                }
+                finally {
+                    JdbcUtils.closeResultSet(rs);
+                }
+            }
+
+            @Override
+            public String getSql() {
+                return sql;
+            }
+        }
+
+        return execute(new QueryStatementCallback());
+    }
+
+```
+
+```java
+	@Override
+    @Nullable
+    public <T> T execute(StatementCallback<T> action) throws DataAccessException {
+        Assert.notNull(action, "Callback object must not be null");
+
+        Connection con = DataSourceUtils.getConnection(obtainDataSource());
+        Statement stmt = null;
+        try {
+            stmt = con.createStatement();
+            applyStatementSettings(stmt);
+            // 执行 
+            T result = action.doInStatement(stmt);
+            handleWarnings(stmt);
+            return result;
+        }
+        catch (SQLException ex) {
+            // Release Connection early, to avoid potential connection pool deadlock
+            // in the case when the exception translator hasn't been initialized yet.
+            String sql = getSql(action);
+            JdbcUtils.closeStatement(stmt);
+            stmt = null;
+            DataSourceUtils.releaseConnection(con, getDataSource());
+            con = null;
+            throw translateException("StatementCallback", sql, ex);
+        }
+        finally {
+            JdbcUtils.closeStatement(stmt);
+            DataSourceUtils.releaseConnection(con, getDataSource());
+        }
+    }
+```
+
+```JAVA
+    @Override
+    public List<T> extractData(ResultSet rs) throws SQLException {
+        List<T> results = (this.rowsExpected > 0 ? new ArrayList<>(this.rowsExpected) : new ArrayList<>());
+        int rowNum = 0;
+        while (rs.next()) {
+            // 调用自定义的 rowMapper 进行数据处理
+            T t = this.rowMapper.mapRow(rs, rowNum++);
+            results.add(t);
+        }
+        return results;
+    }
+
+```
+
+![image-20200109150841916](assets/image-20200109150841916.png)
+
+这样就可以获取到了
+
+方法`result`没有什么操作直接返回即可
+
+```java
+    private static <T> T result(@Nullable T result) {
+        Assert.state(result != null, "No result");
+        return result;
+    }
+```
+
+
+
+
+
+
+
+## 插入解析
+
+```java
+@Override
+    public void save(HsLog hsLog) {
+        this.getJdbcTemplate().update("insert into hs_log (SOURCE) values(?)"
+                , new Object[]{
+                        hsLog.getSource(),
+                      }
+
+        );
+    }
+```
+
+`org.springframework.jdbc.core.JdbcTemplate#update(org.springframework.jdbc.core.PreparedStatementCreator, org.springframework.jdbc.core.PreparedStatementSetter)`
+
+```java
+    protected int update(final PreparedStatementCreator psc, @Nullable final PreparedStatementSetter pss)
+            throws DataAccessException {
+
+        logger.debug("Executing prepared SQL update");
+
+        return updateCount(execute(psc, ps -> {
+            try {
+                if (pss != null) {
+                    // 设置请求参数
+                   pss.setValues(ps);
+                }
+                int rows = ps.executeUpdate();
+                if (logger.isTraceEnabled()) {
+                    logger.trace("SQL update affected " + rows + " rows");
+                }
+                return rows;
+            }
+            finally {
+                if (pss instanceof ParameterDisposer) {
+                    ((ParameterDisposer) pss).cleanupParameters();
+                }
+            }
+        }));
+    }
+
+```
+
+
+
