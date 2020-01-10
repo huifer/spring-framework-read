@@ -13,9 +13,11 @@ public class SpringJDBCSourceCode {
         HsLogDaoImpl bean = applicationContext.getBean(HsLogDaoImpl.class);
 //        List<HsLog> all = bean.findAll();
 //        System.out.println(all);
-        HsLog hsLog = new HsLog();
-        hsLog.setSource("jlkjll");
-        bean.save(hsLog);
-
+//        HsLog hsLog = new HsLog();
+//        hsLog.setSource("jlkjll");
+//        bean.save(hsLog);
+//
+        HsLog hsLog = bean.byId(461);
+        System.out.println();
     }
 }

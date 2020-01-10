@@ -1,11 +1,16 @@
 package com.huifer.source.spring.dao;
 
-import java.util.Date;
-
 public class HsLog {
     private Integer id;
 
     private String source;
+
+    public HsLog() {
+    }
+
+    public HsLog(String source) {
+        this.source = source;
+    }
 
     public Integer getId() {
         return id;

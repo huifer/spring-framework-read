@@ -6,4 +6,6 @@ public interface HsLogDao {
     List<HsLog> findAll();
 
     void save(HsLog hsLog);
+
+    HsLog byId(Integer id);
 }
