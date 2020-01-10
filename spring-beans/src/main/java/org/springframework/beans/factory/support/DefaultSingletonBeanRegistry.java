@@ -99,7 +99,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
             Collections.newSetFromMap(new ConcurrentHashMap<>(16));
     /**
      * Disposable bean instances: bean name to disposable instance.
-     * 一次性的bean
+     * 摧毁的单例对象
      */
     private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
     /**
@@ -558,6 +558,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
         }
     }
 
+    /**
+     * 摧毁单例对象
+     */
     public void destroySingletons() {
         if (logger.isTraceEnabled()) {
             logger.trace("Destroying singletons in " + this);
@@ -568,6 +571,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
         String[] disposableBeanNames;
         synchronized (this.disposableBeans) {
+            // 获取摧毁的单例对象的beanName
             disposableBeanNames = StringUtils.toStringArray(this.disposableBeans.keySet());
         }
         for (int i = disposableBeanNames.length - 1; i >= 0; i--) {
@@ -578,6 +582,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
         this.dependentBeanMap.clear();
         this.dependenciesForBeanMap.clear();
 
+        // 清空
         clearSingletonCache();
     }
 
@@ -600,6 +605,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
      * Destroy the given bean. Delegates to {@code destroyBean}
      * if a corresponding disposable bean instance is found.
      *
+     * 通过beanName移除相关信息
      * @param beanName the name of the bean
      * @see #destroyBean
      */

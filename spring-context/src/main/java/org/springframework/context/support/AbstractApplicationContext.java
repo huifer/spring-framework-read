@@ -1175,6 +1175,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         return getBeanFactory().getBean(name, args);
     }
 
+    /**
+     *
+     * @param requiredType type the bean must match; can be an interface or superclass
+     * @param <T>
+     * @return
+     * @throws BeansException
+     * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#getBean(java.lang.Class)
+     */
     @Override
     public <T> T getBean(Class<T> requiredType) throws BeansException {
         assertBeanFactoryActive();
