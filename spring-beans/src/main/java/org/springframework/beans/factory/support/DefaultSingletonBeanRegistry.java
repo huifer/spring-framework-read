@@ -108,7 +108,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
     private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
     /**
      * Map between dependent bean names: bean name to Set of dependent bean names.
-     *
+     * <p>
      * bean 和beanName的关系
      */
     private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
@@ -156,8 +156,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
     /**
      * Add the given singleton object to the singleton cache of this factory.
      * <p>To be called for eager registration of singletons.
-     *
+     * <p>
      * 添加单例对象的操作方法
+     *
      * @param beanName        the name of the bean
      * @param singletonObject the singleton object
      */
@@ -211,13 +212,18 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
     protected Object getSingleton(String beanName, boolean allowEarlyReference) {
         // 从列表中获取单例对象
         Object singletonObject = this.singletonObjects.get(beanName);
+        // 判断当前beanName是否存在
         if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
             synchronized (this.singletonObjects) {
+                // 从延迟加载中获取
                 singletonObject = this.earlySingletonObjects.get(beanName);
                 if (singletonObject == null && allowEarlyReference) {
+                    // 从singletonFactories获取ObjectFactory
                     ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
                     if (singletonFactory != null) {
+                        // 获取对象
                         singletonObject = singletonFactory.getObject();
+                        // 加入缓存
                         this.earlySingletonObjects.put(beanName, singletonObject);
                         this.singletonFactories.remove(beanName);
                     }
@@ -257,6 +263,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
                     this.suppressedExceptions = new LinkedHashSet<>();
                 }
                 try {
+                    // 调用自定义实现,或者接口实现
                     singletonObject = singletonFactory.getObject();
                     newSingleton = true;
                 }
@@ -322,6 +329,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
     /**
      * 通过map的key是否存在判断
+     *
      * @param beanName the name of the bean to look for
      * @return
      */
@@ -337,9 +345,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
         }
     }
 
+    /**
+     * 获取 单例对象的数量
+     * @return
+     */
     @Override
     public int getSingletonCount() {
         synchronized (this.singletonObjects) {
+            // 直接获取数量
             return this.registeredSingletons.size();
         }
     }
@@ -367,6 +380,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
     /**
      * Return whether the specified singleton bean is currently in creation
      * (within the entire factory).
+     * <p>
+     * 判断当前beanName 是否存在
      *
      * @param beanName the name of the bean
      */

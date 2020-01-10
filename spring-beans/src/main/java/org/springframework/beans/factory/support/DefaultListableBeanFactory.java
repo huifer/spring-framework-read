@@ -319,8 +319,17 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     // Implementation of remaining BeanFactory methods
     //---------------------------------------------------------------------
 
+    /**
+     *
+     * @param requiredType type the bean must match; can be an interface or superclass
+     * @param <T>
+     * @return
+     * @throws BeansException
+     * @see org.springframework.context.support.AbstractApplicationContext#getBean(java.lang.Class)
+     */
     @Override
     public <T> T getBean(Class<T> requiredType) throws BeansException {
+        //  getBean
         return getBean(requiredType, (Object[]) null);
     }
 
