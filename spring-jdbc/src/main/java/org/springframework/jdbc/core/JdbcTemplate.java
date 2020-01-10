@@ -351,13 +351,16 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
         Connection con = DataSourceUtils.getConnection(obtainDataSource());
         try {
             // Create close-suppressing Connection proxy, also preparing returned Statements.
+            // 创建链接s对象(代理对象)
             Connection conToUse = createConnectionProxy(con);
             return action.doInConnection(conToUse);
         }
         catch (SQLException ex) {
             // Release Connection early, to avoid potential connection pool deadlock
             // in the case when the exception translator hasn't been initialized yet.
+            //获取sql
             String sql = getSql(action);
+            // 释放资源
             DataSourceUtils.releaseConnection(con, getDataSource());
             con = null;
             throw translateException("ConnectionCallback", sql, ex);
@@ -1451,14 +1454,18 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
     /**
      * Throw a SQLWarningException if we're not ignoring warnings,
      * otherwise log the warnings at debug level.
+     * <p>
+     * 警告处理
      *
      * @param stmt the current JDBC statement
      * @throws SQLWarningException if not ignoring warnings
      * @see org.springframework.jdbc.SQLWarningException
      */
     protected void handleWarnings(Statement stmt) throws SQLException {
+        // 是否忽略预警
         if (isIgnoreWarnings()) {
             if (logger.isDebugEnabled()) {
+                // 是否开启sql预警
                 SQLWarning warningToLog = stmt.getWarnings();
                 while (warningToLog != null) {
                     logger.debug("SQLWarning ignored: SQL state '" + warningToLog.getSQLState() + "', error code '" +

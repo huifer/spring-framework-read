@@ -66,9 +66,10 @@ public abstract class DataSourceUtils {
      * when using {@link DataSourceTransactionManager}. Will bind a Connection to the
      * thread if transaction synchronization is active, e.g. when running within a
      * {@link org.springframework.transaction.jta.JtaTransactionManager JTA} transaction).
-     *
-     *
+     * <p>
+     * <p>
      * 获取数据库链接对象
+     *
      * @param dataSource the DataSource to obtain Connections from
      * @return a JDBC Connection from the given DataSource
      * @throws org.springframework.jdbc.CannotGetJdbcConnectionException if the attempt to get a Connection failed
@@ -107,6 +108,7 @@ public abstract class DataSourceUtils {
             conHolder.requested();
             if (!conHolder.hasConnection()) {
                 logger.debug("Fetching resumed JDBC Connection from DataSource");
+                // 设置连接对象
                 conHolder.setConnection(fetchConnection(dataSource));
             }
             return conHolder.getConnection();
@@ -114,12 +116,15 @@ public abstract class DataSourceUtils {
         // Else we either got no holder or an empty thread-bound holder here.
 
         logger.debug("Fetching JDBC Connection from DataSource");
+        // 获取链接
         Connection con = fetchConnection(dataSource);
 
+        // 当前线程支持同步
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             try {
                 // Use same Connection for further JDBC actions within the transaction.
                 // Thread-bound object will get removed by synchronization at transaction completion.
+                // 在同一个事物中使用同一个链接对象
                 ConnectionHolder holderToUse = conHolder;
                 if (holderToUse == null) {
                     holderToUse = new ConnectionHolder(con);
@@ -127,6 +132,7 @@ public abstract class DataSourceUtils {
                 else {
                     holderToUse.setConnection(con);
                 }
+                // 记录链接数量
                 holderToUse.requested();
                 TransactionSynchronizationManager.registerSynchronization(
                         new ConnectionSynchronization(holderToUse, dataSource));
@@ -137,6 +143,7 @@ public abstract class DataSourceUtils {
             }
             catch (RuntimeException ex) {
                 // Unexpected exception from external delegation call -> close Connection and rethrow.
+                //  释放资源
                 releaseConnection(con, dataSource);
                 throw ex;
             }
@@ -149,6 +156,8 @@ public abstract class DataSourceUtils {
      * Actually fetch a {@link Connection} from the given {@link DataSource},
      * defensively turning an unexpected {@code null} return value from
      * {@link DataSource#getConnection()} into an {@link IllegalStateException}.
+     * <p>
+     * 从 dataSource 获取链接对象
      *
      * @param dataSource the DataSource to obtain Connections from
      * @return a JDBC Connection from the given DataSource (never {@code null})
@@ -157,6 +166,7 @@ public abstract class DataSourceUtils {
      * @see DataSource#getConnection()
      */
     private static Connection fetchConnection(DataSource dataSource) throws SQLException {
+        // 从 dataSource 获取链接对象
         Connection con = dataSource.getConnection();
         if (con == null) {
             throw new IllegalStateException("DataSource returned null from getConnection(): " + dataSource);
@@ -349,10 +359,12 @@ public abstract class DataSourceUtils {
             ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
             if (conHolder != null && connectionEquals(conHolder, con)) {
                 // It's the transactional Connection: Don't close it.
+                // 连接数-1
                 conHolder.released();
                 return;
             }
         }
+        // 处理其他情况
         doCloseConnection(con, dataSource);
     }
 

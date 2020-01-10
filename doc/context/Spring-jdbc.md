@@ -183,6 +183,157 @@
 
 
 
+## 链接对象构造
+
+`Connection con = DataSourceUtils.getConnection(obtainDataSource());`
+
+```java
+    public static Connection getConnection(DataSource dataSource) throws CannotGetJdbcConnectionException {
+        try {
+            return doGetConnection(dataSource);
+        }
+        catch (SQLException ex) {
+            throw new CannotGetJdbcConnectionException("Failed to obtain JDBC Connection", ex);
+        }
+        catch (IllegalStateException ex) {
+            throw new CannotGetJdbcConnectionException("Failed to obtain JDBC Connection: " + ex.getMessage());
+        }
+    }
+
+```
+
+### org.springframework.jdbc.datasource.DataSourceUtils#doGetConnection
+
+```java
+    public static Connection doGetConnection(DataSource dataSource) throws SQLException {
+        Assert.notNull(dataSource, "No DataSource specified");
+
+        ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+        if (conHolder != null && (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
+            conHolder.requested();
+            if (!conHolder.hasConnection()) {
+                logger.debug("Fetching resumed JDBC Connection from DataSource");
+                // 设置连接对象
+                conHolder.setConnection(fetchConnection(dataSource));
+            }
+            return conHolder.getConnection();
+        }
+        // Else we either got no holder or an empty thread-bound holder here.
+
+        logger.debug("Fetching JDBC Connection from DataSource");
+        // 获取链接
+        Connection con = fetchConnection(dataSource);
+
+        // 当前线程支持同步
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            try {
+                // Use same Connection for further JDBC actions within the transaction.
+                // Thread-bound object will get removed by synchronization at transaction completion.
+                // 在同一个事物中使用同一个链接对象
+                ConnectionHolder holderToUse = conHolder;
+                if (holderToUse == null) {
+                    holderToUse = new ConnectionHolder(con);
+                }
+                else {
+                    holderToUse.setConnection(con);
+                }
+                // 记录链接数量
+                holderToUse.requested();
+                TransactionSynchronizationManager.registerSynchronization(
+                        new ConnectionSynchronization(holderToUse, dataSource));
+                holderToUse.setSynchronizedWithTransaction(true);
+                if (holderToUse != conHolder) {
+                    TransactionSynchronizationManager.bindResource(dataSource, holderToUse);
+                }
+            }
+            catch (RuntimeException ex) {
+                // Unexpected exception from external delegation call -> close Connection and rethrow.
+                releaseConnection(con, dataSource);
+                throw ex;
+            }
+        }
+
+        return con;
+    }
+
+```
+
+
+
+
+
+## 释放资源
+
+`releaseConnection(con, dataSource);`
+
+- `org.springframework.jdbc.datasource.DataSourceUtils#releaseConnection`
+
+```JAVA
+    public static void releaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) {
+        try {
+            doReleaseConnection(con, dataSource);
+        }
+        catch (SQLException ex) {
+            logger.debug("Could not close JDBC Connection", ex);
+        }
+        catch (Throwable ex) {
+            logger.debug("Unexpected exception on closing JDBC Connection", ex);
+        }
+    }
+
+```
+
+```java
+public static void doReleaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) throws SQLException {
+        if (con == null) {
+            return;
+        }
+        if (dataSource != null) {
+            ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+            if (conHolder != null && connectionEquals(conHolder, con)) {
+                // It's the transactional Connection: Don't close it.
+                // 连接数-1
+                conHolder.released();
+                return;
+            }
+        }
+        // 处理其他情况
+        doCloseConnection(con, dataSource);
+    }
+```
+
+
+
+
+
+### org.springframework.transaction.support.ResourceHolderSupport
+
+链接数
+
+```JAVA
+    /**
+     * Increase the reference count by one because the holder has been requested
+     * (i.e. someone requested the resource held by it).
+     */
+    public void requested() {
+        this.referenceCount++;
+    }
+
+    /**
+     * Decrease the reference count by one because the holder has been released
+     * (i.e. someone released the resource held by it).
+     */
+    public void released() {
+        this.referenceCount--;
+    }
+```
+
+
+
+
+
+
+
 ## 查询解析
 
 ### org.springframework.jdbc.core.JdbcTemplate
@@ -364,6 +515,8 @@ public void setDataSource(@Nullable DataSource dataSource) {
     }
 
 ```
+
+
 
 
 
