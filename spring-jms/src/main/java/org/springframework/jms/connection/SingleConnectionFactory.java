@@ -533,6 +533,7 @@ public class SingleConnectionFactory implements ConnectionFactory, QueueConnecti
         if (target instanceof TopicConnection) {
             classes.add(TopicConnection.class);
         }
+        // JDK 代理对象
         return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(),
                 ClassUtils.toClassArray(classes), new SharedConnectionInvocationHandler());
     }

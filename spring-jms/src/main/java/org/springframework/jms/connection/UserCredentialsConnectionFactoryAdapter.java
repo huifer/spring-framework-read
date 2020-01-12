@@ -169,6 +169,7 @@ public class UserCredentialsConnectionFactoryAdapter
      * If the specified username is empty, it will simply delegate to the standard
      * {@code createConnection()} method of the target ConnectionFactory.
      *
+     * 创建连接对象
      * @param username the username to use
      * @param password the password to use
      * @return the Connection
@@ -178,6 +179,7 @@ public class UserCredentialsConnectionFactoryAdapter
     protected Connection doCreateConnection(@Nullable String username, @Nullable String password) throws JMSException {
         ConnectionFactory target = obtainTargetConnectionFactory();
         if (StringUtils.hasLength(username)) {
+            // javax.jms 创建连接对象
             return target.createConnection(username, password);
         }
         else {

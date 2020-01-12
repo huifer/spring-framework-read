@@ -1414,6 +1414,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     // Implementation of ResourcePatternResolver interface
     //---------------------------------------------------------------------
 
+
+    /**
+     * 资源路径解析
+     * @param locationPattern the location pattern to resolve
+     * @return
+     * @throws IOException
+     */
     @Override
     public Resource[] getResources(String locationPattern) throws IOException {
         return this.resourcePatternResolver.getResources(locationPattern);

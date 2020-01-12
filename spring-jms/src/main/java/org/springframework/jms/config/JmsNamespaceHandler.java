@@ -22,6 +22,8 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * A {@link org.springframework.beans.factory.xml.NamespaceHandler}
  * for the JMS namespace.
  *
+ *
+ * JMS 命名空间处理器
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Stephane Nicoll

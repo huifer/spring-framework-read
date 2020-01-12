@@ -56,6 +56,7 @@ public abstract class JmsGatewaySupport implements InitializingBean {
      * <p>Can be overridden in subclasses to provide a JmsTemplate instance with
      * a different configuration.
      *
+     * 创建JMS template
      * @param connectionFactory the JMS ConnectionFactory to create a JmsTemplate for
      * @return the new JmsTemplate instance
      * @see #setConnectionFactory
