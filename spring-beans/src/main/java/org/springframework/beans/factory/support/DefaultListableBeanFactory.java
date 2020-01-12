@@ -322,6 +322,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     /**
      *
      * @param requiredType type the bean must match; can be an interface or superclass
+     *                      对象.clss
      * @param <T>
      * @return
      * @throws BeansException
@@ -337,6 +338,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public <T> T getBean(Class<T> requiredType, @Nullable Object... args) throws BeansException {
         Assert.notNull(requiredType, "Required type must not be null");
+        // 解析bean
         Object resolved = resolveBean(ResolvableType.forRawClass(requiredType), args, false);
         if (resolved == null) {
             throw new NoSuchBeanDefinitionException(requiredType);

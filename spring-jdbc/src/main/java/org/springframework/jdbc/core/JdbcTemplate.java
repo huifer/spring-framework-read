@@ -348,6 +348,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
     public <T> T execute(ConnectionCallback<T> action) throws DataAccessException {
         Assert.notNull(action, "Callback object must not be null");
 
+        // 获取数据库连接对象
         Connection con = DataSourceUtils.getConnection(obtainDataSource());
         try {
             // Create close-suppressing Connection proxy, also preparing returned Statements.
@@ -358,11 +359,13 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
             // Release Connection early, to avoid potential connection pool deadlock
             // in the case when the exception translator hasn't been initialized yet.
             String sql = getSql(action);
+            // 数据库资源释放
             DataSourceUtils.releaseConnection(con, getDataSource());
             con = null;
             throw translateException("ConnectionCallback", sql, ex);
         }
         finally {
+            // 资源释放
             DataSourceUtils.releaseConnection(con, getDataSource());
         }
     }

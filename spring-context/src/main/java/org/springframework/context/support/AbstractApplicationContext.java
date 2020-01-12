@@ -1163,6 +1163,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         return getBeanFactory().getBean(name);
     }
 
+    /**
+     *
+     * @param name         the name of the bean to retrieve
+     *                     beanName bean的名称
+     * @param requiredType type the bean must match; can be an interface or superclass
+     *                     bean 类型
+     * @param <T>
+     * @return
+     * @throws BeansException
+     */
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         assertBeanFactoryActive();

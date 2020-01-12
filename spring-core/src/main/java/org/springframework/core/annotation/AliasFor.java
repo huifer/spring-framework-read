@@ -169,6 +169,8 @@ import java.lang.annotation.*;
  * attribute aliases. Consult the Javadoc for individual annotations as well
  * as the reference manual for details.
  *
+ *
+ * 别名注解
  * @author Sam Brannen
  * @see AnnotatedElementUtils
  * @see AnnotationUtils
