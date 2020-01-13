@@ -120,7 +120,9 @@ public class SimpleJndiBeanFactory extends JndiLocatorSupport implements BeanFac
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         try {
+            // 判断这个beanName 是否是一个单例对象
             if (isSingleton(name)) {
+                // 获取单例对象
                 return doGetSingleton(name, requiredType);
             }
             else {
@@ -221,6 +223,12 @@ public class SimpleJndiBeanFactory extends JndiLocatorSupport implements BeanFac
         }
     }
 
+    /**
+     * 判断是否是一个单例对象
+     * @param name the name of the bean to query
+     * @return
+     * @throws NoSuchBeanDefinitionException
+     */
     @Override
     public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
         return this.shareableResources.contains(name);
@@ -263,16 +271,27 @@ public class SimpleJndiBeanFactory extends JndiLocatorSupport implements BeanFac
     }
 
 
+    /**
+     * 通过beanName获取实例对象
+     * @param name beanName
+     * @param requiredType beanType  bean.class
+     * @param <T> bean Object
+     * @return
+     * @throws NamingException
+     */
     @SuppressWarnings("unchecked")
     private <T> T doGetSingleton(String name, @Nullable Class<T> requiredType) throws NamingException {
         synchronized (this.singletonObjects) {
+            // 获取单例对象
             Object singleton = this.singletonObjects.get(name);
             if (singleton != null) {
                 if (requiredType != null && !requiredType.isInstance(singleton)) {
                     throw new TypeMismatchNamingException(convertJndiName(name), requiredType, singleton.getClass());
                 }
+                // 返回获取到的对象
                 return (T) singleton;
             }
+            // todo : 2020年01月12日 解析lookup方法
             T jndiObject = lookup(name, requiredType);
             this.singletonObjects.put(name, jndiObject);
             return jndiObject;

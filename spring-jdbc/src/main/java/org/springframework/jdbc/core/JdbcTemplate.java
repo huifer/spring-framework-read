@@ -348,6 +348,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
     public <T> T execute(ConnectionCallback<T> action) throws DataAccessException {
         Assert.notNull(action, "Callback object must not be null");
 
+        // 获取数据库连接对象
         Connection con = DataSourceUtils.getConnection(obtainDataSource());
         try {
             // Create close-suppressing Connection proxy, also preparing returned Statements.
@@ -360,12 +361,14 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
             // in the case when the exception translator hasn't been initialized yet.
             //获取sql
             String sql = getSql(action);
+            // 数据库资源释放
             // 释放资源
             DataSourceUtils.releaseConnection(con, getDataSource());
             con = null;
             throw translateException("ConnectionCallback", sql, ex);
         }
         finally {
+            // 资源释放
             DataSourceUtils.releaseConnection(con, getDataSource());
         }
     }
@@ -1454,18 +1457,14 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
     /**
      * Throw a SQLWarningException if we're not ignoring warnings,
      * otherwise log the warnings at debug level.
-     * <p>
-     * 警告处理
      *
      * @param stmt the current JDBC statement
      * @throws SQLWarningException if not ignoring warnings
      * @see org.springframework.jdbc.SQLWarningException
      */
     protected void handleWarnings(Statement stmt) throws SQLException {
-        // 是否忽略预警
         if (isIgnoreWarnings()) {
             if (logger.isDebugEnabled()) {
-                // 是否开启sql预警
                 SQLWarning warningToLog = stmt.getWarnings();
                 while (warningToLog != null) {
                     logger.debug("SQLWarning ignored: SQL state '" + warningToLog.getSQLState() + "', error code '" +

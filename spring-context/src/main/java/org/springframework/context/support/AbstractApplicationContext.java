@@ -1163,6 +1163,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         return getBeanFactory().getBean(name);
     }
 
+    /**
+     *
+     * @param name         the name of the bean to retrieve
+     *                     beanName bean的名称
+     * @param requiredType type the bean must match; can be an interface or superclass
+     *                     bean 类型
+     * @param <T>
+     * @return
+     * @throws BeansException
+     */
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         assertBeanFactoryActive();
@@ -1404,6 +1414,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     // Implementation of ResourcePatternResolver interface
     //---------------------------------------------------------------------
 
+
+    /**
+     * 资源路径解析
+     * @param locationPattern the location pattern to resolve
+     * @return
+     * @throws IOException
+     */
     @Override
     public Resource[] getResources(String locationPattern) throws IOException {
         return this.resourcePatternResolver.getResources(locationPattern);

@@ -418,12 +418,21 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
         return candidates;
     }
 
+    /**
+     * 扫描当前包路径下的资源
+     * @param basePackage
+     * @return
+     */
     private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
         Set<BeanDefinition> candidates = new LinkedHashSet<>();
         try {
+            // 字符串拼接出一个编译后的路径 classpath://
+            // 这里替换了通配符
             String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                     resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+            // 获取资源
             Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
+            // 日志级别
             boolean traceEnabled = logger.isTraceEnabled();
             boolean debugEnabled = logger.isDebugEnabled();
             for (Resource resource : resources) {

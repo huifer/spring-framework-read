@@ -114,7 +114,11 @@ public class ReflectUtils {
     }
     // SPRING PATCH END
 
+    /**
+     * 类型映射
+     */
     static {
+        // 包装类型映射
         primitives.put("byte", Byte.TYPE);
         primitives.put("char", Character.TYPE);
         primitives.put("double", Double.TYPE);
@@ -124,6 +128,7 @@ public class ReflectUtils {
         primitives.put("short", Short.TYPE);
         primitives.put("boolean", Boolean.TYPE);
 
+        // 基础类型映射
         transforms.put("byte", "B");
         transforms.put("char", "C");
         transforms.put("double", "D");

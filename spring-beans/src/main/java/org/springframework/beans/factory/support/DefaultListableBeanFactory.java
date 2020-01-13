@@ -322,6 +322,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     /**
      *
      * @param requiredType type the bean must match; can be an interface or superclass
+     *                      对象.clss
      * @param <T>
      * @return
      * @throws BeansException
@@ -333,10 +334,22 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return getBean(requiredType, (Object[]) null);
     }
 
+    /**
+     *获取getBean
+     * @param requiredType type the bean must match; can be an interface or superclass
+     *                     beanType
+     * @param args         arguments to use when creating a bean instance using explicit arguments
+     *                     (only applied when creating a new instance as opposed to retrieving an existing one)
+     *                     请求参数
+     * @param <T>
+     * @return
+     * @throws BeansException
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getBean(Class<T> requiredType, @Nullable Object... args) throws BeansException {
         Assert.notNull(requiredType, "Required type must not be null");
+        // 解析bean
         Object resolved = resolveBean(ResolvableType.forRawClass(requiredType), args, false);
         if (resolved == null) {
             throw new NoSuchBeanDefinitionException(requiredType);
@@ -409,6 +422,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
     @Nullable
     private <T> T resolveBean(ResolvableType requiredType, @Nullable Object[] args, boolean nonUniqueAsNull) {
+        // 解析bean
         NamedBeanHolder<T> namedBean = resolveNamedBean(requiredType, args, nonUniqueAsNull);
         if (namedBean != null) {
             return namedBean.getBeanInstance();
@@ -460,6 +474,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         }
     }
 
+    /**
+     * 根据 type 获取 BeanName
+     * @param type the generically typed class or interface to match
+     * @return
+     */
     @Override
     public String[] getBeanNamesForType(ResolvableType type) {
         Class<?> resolved = type.resolve();
@@ -495,8 +514,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         if (!isConfigurationFrozen() || type == null || !allowEagerInit) {
             return doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, allowEagerInit);
         }
+        // 方法内创建判断应该从哪个缓存Map中获取
         Map<Class<?>, String[]> cache =
                 (includeNonSingletons ? this.allBeanNamesByType : this.singletonBeanNamesByType);
+        // 获取 beanName
         String[] resolvedBeanNames = cache.get(type);
         if (resolvedBeanNames != null) {
             return resolvedBeanNames;
@@ -508,6 +529,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return resolvedBeanNames;
     }
 
+    /**
+     * 根据 beanType 获取beanName
+     * @param type
+     * @param includeNonSingletons
+     * @param allowEagerInit
+     * @return
+     */
     private String[] doGetBeanNamesForType(ResolvableType type, boolean includeNonSingletons, boolean allowEagerInit) {
         List<String> result = new ArrayList<>();
 
@@ -1146,6 +1174,8 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
         if (candidateNames.length == 1) {
             String beanName = candidateNames[0];
+            // 创建一个NamedBeanHolder
+            // getBean
             return new NamedBeanHolder<>(beanName, (T) getBean(beanName, requiredType.toClass(), args));
         }
         else if (candidateNames.length > 1) {

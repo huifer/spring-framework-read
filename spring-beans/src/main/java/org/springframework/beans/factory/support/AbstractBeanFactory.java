@@ -177,6 +177,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
+        // 核心方法
         return doGetBean(name, requiredType, null, false);
     }
 
@@ -204,13 +205,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     /**
      * Return an instance, which may be shared or independent, of the specified bean.
      *
+     * 获取bean的核心方法
      * @param name          the name of the bean to retrieve
+     *                         beanName
      * @param requiredType  the required type of the bean to retrieve
+     *                      beanType
      * @param args          arguments to use when creating a bean instance using explicit arguments
      *                      (only applied when creating a new instance as opposed to retrieving an existing one)
+     *                      构造参数
      * @param typeCheckOnly whether the instance is obtained for a type check,
      *                      not for actual use
-     * @return an instance of the bean
+     * @return an instance of the bean, bean对象
      * @throws BeansException if the bean could not be created
      */
     @SuppressWarnings("unchecked")
@@ -221,9 +226,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         Object bean;
 
         // Eagerly check singleton cache for manually registered singletons.
+        // 获取单例对象bean
         Object sharedInstance = getSingleton(beanName);
+        // 如果单例对象不存在 并且 构造参数没有
         if (sharedInstance != null && args == null) {
             if (logger.isTraceEnabled()) {
+                // 判断当前bean是否存在
                 if (isSingletonCurrentlyInCreation(beanName)) {
                     logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
                             "' that is not fully initialized yet - a consequence of a circular reference");
@@ -232,6 +240,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                     logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
                 }
             }
+            // 生产bean对象
             bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
         }
 
@@ -1668,6 +1677,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
         Object object = null;
         if (mbd == null) {
+            // 从 缓存map 中获取bean对象
             object = getCachedObjectForFactoryBean(beanName);
         }
         if (object == null) {
@@ -1678,6 +1688,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                 mbd = getMergedLocalBeanDefinition(beanName);
             }
             boolean synthetic = (mbd != null && mbd.isSynthetic());
+            // 从 工厂中创建对象
             object = getObjectFromFactoryBean(factory, beanName, !synthetic);
         }
         return object;
