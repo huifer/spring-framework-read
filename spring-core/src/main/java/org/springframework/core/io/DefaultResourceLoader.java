@@ -61,6 +61,7 @@ public class DefaultResourceLoader implements ResourceLoader {
      * @see java.lang.Thread#getContextClassLoader()
      */
     public DefaultResourceLoader() {
+        // 创建类加载器
         this.classLoader = ClassUtils.getDefaultClassLoader();
     }
 
@@ -144,6 +145,12 @@ public class DefaultResourceLoader implements ResourceLoader {
     }
 
 
+    /**
+     * 获取资源
+     * @param location the resource location
+     *                  资源路径
+     * @return {@link Resource}
+     */
     @Override
     public Resource getResource(String location) {
         Assert.notNull(location, "Location must not be null");
@@ -155,15 +162,18 @@ public class DefaultResourceLoader implements ResourceLoader {
             }
         }
 
+        // location 以/开头
         if (location.startsWith("/")) {
             return getResourceByPath(location);
         }
+        // location以 classpath: 开头
         else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
             return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
         }
         else {
             try {
                 // Try to parse the location as a URL...
+                // location 是一个url
                 URL url = new URL(location);
                 return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
             }
@@ -180,6 +190,7 @@ public class DefaultResourceLoader implements ResourceLoader {
      * be appropriate for standalone implementations but can be overridden,
      * e.g. for implementations targeted at a Servlet container.
      *
+     * 根据路径获取Resource
      * @param path the path to the resource
      * @return the corresponding Resource handle
      * @see ClassPathResource
@@ -197,6 +208,11 @@ public class DefaultResourceLoader implements ResourceLoader {
      */
     protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {
 
+        /**
+         *
+         * @param path 资源路径
+         * @param classLoader 类加载器
+         */
         public ClassPathContextResource(String path, @Nullable ClassLoader classLoader) {
             super(path, classLoader);
         }

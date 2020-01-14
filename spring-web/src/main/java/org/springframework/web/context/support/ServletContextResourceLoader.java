@@ -46,6 +46,8 @@ public class ServletContextResourceLoader extends DefaultResourceLoader {
      * Create a new ServletContextResourceLoader.
      *
      * @param servletContext the ServletContext to load resources with
+     *                           servlet 上下文
+     * @see DefaultResourceLoader#DefaultResourceLoader()
      */
     public ServletContextResourceLoader(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -54,6 +56,7 @@ public class ServletContextResourceLoader extends DefaultResourceLoader {
     /**
      * This implementation supports file paths beneath the root of the web application.
      *
+     * 根据路径获取资源
      * @see ServletContextResource
      */
     @Override

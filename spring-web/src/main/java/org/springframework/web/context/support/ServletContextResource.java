@@ -63,7 +63,9 @@ public class ServletContextResource extends AbstractFileResolvingResource implem
      * doesn't already start with one.
      *
      * @param servletContext the ServletContext to load from
+     *                       servlet 上下文
      * @param path           the path of the resource
+     *                      文件地址
      */
     public ServletContextResource(ServletContext servletContext, String path) {
         // check ServletContext
@@ -72,6 +74,8 @@ public class ServletContextResource extends AbstractFileResolvingResource implem
 
         // check path
         Assert.notNull(path, "Path is required");
+
+        // 清洗路径
         String pathToUse = StringUtils.cleanPath(path);
         if (!pathToUse.startsWith("/")) {
             pathToUse = "/" + pathToUse;
