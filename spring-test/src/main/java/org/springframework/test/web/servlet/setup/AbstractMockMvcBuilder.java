@@ -118,9 +118,12 @@ public abstract class AbstractMockMvcBuilder<B extends AbstractMockMvcBuilder<B>
     @SuppressWarnings("rawtypes")
     public final MockMvc build() {
         WebApplicationContext wac = initWebAppContext();
+        // 获取 ServletContext
         ServletContext servletContext = wac.getServletContext();
+        // 创建 MockServletConfig
         MockServletConfig mockServletConfig = new MockServletConfig(servletContext);
 
+        // 循环配置
         for (MockMvcConfigurer configurer : this.configurers) {
             RequestPostProcessor processor = configurer.beforeMockMvcCreated(this, wac);
             if (processor != null) {

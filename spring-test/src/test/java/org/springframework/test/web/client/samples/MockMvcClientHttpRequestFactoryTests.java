@@ -48,6 +48,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@link MockMvc} instance that uses a {@link WebApplicationContext} loaded by
  * the TestContext framework.
  *
+ *
+ * todo : 2020年1月14日 servlet和mvc初始化测试方法
+ * {@link org.springframework.test.web.servlet.TestDispatcherServlet}
  * @author Rossen Stoyanchev
  */
 @RunWith(SpringJUnit4ClassRunner.class)

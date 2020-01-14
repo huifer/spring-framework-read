@@ -285,6 +285,17 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
         this.uriTemplateHandler = handler;
     }
 
+    /**
+     *
+     * @param url          the URL
+     *                     路由地址
+     * @param responseType the type of the return value
+     *                     返回对象
+     * @param uriVariables the variables to expand the template
+     * @param <T>
+     * @return
+     * @throws RestClientException
+     */
     @Override
     @Nullable
     public <T> T getForObject(String url, Class<T> responseType, Object... uriVariables) throws RestClientException {

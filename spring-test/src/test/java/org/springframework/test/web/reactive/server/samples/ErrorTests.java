@@ -84,6 +84,7 @@ public class ErrorTests {
 
         @PostMapping(path = "/post", params = "p")
         void handlePost(@RequestBody Person person) {
+            System.out.println();
         }
     }
 

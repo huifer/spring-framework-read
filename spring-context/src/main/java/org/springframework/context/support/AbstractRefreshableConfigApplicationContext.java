@@ -65,6 +65,9 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
      * Set the config locations for this application context in init-param style,
      * i.e. with distinct locations separated by commas, semicolons or whitespace.
      * <p>If not set, the implementation may use a default as appropriate.
+     *
+     *
+     * 设置本地路径
      */
     public void setConfigLocation(String location) {
         setConfigLocations(StringUtils.tokenizeToStringArray(location, CONFIG_LOCATION_DELIMITERS));
