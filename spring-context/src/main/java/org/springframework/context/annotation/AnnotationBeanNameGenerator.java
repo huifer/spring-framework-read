@@ -66,9 +66,18 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
     private static final String COMPONENT_ANNOTATION_CLASSNAME = "org.springframework.stereotype.Component";
 
 
+    /**
+     * 创建beanName
+     *
+     * @param definition the bean definition to generate a name for
+     * @param registry   the bean definition registry that the given definition
+     *                   is supposed to be registered with
+     * @return
+     */
     @Override
     public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
         if (definition instanceof AnnotatedBeanDefinition) {
+            // 如果存在bean(value="") value存在
             String beanName = determineBeanNameFromAnnotation((AnnotatedBeanDefinition) definition);
             if (StringUtils.hasText(beanName)) {
                 // Explicit bean name found.
@@ -76,6 +85,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
             }
         }
         // Fallback: generate a unique default bean name.
+        // 创建beanName
         return buildDefaultBeanName(definition, registry);
     }
 
@@ -93,14 +103,17 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
         for (String type : types) {
             AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(amd, type);
             if (attributes != null && isStereotypeWithNameValue(type, amd.getMetaAnnotationTypes(type), attributes)) {
+                // 获取注解的value 属性值
                 Object value = attributes.get("value");
                 if (value instanceof String) {
                     String strVal = (String) value;
+                    // 判断是否存在值
                     if (StringUtils.hasLength(strVal)) {
                         if (beanName != null && !strVal.equals(beanName)) {
                             throw new IllegalStateException("Stereotype annotations suggest inconsistent " +
                                     "component names: '" + beanName + "' versus '" + strVal + "'");
                         }
+                        // beanName = value属性值
                         beanName = strVal;
                     }
                 }
@@ -148,14 +161,19 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
      * <p>Note that inner classes will thus have names of the form
      * "outerClassName.InnerClassName", which because of the period in the
      * name may be an issue if you are autowiring by name.
+     * <p>
+     * 创建beanName
      *
      * @param definition the bean definition to build a bean name for
      * @return the default bean name (never {@code null})
      */
     protected String buildDefaultBeanName(BeanDefinition definition) {
+        // 获取bean class name
         String beanClassName = definition.getBeanClassName();
         Assert.state(beanClassName != null, "No bean class name set");
+        // 获取短类名,
         String shortClassName = ClassUtils.getShortName(beanClassName);
+        // 第一个字母小写
         return Introspector.decapitalize(shortClassName);
     }
 

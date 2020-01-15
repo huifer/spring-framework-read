@@ -167,6 +167,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
         this.registry = registry;
 
         if (useDefaultFilters) {
+            // 将 Component 注解放入
             registerDefaultFilters();
         }
         setEnvironment(environment);
@@ -269,8 +270,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
      */
     public int scan(String... basePackages) {
 
+        // 获取bean数量
         int beanCountAtScanStart = this.registry.getBeanDefinitionCount();
-
+        // 执行扫描
         doScan(basePackages);
 
         // Register annotation config processors, if necessary.
@@ -288,7 +290,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
      * but rather leaves this up to the caller.
      *
      * @param basePackages the packages to check for annotated classes
-     *                      包列表
+     *                     包列表
      * @return set of beans registered if any for tooling registration purposes (never {@code null})
      */
     protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
@@ -298,20 +300,30 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
             // 寻找组件
             Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
             for (BeanDefinition candidate : candidates) {
+                // bean 作用域设置
                 ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
+                // 设置生命周期
                 candidate.setScope(scopeMetadata.getScopeName());
+                // 创建beanName
                 String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
                 if (candidate instanceof AbstractBeanDefinition) {
+                    // 设置默认属性 具体方法:org.springframework.beans.factory.support.AbstractBeanDefinition.applyDefaults
                     postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
                 }
                 if (candidate instanceof AnnotatedBeanDefinition) {
+                    // 读取Lazy，Primary 等注解
                     AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
                 }
+                // bean的重复检查
                 if (checkCandidate(beanName, candidate)) {
+                    // 创建 BeanDefinitionHolder
                     BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
+                    // 代理对象的处理
                     definitionHolder =
                             AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+                    // 放入list中,最后返回用
                     beanDefinitions.add(definitionHolder);
+                    // 注册bean
                     registerBeanDefinition(definitionHolder, this.registry);
                 }
             }
@@ -323,6 +335,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
      * Apply further settings to the given bean definition,
      * beyond the contents retrieved from scanning the component class.
      *
+     * 设置默认值
      * @param beanDefinition the scanned bean definition
      * @param beanName       the generated bean name for the given bean
      */
@@ -358,10 +371,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
      *                                            bean definition has been found for the specified name
      */
     protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) throws IllegalStateException {
+        // 判断当前 beanName 是否在注册表中
         if (!this.registry.containsBeanDefinition(beanName)) {
             return true;
         }
+        // 从注册表中获取
         BeanDefinition existingDef = this.registry.getBeanDefinition(beanName);
+        // 当前的bean
         BeanDefinition originatingDef = existingDef.getOriginatingBeanDefinition();
         if (originatingDef != null) {
             existingDef = originatingDef;

@@ -1270,6 +1270,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     @Override
     public int getBeanDefinitionCount() {
+        // 获取默认的bean对象
         return getBeanFactory().getBeanDefinitionCount();
     }
 

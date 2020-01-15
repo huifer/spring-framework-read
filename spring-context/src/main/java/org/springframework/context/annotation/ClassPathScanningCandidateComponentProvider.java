@@ -106,6 +106,10 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
     @Nullable
     private MetadataReaderFactory metadataReaderFactory;
 
+    /**
+     * 配置 MATE-INF\spring.components
+     * {@link org.springframework.context.index.CandidateComponentsIndex}
+     */
     @Nullable
     private CandidateComponentsIndex componentsIndex;
 
@@ -204,22 +208,21 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
      */
     @SuppressWarnings("unchecked")
     protected void registerDefaultFilters() {
+        // 放入Component 注解后续使用
         this.includeFilters.add(new AnnotationTypeFilter(Component.class));
         ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
         try {
             this.includeFilters.add(new AnnotationTypeFilter(
                     ((Class<? extends Annotation>) ClassUtils.forName("javax.annotation.ManagedBean", cl)), false));
             logger.trace("JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning");
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             // JSR-250 1.1 API (as included in Java EE 6) not available - simply skip.
         }
         try {
             this.includeFilters.add(new AnnotationTypeFilter(
                     ((Class<? extends Annotation>) ClassUtils.forName("javax.inject.Named", cl)), false));
             logger.trace("JSR-330 'javax.inject.Named' annotation found and supported for component scanning");
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             // JSR-330 API not available - simply skip.
         }
     }
@@ -307,10 +310,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
     /**
      * Scan the class path for candidate components.
      *
+     * 寻找组件
      * @param basePackage the package to check for annotated classes
      * @return a corresponding Set of autodetected bean definitions
      */
     public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+        // 扫描
+        /**
+         * if 测试用例: {@link org.springframework.context.annotation.ClassPathScanningCandidateComponentProviderTests#defaultsWithIndex()}
+         * 解析 spring.components文件
+         */
         if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
             return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
         }
@@ -359,6 +368,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
     /**
      * Extract the stereotype to use for the specified compatible filter.
      *
+     * 获取注解名称
      * @param filter the filter to handle
      * @return the stereotype in the index matching this filter
      * @see #indexSupportsIncludeFilter(TypeFilter)
@@ -375,37 +385,42 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
         return null;
     }
 
+
     private Set<BeanDefinition> addCandidateComponentsFromIndex(CandidateComponentsIndex index, String basePackage) {
         Set<BeanDefinition> candidates = new LinkedHashSet<>();
         try {
             Set<String> types = new HashSet<>();
             for (TypeFilter filter : this.includeFilters) {
+                // 获取注解名称
                 String stereotype = extractStereotype(filter);
                 if (stereotype == null) {
                     throw new IllegalArgumentException("Failed to extract stereotype from " + filter);
                 }
+                // 添加到类型列表中
                 types.addAll(index.getCandidateTypes(basePackage, stereotype));
             }
             boolean traceEnabled = logger.isTraceEnabled();
             boolean debugEnabled = logger.isDebugEnabled();
             for (String type : types) {
+                // 获取 MetadataReader
                 MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(type);
+                // 判断是否符合检测需求
                 if (isCandidateComponent(metadataReader)) {
+                    // 符合需求的组件创建
                     AnnotatedGenericBeanDefinition sbd = new AnnotatedGenericBeanDefinition(
                             metadataReader.getAnnotationMetadata());
+                    // 继续检测
                     if (isCandidateComponent(sbd)) {
                         if (debugEnabled) {
                             logger.debug("Using candidate component class from index: " + type);
                         }
                         candidates.add(sbd);
-                    }
-                    else {
+                    } else {
                         if (debugEnabled) {
                             logger.debug("Ignored because not a concrete top-level class: " + type);
                         }
                     }
-                }
-                else {
+                } else {
                     if (traceEnabled) {
                         logger.trace("Ignored because matching an exclude filter: " + type);
                     }
@@ -441,7 +456,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
                 }
                 if (resource.isReadable()) {
                     try {
+                        // 获取 MetadataReader
                         MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+                        // 判断是否是 Component
                         if (isCandidateComponent(metadataReader)) {
                             ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
                             sbd.setResource(resource);
@@ -500,6 +517,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
      * Determine whether the given class does not match any exclude filter
      * and does match at least one include filter.
      *
+     * 检测是否是组件
      * @param metadataReader the ASM ClassReader for the class
      * @return whether the class qualifies as a candidate component
      */
