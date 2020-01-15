@@ -138,9 +138,7 @@ final class PostProcessorRegistrationDelegate {
             // Now, invoke the postProcessBeanFactory callback of all processors handled so far.
             invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
             invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
-        }
-
-        else {
+        } else {
             // Invoke factory processors registered with the context instance.
             invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
         }
@@ -158,14 +156,11 @@ final class PostProcessorRegistrationDelegate {
         for (String ppName : postProcessorNames) {
             if (processedBeans.contains(ppName)) {
                 // skip - already processed in first phase above
-            }
-            else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+            } else if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
                 priorityOrderedPostProcessors.add(beanFactory.getBean(ppName, BeanFactoryPostProcessor.class));
-            }
-            else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
+            } else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
                 orderedPostProcessorNames.add(ppName);
-            }
-            else {
+            } else {
                 nonOrderedPostProcessorNames.add(ppName);
             }
         }
@@ -218,16 +213,17 @@ final class PostProcessorRegistrationDelegate {
                 if (pp instanceof MergedBeanDefinitionPostProcessor) {
                     internalPostProcessors.add(pp);
                 }
-            }
-            else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
+            } else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
                 orderedPostProcessorNames.add(ppName);
-            }
-            else {
+            } else {
                 nonOrderedPostProcessorNames.add(ppName);
             }
         }
 
         // First, register the BeanPostProcessors that implement PriorityOrdered.
+        /**
+         * 有{@link org.springframework.core.annotation.Order} 相关操作
+         */
         sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
         registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
 
@@ -271,6 +267,10 @@ final class PostProcessorRegistrationDelegate {
         if (comparatorToUse == null) {
             comparatorToUse = OrderComparator.INSTANCE;
         }
+        /**
+         * {@link org.springframework.core.annotation.Order} 排序
+         * {@link OrderComparator#compare(java.lang.Object, java.lang.Object)}
+         */
         postProcessors.sort(comparatorToUse);
     }
 

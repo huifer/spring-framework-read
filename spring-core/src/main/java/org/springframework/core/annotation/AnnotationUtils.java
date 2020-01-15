@@ -153,8 +153,7 @@ public abstract class AnnotationUtils {
         try {
             A metaAnn = annotatedElement.getAnnotation(annotationType);
             return (metaAnn != null ? synthesizeAnnotation(metaAnn, annotatedElement) : null);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotatedElement, ex);
             return null;
         }
@@ -186,8 +185,7 @@ public abstract class AnnotationUtils {
                 }
             }
             return (annotation != null ? synthesizeAnnotation(annotation, annotatedElement) : null);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotatedElement, ex);
             return null;
         }
@@ -230,8 +228,7 @@ public abstract class AnnotationUtils {
     public static Annotation[] getAnnotations(AnnotatedElement annotatedElement) {
         try {
             return synthesizeAnnotationArray(annotatedElement.getAnnotations(), annotatedElement);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotatedElement, ex);
             return null;
         }
@@ -254,8 +251,7 @@ public abstract class AnnotationUtils {
     public static Annotation[] getAnnotations(Method method) {
         try {
             return synthesizeAnnotationArray(BridgeMethodResolver.findBridgedMethod(method).getAnnotations(), method);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(method, ex);
             return null;
         }
@@ -413,8 +409,7 @@ public abstract class AnnotationUtils {
                 annotatedElement = BridgeMethodResolver.findBridgedMethod((Method) annotatedElement);
             }
             return new AnnotationCollector<>(annotationType, containerAnnotationType).getResult(annotatedElement);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotatedElement, ex);
             return Collections.emptySet();
         }
@@ -479,8 +474,7 @@ public abstract class AnnotationUtils {
                     }
                 }
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotatedElement, ex);
         }
         return null;
@@ -623,8 +617,7 @@ public abstract class AnnotationUtils {
                     }
                     annotatedMethods.add(baseMethod);
                 }
-            }
-            catch (Throwable ex) {
+            } catch (Throwable ex) {
                 handleIntrospectionFailure(baseMethod, ex);
             }
         }
@@ -693,9 +686,14 @@ public abstract class AnnotationUtils {
      * <p>Note: in this context, the term <em>recursively</em> means that the search
      * process continues by returning to step #1 with the current interface,
      * annotation, or superclass as the class to look for annotations on.
+     * <p>
+     * <p>
+     * 在clazz中寻找annotationType
      *
      * @param clazz          the class to look for annotations on
+     *                       被扫描的类
      * @param annotationType the type of annotation to look for
+     *                       需要扫描的注解
      * @return the first matching annotation, or {@code null} if not found
      */
     @Nullable
@@ -706,6 +704,8 @@ public abstract class AnnotationUtils {
     /**
      * Perform the actual work for {@link #findAnnotation(AnnotatedElement, Class)},
      * honoring the {@code synthesize} flag.
+     * <p>
+     * 寻找注解
      *
      * @param clazz          the class to look for annotations on
      * @param annotationType the type of annotation to look for
@@ -725,6 +725,7 @@ public abstract class AnnotationUtils {
         }
 
         AnnotationCacheKey cacheKey = new AnnotationCacheKey(clazz, annotationType);
+
         A result = (A) findAnnotationCache.get(cacheKey);
         if (result == null) {
             result = findAnnotation(clazz, annotationType, new HashSet<>());
@@ -749,6 +750,7 @@ public abstract class AnnotationUtils {
     @Nullable
     private static <A extends Annotation> A findAnnotation(Class<?> clazz, Class<A> annotationType, Set<Annotation> visited) {
         try {
+            // annotation就是获取到的注解
             A annotation = clazz.getDeclaredAnnotation(annotationType);
             if (annotation != null) {
                 return annotation;
@@ -762,8 +764,7 @@ public abstract class AnnotationUtils {
                     }
                 }
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(clazz, ex);
             return null;
         }
@@ -878,8 +879,7 @@ public abstract class AnnotationUtils {
     public static boolean isAnnotationDeclaredLocally(Class<? extends Annotation> annotationType, Class<?> clazz) {
         try {
             return (clazz.getDeclaredAnnotation(annotationType) != null);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(clazz, ex);
             return false;
         }
@@ -952,11 +952,9 @@ public abstract class AnnotationUtils {
         Class<?> clazz;
         if (annotatedElement instanceof Class) {
             clazz = (Class<?>) annotatedElement;
-        }
-        else if (annotatedElement instanceof Member) {
+        } else if (annotatedElement instanceof Member) {
             clazz = ((Member) annotatedElement).getDeclaringClass();
-        }
-        else {
+        } else {
             return false;
         }
         String name = clazz.getName();
@@ -1017,8 +1015,7 @@ public abstract class AnnotationUtils {
             if (returnType == Class.class || returnType == Class[].class) {
                 try {
                     method.invoke(annotation);
-                }
-                catch (Throwable ex) {
+                } catch (Throwable ex) {
                     throw new IllegalStateException("Could not obtain annotation attribute value for " + method, ex);
                 }
             }
@@ -1188,8 +1185,7 @@ public abstract class AnnotationUtils {
                 }
                 attributes.put(method.getName(),
                         adaptValue(annotatedElement, attributeValue, classValuesAsString, nestedAnnotationsAsMap));
-            }
-            catch (Throwable ex) {
+            } catch (Throwable ex) {
                 if (ex instanceof InvocationTargetException) {
                     Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                     rethrowAnnotationConfigurationException(targetException);
@@ -1225,8 +1221,7 @@ public abstract class AnnotationUtils {
         if (classValuesAsString) {
             if (value instanceof Class) {
                 return ((Class<?>) value).getName();
-            }
-            else if (value instanceof Class[]) {
+            } else if (value instanceof Class[]) {
                 Class<?>[] clazzArray = (Class<?>[]) value;
                 String[] classNames = new String[clazzArray.length];
                 for (int i = 0; i < clazzArray.length; i++) {
@@ -1240,8 +1235,7 @@ public abstract class AnnotationUtils {
             Annotation annotation = (Annotation) value;
             if (nestedAnnotationsAsMap) {
                 return getAnnotationAttributes(annotatedElement, annotation, classValuesAsString, true);
-            }
-            else {
+            } else {
                 return synthesizeAnnotation(annotation, annotatedElement);
             }
         }
@@ -1255,8 +1249,7 @@ public abstract class AnnotationUtils {
                             getAnnotationAttributes(annotatedElement, annotations[i], classValuesAsString, true);
                 }
                 return mappedAnnotations;
-            }
-            else {
+            } else {
                 return synthesizeAnnotationArray(annotations, annotatedElement);
             }
         }
@@ -1285,8 +1278,7 @@ public abstract class AnnotationUtils {
                 if (defaultValue != null && !attributes.containsKey(attributeName)) {
                     if (defaultValue instanceof Annotation) {
                         defaultValue = getAnnotationAttributes((Annotation) defaultValue, false, true);
-                    }
-                    else if (defaultValue instanceof Annotation[]) {
+                    } else if (defaultValue instanceof Annotation[]) {
                         Annotation[] realAnnotations = (Annotation[]) defaultValue;
                         AnnotationAttributes[] mappedAnnotations = new AnnotationAttributes[realAnnotations.length];
                         for (int i = 0; i < realAnnotations.length; i++) {
@@ -1387,14 +1379,12 @@ public abstract class AnnotationUtils {
                                         attributeName, aliasedAttributeName, ObjectUtils.nullSafeToString(value),
                                         ObjectUtils.nullSafeToString(aliasedValue)));
                             }
-                        }
-                        else if (aliasPresent) {
+                        } else if (aliasPresent) {
                             // Replace value with aliasedValue
                             attributes.put(attributeName,
                                     adaptValue(annotatedElement, aliasedValue, classValuesAsString, nestedAnnotationsAsMap));
                             valuesAlreadyReplaced.add(attributeName);
-                        }
-                        else {
+                        } else {
                             // Replace aliasedValue with value
                             attributes.put(aliasedAttributeName,
                                     adaptValue(annotatedElement, value, classValuesAsString, nestedAnnotationsAsMap));
@@ -1456,16 +1446,13 @@ public abstract class AnnotationUtils {
             Method method = annotation.annotationType().getDeclaredMethod(attributeName);
             ReflectionUtils.makeAccessible(method);
             return method.invoke(annotation);
-        }
-        catch (NoSuchMethodException ex) {
+        } catch (NoSuchMethodException ex) {
             return null;
-        }
-        catch (InvocationTargetException ex) {
+        } catch (InvocationTargetException ex) {
             rethrowAnnotationConfigurationException(ex.getTargetException());
             throw new IllegalStateException("Could not obtain value for annotation attribute '" +
                     attributeName + "' in " + annotation, ex);
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotation.getClass(), ex);
             return null;
         }
@@ -1528,8 +1515,7 @@ public abstract class AnnotationUtils {
         }
         try {
             return annotationType.getDeclaredMethod(attributeName).getDefaultValue();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             handleIntrospectionFailure(annotationType, ex);
             return null;
         }
@@ -1776,8 +1762,7 @@ public abstract class AnnotationUtils {
         try {
             return (Class.forName(SynthesizedAnnotation.class.getName(), false, annotationType.getClassLoader()) ==
                     SynthesizedAnnotation.class);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             return false;
         }
     }
@@ -1821,8 +1806,7 @@ public abstract class AnnotationUtils {
                     synthesizable = Boolean.TRUE;
                     break;
                 }
-            }
-            else if (Annotation.class.isAssignableFrom(returnType)) {
+            } else if (Annotation.class.isAssignableFrom(returnType)) {
                 Class<? extends Annotation> nestedAnnotationType = (Class<? extends Annotation>) returnType;
                 if (isSynthesizable(nestedAnnotationType)) {
                     synthesizable = Boolean.TRUE;
@@ -2008,8 +1992,7 @@ public abstract class AnnotationUtils {
             if (loggerToUse.isDebugEnabled()) {
                 loggerToUse.debug("Failed to meta-introspect annotation " + element + ": " + ex);
             }
-        }
-        else {
+        } else {
             // Direct annotation lookup on regular Class, Method, Field
             if (loggerToUse.isInfoEnabled()) {
                 loggerToUse.info("Failed to introspect annotations on " + element + ": " + ex);
@@ -2112,16 +2095,13 @@ public abstract class AnnotationUtils {
                         Class<? extends Annotation> currentAnnotationType = ann.annotationType();
                         if (ObjectUtils.nullSafeEquals(this.annotationType, currentAnnotationType)) {
                             this.result.add(synthesizeAnnotation((A) ann, element));
-                        }
-                        else if (ObjectUtils.nullSafeEquals(this.containerAnnotationType, currentAnnotationType)) {
+                        } else if (ObjectUtils.nullSafeEquals(this.containerAnnotationType, currentAnnotationType)) {
                             this.result.addAll(getValue(element, ann));
-                        }
-                        else if (!isInJavaLangAnnotationPackage(currentAnnotationType)) {
+                        } else if (!isInJavaLangAnnotationPackage(currentAnnotationType)) {
                             process(currentAnnotationType);
                         }
                     }
-                }
-                catch (Throwable ex) {
+                } catch (Throwable ex) {
                     handleIntrospectionFailure(element, ex);
                 }
             }
@@ -2138,8 +2118,7 @@ public abstract class AnnotationUtils {
                     }
                 }
                 return synthesizedAnnotations;
-            }
-            catch (Throwable ex) {
+            } catch (Throwable ex) {
                 handleIntrospectionFailure(element, ex);
             }
             // Unable to read value from repeating annotation container -> ignore it.
@@ -2194,8 +2173,7 @@ public abstract class AnnotationUtils {
             }
             try {
                 this.aliasedAttribute = this.aliasedAnnotationType.getDeclaredMethod(this.aliasedAttributeName);
-            }
-            catch (NoSuchMethodException ex) {
+            } catch (NoSuchMethodException ex) {
                 String msg = String.format(
                         "Attribute '%s' in annotation [%s] is declared as an @AliasFor nonexistent attribute '%s' in annotation [%s].",
                         this.sourceAttributeName, this.sourceAnnotationType.getName(), this.aliasedAttributeName,

@@ -37,6 +37,9 @@ public class AnnotationAwareOrderComparatorTests {
         assertThat(AnnotationAwareOrderComparator.INSTANCE, is(instanceOf(AnnotationAwareOrderComparator.class)));
     }
 
+    /**
+     * 排序比较Order
+     */
     @Test
     public void sortInstances() {
         List<Object> list = new ArrayList<>();

@@ -37,6 +37,8 @@ import java.util.List;
  * at the end of a sorted collection in arbitrary order with respect to
  * other objects with the same order value.
  *
+ * {@link org.springframework.core.annotation.Order} 比较器
+ *
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @see Ordered
@@ -109,6 +111,12 @@ public class OrderComparator implements Comparator<Object> {
         return (o1, o2) -> doCompare(o1, o2, sourceProvider);
     }
 
+    /**
+     * {@link org.springframework.core.annotation.Order} 比较
+     * @param o1
+     * @param o2
+     * @return
+     */
     @Override
     public int compare(@Nullable Object o1, @Nullable Object o2) {
         return doCompare(o1, o2, null);

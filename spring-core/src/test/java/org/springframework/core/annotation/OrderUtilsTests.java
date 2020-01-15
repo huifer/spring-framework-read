@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
+ * {@link OrderUtils}测试用例
  * @author Stephane Nicoll
  * @author Juergen Hoeller
  */

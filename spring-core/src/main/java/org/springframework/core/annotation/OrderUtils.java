@@ -82,6 +82,8 @@ public abstract class OrderUtils {
      * default value if none can be found.
      * <p>Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
      *
+     *
+     * 获取 Order 的value值
      * @param type the type to handle
      * @return the priority value, or the specified default order if none can be found
      * @see #getPriority(Class)
@@ -89,6 +91,7 @@ public abstract class OrderUtils {
     @Nullable
     public static Integer getOrder(Class<?> type, @Nullable Integer defaultOrder) {
         Integer order = getOrder(type);
+        // 如果不存在则返回默认值,Integer.MAX_VALUE
         return (order != null ? order : defaultOrder);
     }
 
@@ -106,6 +109,9 @@ public abstract class OrderUtils {
         if (cached != null) {
             return (cached instanceof Integer ? (Integer) cached : null);
         }
+        /**
+         * 注解工具类,寻找{@link Order}注解
+         */
         Order order = AnnotationUtils.findAnnotation(type, Order.class);
         Integer result;
         if (order != null) {

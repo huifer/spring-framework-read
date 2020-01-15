@@ -148,6 +148,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
      * Sort advisors based on ordering. Subclasses may choose to override this
      * method to customize the sorting strategy.
      *
+     * Order 注解排序
      * @param advisors the source List of Advisors
      * @return the sorted List of Advisors
      * @see org.springframework.core.Ordered

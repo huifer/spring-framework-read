@@ -56,6 +56,7 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
      * <p>Optimized to skip sorting for lists with size 0 or 1,
      * in order to avoid unnecessary array extraction.
      *
+     * 排序oRDER
      * @param list the List to sort
      * @see java.util.List#sort(java.util.Comparator)
      */
