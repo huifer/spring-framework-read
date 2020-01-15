@@ -37,10 +37,15 @@ import org.w3c.dom.NodeList;
  */
 class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 
+    /**
+     * 入口方法
+     */
     @Override
     @Nullable
     public BeanDefinition parse(Element element, ParserContext parserContext) {
+        // 注册 <aop:aspectj-autoproxy/>
         AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);
+        // 子类解析
         extendBeanDefinition(element, parserContext);
         return null;
     }
