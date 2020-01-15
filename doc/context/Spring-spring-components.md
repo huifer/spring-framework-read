@@ -104,3 +104,21 @@ example.scannable.sub.BarComponent=org.springframework.stereotype.Component
 
 
 ![image-20200115105941265](assets/image-20200115105941265.png)
+- 该类给`org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents`提供了帮助
+
+```java
+    public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+        // 扫描
+        /**
+         * if 测试用例: {@link org.springframework.context.annotation.ClassPathScanningCandidateComponentProviderTests#defaultsWithIndex()}
+         * 解析 spring.components文件
+         */
+        if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
+            return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
+        }
+        else {
+            return scanCandidateComponents(basePackage);
+        }
+    }
+
+```
