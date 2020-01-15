@@ -1,4 +1,4 @@
-package com.huifer.source.spring;
+package com.huifer.source.spring.ann;
 
 import com.huifer.source.spring.ann.Ubean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -9,7 +9,6 @@ public class AnnotationApplicationSourceCode {
                 new AnnotationConfigApplicationContext("com.huifer.source.spring.ann");
         Ubean bean = aac.getBean(Ubean.class);
         System.out.println(bean);
-
 
         Ubean hc = aac.getBean("hc", Ubean.class);
         System.out.println(hc);

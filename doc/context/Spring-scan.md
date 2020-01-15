@@ -485,3 +485,50 @@ static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition abd, Anno
 #### org.springframework.context.annotation.ClassPathBeanDefinitionScanner#checkCandidate
 
 - 重复检查
+
+```java
+    protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) throws IllegalStateException {
+        // 判断当前 beanName 是否在注册表中
+        if (!this.registry.containsBeanDefinition(beanName)) {
+            return true;
+        }
+        // 从注册表中获取
+        BeanDefinition existingDef = this.registry.getBeanDefinition(beanName);
+        // 当前的bean
+        BeanDefinition originatingDef = existingDef.getOriginatingBeanDefinition();
+        if (originatingDef != null) {
+            existingDef = originatingDef;
+        }
+        if (isCompatible(beanDefinition, existingDef)) {
+            return false;
+        }
+        throw new ConflictingBeanDefinitionException("Annotation-specified bean name '" + beanName +
+                "' for bean class [" + beanDefinition.getBeanClassName() + "] conflicts with existing, " +
+                "non-compatible bean definition of same name and class [" + existingDef.getBeanClassName() + "]");
+    }
+
+```
+
+
+
+
+
+#### org.springframework.context.annotation.AnnotationConfigUtils#applyScopedProxyMode
+
+
+
+```JAVA
+    static BeanDefinitionHolder applyScopedProxyMode(
+            ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
+
+        ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
+        if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
+            return definition;
+        }
+        boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
+        // 创建代理对象
+        return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass);
+    }
+
+```
+

@@ -47,6 +47,8 @@ public abstract class ScopedProxyUtils {
      * Generate a scoped proxy for the supplied target bean, registering the target
      * bean with an internal name and setting 'targetBeanName' on the scoped proxy.
      *
+     *
+     * todo : 2020年1月15日 代理对象创建
      * @param definition       the original bean definition
      * @param registry         the bean definition registry
      * @param proxyTargetClass whether to create a target class proxy
