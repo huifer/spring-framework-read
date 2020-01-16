@@ -258,3 +258,261 @@ public @interface Order {
 最终返回
 
 ![image-20200116085927359](assets/image-20200116085927359.png)
+
+
+
+
+
+
+
+
+
+## findAnnotation
+
+- `org.springframework.core.annotation.AnnotationUtils#findAnnotation(java.lang.reflect.Method, java.lang.Class<A>)`
+
+  ```java
+      @SuppressWarnings("unchecked")
+      @Nullable
+      public static <A extends Annotation> A findAnnotation(Method method, @Nullable Class<A> annotationType) {
+          Assert.notNull(method, "Method must not be null");
+          if (annotationType == null) {
+              return null;
+          }
+          // 创建注解缓存,key:被扫描的函数,value:注解
+          AnnotationCacheKey cacheKey = new AnnotationCacheKey(method, annotationType);
+          // 从findAnnotationCache获取缓存
+          A result = (A) findAnnotationCache.get(cacheKey);
+  
+          if (result == null) {
+              Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
+              // 寻找注解
+              result = findAnnotation((AnnotatedElement) resolvedMethod, annotationType);
+              if (result == null) {
+                  result = searchOnInterfaces(method, annotationType, method.getDeclaringClass().getInterfaces());
+              }
+  
+              Class<?> clazz = method.getDeclaringClass();
+              while (result == null) {
+                  clazz = clazz.getSuperclass();
+                  if (clazz == null || clazz == Object.class) {
+                      break;
+                  }
+                  Set<Method> annotatedMethods = getAnnotatedMethodsInBaseType(clazz);
+                  if (!annotatedMethods.isEmpty()) {
+                      for (Method annotatedMethod : annotatedMethods) {
+                          if (isOverride(method, annotatedMethod)) {
+                              Method resolvedSuperMethod = BridgeMethodResolver.findBridgedMethod(annotatedMethod);
+                              result = findAnnotation((AnnotatedElement) resolvedSuperMethod, annotationType);
+                              if (result != null) {
+                                  break;
+                              }
+                          }
+                      }
+                  }
+                  if (result == null) {
+                      result = searchOnInterfaces(method, annotationType, clazz.getInterfaces());
+                  }
+              }
+  
+              if (result != null) {
+                  // 处理注解
+                  result = synthesizeAnnotation(result, method);
+                  // 添加缓存
+                  findAnnotationCache.put(cacheKey, result);
+              }
+          }
+          // 返回
+          return result;
+      }
+  
+  ```
+
+  
+
+- `org.springframework.core.annotation.AnnotationUtils.AnnotationCacheKey`
+
+  ```java
+    private static final class AnnotationCacheKey implements Comparable<AnnotationCacheKey> {
+  
+          /**
+           * 带有注解的函数或者类
+           */
+          private final AnnotatedElement element;
+  
+          /**
+           * 注解
+           */
+          private final Class<? extends Annotation> annotationType;
+  
+          public AnnotationCacheKey(AnnotatedElement element, Class<? extends Annotation> annotationType) {
+              this.element = element;
+              this.annotationType = annotationType;
+          }
+  
+    }
+  ```
+
+  
+
+- `org.springframework.core.annotation.AnnotationUtils#findAnnotation(java.lang.reflect.AnnotatedElement, java.lang.Class<A>)`
+
+  ```java
+      @Nullable
+      public static <A extends Annotation> A findAnnotation(
+              AnnotatedElement annotatedElement, @Nullable Class<A> annotationType) {
+          // 注解类型不为空
+          if (annotationType == null) {
+              return null;
+          }
+  
+          // Do NOT store result in the findAnnotationCache since doing so could break
+          // findAnnotation(Class, Class) and findAnnotation(Method, Class).
+          // 寻找注解
+          A ann = findAnnotation(annotatedElement, annotationType, new HashSet<>());
+          return (ann != null ? synthesizeAnnotation(ann, annotatedElement) : null);
+      }
+  
+  ```
+
+
+
+
+
+- `org.springframework.core.annotation.AnnotationUtils#findAnnotation(java.lang.reflect.AnnotatedElement, java.lang.Class<A>, java.util.Set<java.lang.annotation.Annotation>)`
+
+  ```java
+      @Nullable
+      private static <A extends Annotation> A findAnnotation(
+              AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
+          try {
+              // 直接获取注解
+              A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
+              if (annotation != null) {
+                  return annotation;
+              }
+              // 多级注解
+              for (Annotation declaredAnn : getDeclaredAnnotations(annotatedElement)) {
+                  Class<? extends Annotation> declaredType = declaredAnn.annotationType();
+                  // 注解是否 由java.lang.annotation提供
+                  if (!isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
+                      annotation = findAnnotation((AnnotatedElement) declaredType, annotationType, visited);
+                      if (annotation != null) {
+                          return annotation;
+                      }
+                  }
+              }
+          } catch (Throwable ex) {
+              handleIntrospectionFailure(annotatedElement, ex);
+          }
+          return null;
+      }
+  
+  ```
+
+  
+
+![image-20200116092259944](assets/image-20200116092259944.png)
+
+- `synthesizeAnnotation`方法就不再重复一遍了可以看上文
+
+
+
+
+
+
+
+## getValue
+
+- 测试用例
+
+  ```java
+      @Test
+      public void getValueFromAnnotation() throws Exception {
+          Method method = SimpleFoo.class.getMethod("something", Object.class);
+          Order order = findAnnotation(method, Order.class);
+  
+          assertEquals(1, getValue(order, VALUE));
+          assertEquals(1, getValue(order));
+      }
+  ```
+
+
+
+- `org.springframework.core.annotation.AnnotationUtils#getValue(java.lang.annotation.Annotation, java.lang.String)`
+
+```java
+    @Nullable
+    public static Object getValue(@Nullable Annotation annotation, @Nullable String attributeName) {
+        if (annotation == null || !StringUtils.hasText(attributeName)) {
+            return null;
+        }
+        try {
+            // 根据attributeName获取注解对应函数
+            Method method = annotation.annotationType().getDeclaredMethod(attributeName);
+            ReflectionUtils.makeAccessible(method);
+            // 反射执行方法
+            return method.invoke(annotation);
+        } catch (NoSuchMethodException ex) {
+            return null;
+        } catch (InvocationTargetException ex) {
+            rethrowAnnotationConfigurationException(ex.getTargetException());
+            throw new IllegalStateException("Could not obtain value for annotation attribute '" +
+                    attributeName + "' in " + annotation, ex);
+        } catch (Throwable ex) {
+            handleIntrospectionFailure(annotation.getClass(), ex);
+            return null;
+        }
+    }
+
+```
+
+
+
+```java
+    @Nullable
+    public static Object getValue(Annotation annotation) {
+        return getValue(annotation, VALUE);
+    }
+
+```
+
+
+
+
+
+
+
+## getDefaultValue
+
+- `org.springframework.core.annotation.AnnotationUtils#getDefaultValue(java.lang.annotation.Annotation)`
+
+
+
+```java
+    @Nullable
+    public static Object getDefaultValue(Annotation annotation) {
+        return getDefaultValue(annotation, VALUE);
+    }
+
+```
+
+```java
+    @Nullable
+    public static Object getDefaultValue(
+            @Nullable Class<? extends Annotation> annotationType, @Nullable String attributeName) {
+
+        if (annotationType == null || !StringUtils.hasText(attributeName)) {
+            return null;
+        }
+        try {
+            // 直接获取defaultValue
+            return annotationType.getDeclaredMethod(attributeName).getDefaultValue();
+        } catch (Throwable ex) {
+            handleIntrospectionFailure(annotationType, ex);
+            return null;
+        }
+    }
+
+```
+
