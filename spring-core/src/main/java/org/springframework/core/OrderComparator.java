@@ -36,7 +36,7 @@ import java.util.List;
  * assigned a value of {@link Ordered#LOWEST_PRECEDENCE}, thus ending up
  * at the end of a sorted collection in arbitrary order with respect to
  * other objects with the same order value.
- *
+ * <p>
  * {@link org.springframework.core.annotation.Order} 比较器
  *
  * @author Juergen Hoeller
@@ -94,8 +94,7 @@ public class OrderComparator implements Comparator<Object> {
     public static void sortIfNecessary(Object value) {
         if (value instanceof Object[]) {
             sort((Object[]) value);
-        }
-        else if (value instanceof List) {
+        } else if (value instanceof List) {
             sort((List<?>) value);
         }
     }
@@ -113,27 +112,37 @@ public class OrderComparator implements Comparator<Object> {
 
     /**
      * {@link org.springframework.core.annotation.Order} 比较
+     *
      * @param o1
      * @param o2
      * @return
      */
     @Override
     public int compare(@Nullable Object o1, @Nullable Object o2) {
+        // 执行对比
         return doCompare(o1, o2, null);
     }
 
+    /**
+     * 对比
+     *
+     * @param o1             第一个对象
+     * @param o2             第二对象
+     * @param sourceProvider
+     * @return
+     */
     private int doCompare(@Nullable Object o1, @Nullable Object o2, @Nullable OrderSourceProvider sourceProvider) {
         boolean p1 = (o1 instanceof PriorityOrdered);
         boolean p2 = (o2 instanceof PriorityOrdered);
         if (p1 && !p2) {
             return -1;
-        }
-        else if (p2 && !p1) {
+        } else if (p2 && !p1) {
             return 1;
         }
 
         int i1 = getOrder(o1, sourceProvider);
         int i2 = getOrder(o2, sourceProvider);
+        // 对比两个Order值得大小返回
         return Integer.compare(i1, i2);
     }
 
@@ -148,18 +157,21 @@ public class OrderComparator implements Comparator<Object> {
     private int getOrder(@Nullable Object obj, @Nullable OrderSourceProvider sourceProvider) {
         Integer order = null;
         if (obj != null && sourceProvider != null) {
+            // 获取Order
             Object orderSource = sourceProvider.getOrderSource(obj);
             if (orderSource != null) {
                 if (orderSource.getClass().isArray()) {
+                    // 获取 OrderSourceProvider 的值
                     Object[] sources = ObjectUtils.toObjectArray(orderSource);
                     for (Object source : sources) {
+                        // 找 order 返回
                         order = findOrder(source);
                         if (order != null) {
                             break;
                         }
                     }
-                }
-                else {
+                } else {
+                    // 寻找 order
                     order = findOrder(orderSource);
                 }
             }
@@ -177,11 +189,13 @@ public class OrderComparator implements Comparator<Object> {
      */
     protected int getOrder(@Nullable Object obj) {
         if (obj != null) {
+            // 获取Order value
             Integer order = findOrder(obj);
             if (order != null) {
                 return order;
             }
         }
+        // integer最大值
         return Ordered.LOWEST_PRECEDENCE;
     }
 
@@ -195,6 +209,7 @@ public class OrderComparator implements Comparator<Object> {
      */
     @Nullable
     protected Integer findOrder(Object obj) {
+        // 获取Ordered实现类
         return (obj instanceof Ordered ? ((Ordered) obj).getOrder() : null);
     }
 

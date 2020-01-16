@@ -42,12 +42,17 @@ public abstract class OrderUtils {
     private static final Object NOT_ANNOTATED = new Object();
     /**
      * Cache for @Order value (or NOT_ANNOTATED marker) per Class.
+     * key: 类名,value: intValue
      */
     private static final Map<Class<?>, Object> orderCache = new ConcurrentReferenceHashMap<>(64);
     /**
      * Cache for @Priority value (or NOT_ANNOTATED marker) per Class.
+     * key: 类名,value: intValue
      */
     private static final Map<Class<?>, Object> priorityCache = new ConcurrentReferenceHashMap<>();
+    /**
+     * clazz
+     */
     @Nullable
     private static Class<? extends Annotation> priorityAnnotationType;
 
@@ -55,8 +60,7 @@ public abstract class OrderUtils {
         try {
             priorityAnnotationType = (Class<? extends Annotation>)
                     ClassUtils.forName("javax.annotation.Priority", OrderUtils.class.getClassLoader());
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // javax.annotation.Priority not available
             priorityAnnotationType = null;
         }
@@ -81,11 +85,14 @@ public abstract class OrderUtils {
      * Return the order on the specified {@code type}, or the specified
      * default value if none can be found.
      * <p>Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
-     *
-     *
+     * <p>
+     * <p>
      * 获取 Order 的value值
+     *
      * @param type the type to handle
+     *             带有{@link Order}的类
      * @return the priority value, or the specified default order if none can be found
+     * {@link Order}的value
      * @see #getPriority(Class)
      */
     @Nullable
@@ -105,8 +112,10 @@ public abstract class OrderUtils {
      */
     @Nullable
     public static Integer getOrder(Class<?> type) {
+        // 缓存中获取
         Object cached = orderCache.get(type);
         if (cached != null) {
+            // 返回 int
             return (cached instanceof Integer ? (Integer) cached : null);
         }
         /**
@@ -115,11 +124,12 @@ public abstract class OrderUtils {
         Order order = AnnotationUtils.findAnnotation(type, Order.class);
         Integer result;
         if (order != null) {
+            // 返回
             result = order.value();
-        }
-        else {
+        } else {
             result = getPriority(type);
         }
+        // key: 类名,value: intValue
         orderCache.put(type, (result != null ? result : NOT_ANNOTATED));
         return result;
     }
@@ -136,15 +146,20 @@ public abstract class OrderUtils {
         if (priorityAnnotationType == null) {
             return null;
         }
+        // 缓存中获取
         Object cached = priorityCache.get(type);
         if (cached != null) {
+            // 不为空返回
             return (cached instanceof Integer ? (Integer) cached : null);
         }
+        // 注解工具获取注解
         Annotation priority = AnnotationUtils.findAnnotation(type, priorityAnnotationType);
         Integer result = null;
         if (priority != null) {
+            // 获取 value
             result = (Integer) AnnotationUtils.getValue(priority);
         }
+        // 向缓存插入数据
         priorityCache.put(type, (result != null ? result : NOT_ANNOTATED));
         return result;
     }
