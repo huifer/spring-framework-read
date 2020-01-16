@@ -611,6 +611,9 @@ public abstract class ReflectionUtils {
      */
     @SuppressWarnings("deprecation")  // on JDK 9
     public static void makeAccessible(Method method) {
+        // 1. 方法修饰符是不是public
+        // 2. 注解是不是public
+        // 3. 是否重写
         if ((!Modifier.isPublic(method.getModifiers()) ||
                 !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
             method.setAccessible(true);

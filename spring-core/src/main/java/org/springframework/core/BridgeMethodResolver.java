@@ -57,6 +57,7 @@ public final class BridgeMethodResolver {
      * In such a case, the supplied {@link Method} instance is returned directly to the caller.
      * Callers are <strong>not</strong> required to check for bridging before calling this method.
      *
+     * 桥接函数
      * @param bridgeMethod the method to introspect
      * @return the original method (either the bridged method or the passed-in method
      * if no more specific one could be found)

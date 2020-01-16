@@ -98,6 +98,10 @@ public abstract class AnnotationUtils {
      */
     public static final String VALUE = "value";
 
+    /**
+     * key:AnnotationCacheKey {@link AnnotationCacheKey}
+     * value: 注解
+     */
     private static final Map<AnnotationCacheKey, Annotation> findAnnotationCache =
             new ConcurrentReferenceHashMap<>(256);
 
@@ -114,15 +118,24 @@ public abstract class AnnotationUtils {
     @Deprecated  // just here for older tool versions trying to reflectively clear the cache
     private static final Map<Class<?>, ?> annotatedInterfaceCache = annotatedBaseTypeCache;
 
+
     private static final Map<Class<? extends Annotation>, Boolean> synthesizableCache =
             new ConcurrentReferenceHashMap<>(256);
 
     private static final Map<Class<? extends Annotation>, Map<String, List<String>>> attributeAliasesCache =
             new ConcurrentReferenceHashMap<>(256);
 
+    /**
+     * 注解->注解函数
+     * key:注解
+     * value:注解的函数列表
+     */
     private static final Map<Class<? extends Annotation>, List<Method>> attributeMethodsCache =
             new ConcurrentReferenceHashMap<>(256);
 
+    /**
+     * 注解的函数->别名{@link AliasDescriptor}
+     */
     private static final Map<Method, AliasDescriptor> aliasDescriptorCache =
             new ConcurrentReferenceHashMap<>(256);
 
@@ -168,13 +181,16 @@ public abstract class AnnotationUtils {
      * {@link #findAnnotation(AnnotatedElement, Class)} instead.
      *
      * @param annotatedElement the {@code AnnotatedElement} from which to get the annotation
+     *                         带有注解的函数或者类
      * @param annotationType   the annotation type to look for, both locally and as a meta-annotation
+     *                         注解类型
      * @return the first matching annotation, or {@code null} if not found
      * @since 3.1
      */
     @Nullable
     public static <A extends Annotation> A getAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
         try {
+            // 获取注解
             A annotation = annotatedElement.getAnnotation(annotationType);
             if (annotation == null) {
                 for (Annotation metaAnn : annotatedElement.getAnnotations()) {
@@ -201,14 +217,18 @@ public abstract class AnnotationUtils {
      * {@link #findAnnotation(Method, Class)} instead.
      *
      * @param method         the method to look for annotations on
+     *                       被检查的函数
      * @param annotationType the annotation type to look for
+     *                       需要检测的注解类型
      * @return the first matching annotation, or {@code null} if not found
      * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod(Method)
      * @see #getAnnotation(AnnotatedElement, Class)
      */
     @Nullable
     public static <A extends Annotation> A getAnnotation(Method method, Class<A> annotationType) {
+        // 函数
         Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
+        // 强制转换
         return getAnnotation((AnnotatedElement) resolvedMethod, annotationType);
     }
 
@@ -428,20 +448,23 @@ public abstract class AnnotationUtils {
      * instead.
      *
      * @param annotatedElement the {@code AnnotatedElement} on which to find the annotation
+     *                         带有注解的方法或者类
      * @param annotationType   the annotation type to look for, both locally and as a meta-annotation
+     *                         注解类型
      * @return the first matching annotation, or {@code null} if not found
      * @since 4.2
      */
     @Nullable
     public static <A extends Annotation> A findAnnotation(
             AnnotatedElement annotatedElement, @Nullable Class<A> annotationType) {
-
+        // 注解类型不为空
         if (annotationType == null) {
             return null;
         }
 
         // Do NOT store result in the findAnnotationCache since doing so could break
         // findAnnotation(Class, Class) and findAnnotation(Method, Class).
+        // 寻找注解
         A ann = findAnnotation(annotatedElement, annotationType, new HashSet<>());
         return (ann != null ? synthesizeAnnotation(ann, annotatedElement) : null);
     }
@@ -452,7 +475,9 @@ public abstract class AnnotationUtils {
      * been <em>visited</em>.
      *
      * @param annotatedElement the {@code AnnotatedElement} on which to find the annotation
+     *                         带有注解的函数或类
      * @param annotationType   the annotation type to look for, both locally and as a meta-annotation
+     *                         注解类型
      * @param visited          the set of annotations that have already been visited
      * @return the first matching annotation, or {@code null} if not found
      * @since 4.2
@@ -461,12 +486,15 @@ public abstract class AnnotationUtils {
     private static <A extends Annotation> A findAnnotation(
             AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
         try {
+            // 直接获取注解
             A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
             if (annotation != null) {
                 return annotation;
             }
+            // 多级注解
             for (Annotation declaredAnn : getDeclaredAnnotations(annotatedElement)) {
                 Class<? extends Annotation> declaredType = declaredAnn.annotationType();
+                // 注解是否 由java.lang.annotation提供
                 if (!isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
                     annotation = findAnnotation((AnnotatedElement) declaredType, annotationType, visited);
                     if (annotation != null) {
@@ -492,7 +520,9 @@ public abstract class AnnotationUtils {
      * this explicitly.
      *
      * @param method         the method to look for annotations on
+     *                       被检查的函数
      * @param annotationType the annotation type to look for
+     *                       需要检测的注解类型
      * @return the first matching annotation, or {@code null} if not found
      * @see #getAnnotation(Method, Class)
      */
@@ -503,12 +533,14 @@ public abstract class AnnotationUtils {
         if (annotationType == null) {
             return null;
         }
-
+        // 创建注解缓存,key:被扫描的函数,value:注解
         AnnotationCacheKey cacheKey = new AnnotationCacheKey(method, annotationType);
+        // 从findAnnotationCache获取缓存
         A result = (A) findAnnotationCache.get(cacheKey);
 
         if (result == null) {
             Method resolvedMethod = BridgeMethodResolver.findBridgedMethod(method);
+            // 寻找注解
             result = findAnnotation((AnnotatedElement) resolvedMethod, annotationType);
             if (result == null) {
                 result = searchOnInterfaces(method, annotationType, method.getDeclaringClass().getInterfaces());
@@ -538,11 +570,13 @@ public abstract class AnnotationUtils {
             }
 
             if (result != null) {
+                // 处理注解
                 result = synthesizeAnnotation(result, method);
+                // 添加缓存
                 findAnnotationCache.put(cacheKey, result);
             }
         }
-
+        // 返回
         return result;
     }
 
@@ -987,6 +1021,8 @@ public abstract class AnnotationUtils {
     /**
      * Determine if the {@link Annotation} with the supplied name is defined
      * in the core JDK {@code java.lang.annotation} package.
+     * <p>
+     * 注解是否是{@code java.lang.annotation} 提供
      *
      * @param annotationType the name of the annotation type to check
      * @return {@code true} if the annotation is in the {@code java.lang.annotation} package
@@ -1430,7 +1466,9 @@ public abstract class AnnotationUtils {
      * Retrieve the <em>value</em> of a named attribute, given an annotation instance.
      *
      * @param annotation    the annotation instance from which to retrieve the value
+     *                      注解
      * @param attributeName the name of the attribute value to retrieve
+     *                      属性值
      * @return the attribute value, or {@code null} if not found unless the attribute
      * value cannot be retrieved due to an {@link AnnotationConfigurationException},
      * in which case such an exception will be rethrown
@@ -1443,8 +1481,10 @@ public abstract class AnnotationUtils {
             return null;
         }
         try {
+            // 根据attributeName获取注解对应函数
             Method method = annotation.annotationType().getDeclaredMethod(attributeName);
             ReflectionUtils.makeAccessible(method);
+            // 反射执行方法
             return method.invoke(annotation);
         } catch (NoSuchMethodException ex) {
             return null;
@@ -1514,6 +1554,7 @@ public abstract class AnnotationUtils {
             return null;
         }
         try {
+            // 直接获取defaultValue
             return annotationType.getDeclaredMethod(attributeName).getDefaultValue();
         } catch (Throwable ex) {
             handleIntrospectionFailure(annotationType, ex);
@@ -1564,12 +1605,20 @@ public abstract class AnnotationUtils {
         return synthesizeAnnotation(annotation, (Object) annotatedElement);
     }
 
+    /**
+     * 注解是否存在别名,没有直接返回
+     *
+     * @param annotation       注解
+     * @param annotatedElement 注解元素(带有注解的函数或类)
+     * @param <A>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     static <A extends Annotation> A synthesizeAnnotation(A annotation, @Nullable Object annotatedElement) {
         if (annotation instanceof SynthesizedAnnotation || hasPlainJavaAnnotationsOnly(annotatedElement)) {
             return annotation;
         }
-
+        // 具体的注解
         Class<? extends Annotation> annotationType = annotation.annotationType();
         if (!isSynthesizable(annotationType)) {
             return annotation;
@@ -1786,7 +1835,7 @@ public abstract class AnnotationUtils {
         if (hasPlainJavaAnnotationsOnly(annotationType)) {
             return false;
         }
-
+        // 从缓存中获取当前注解,不存在null
         Boolean synthesizable = synthesizableCache.get(annotationType);
         if (synthesizable != null) {
             return synthesizable;
@@ -1798,7 +1847,10 @@ public abstract class AnnotationUtils {
                 synthesizable = Boolean.TRUE;
                 break;
             }
+            // 获取返回值类型
             Class<?> returnType = attribute.getReturnType();
+
+            // 根据返回值做不同处理
             if (Annotation[].class.isAssignableFrom(returnType)) {
                 Class<? extends Annotation> nestedAnnotationType =
                         (Class<? extends Annotation>) returnType.getComponentType();
@@ -1822,8 +1874,11 @@ public abstract class AnnotationUtils {
     /**
      * Get the names of the aliased attributes configured via
      * {@link AliasFor @AliasFor} for the supplied annotation {@code attribute}.
+     * <p>
+     * 别名列表
      *
      * @param attribute the attribute to find aliases for
+     *                  注解的函数
      * @return the names of the aliased attributes (never {@code null}, though
      * potentially <em>empty</em>)
      * @throws IllegalArgumentException         if the supplied attribute method is
@@ -1834,6 +1889,7 @@ public abstract class AnnotationUtils {
      * @since 4.2
      */
     static List<String> getAttributeAliasNames(Method attribute) {
+        // 别名处理
         AliasDescriptor descriptor = AliasDescriptor.from(attribute);
         return (descriptor != null ? descriptor.getAttributeAliasNames() : Collections.emptyList());
     }
@@ -1881,6 +1937,7 @@ public abstract class AnnotationUtils {
         }
 
         methods = new ArrayList<>();
+        // annotationType.getDeclaredMethods() 获取注解中的方法
         for (Method method : annotationType.getDeclaredMethods()) {
             if (isAttributeMethod(method)) {
                 ReflectionUtils.makeAccessible(method);
@@ -1888,7 +1945,9 @@ public abstract class AnnotationUtils {
             }
         }
 
+        // 缓存 key:注解,value:注解的函数列表
         attributeMethodsCache.put(annotationType, methods);
+        // 注解的函数列表
         return methods;
     }
 
@@ -1914,6 +1973,13 @@ public abstract class AnnotationUtils {
 
     /**
      * Determine if the supplied {@code method} is an annotation attribute method.
+     * <p>
+     * 做3个判断
+     * <ol>
+     *     <li>函数不为空(method != null)</li>
+     *     <li>参数列表是不是空(method.getParameterCount() == 0)</li>
+     *     <li>返回类型不是void(method.getReturnType() != void.class)</li>
+     * </ol>
      *
      * @param method the method to check
      * @return {@code true} if the method is an attribute method
@@ -2022,8 +2088,14 @@ public abstract class AnnotationUtils {
      */
     private static final class AnnotationCacheKey implements Comparable<AnnotationCacheKey> {
 
+        /**
+         * 带有注解的函数或者类
+         */
         private final AnnotatedElement element;
 
+        /**
+         * 注解
+         */
         private final Class<? extends Annotation> annotationType;
 
         public AnnotationCacheKey(AnnotatedElement element, Class<? extends Annotation> annotationType) {
@@ -2197,16 +2269,17 @@ public abstract class AnnotationUtils {
          */
         @Nullable
         public static AliasDescriptor from(Method attribute) {
+            //
             AliasDescriptor descriptor = aliasDescriptorCache.get(attribute);
             if (descriptor != null) {
                 return descriptor;
             }
-
+            // 获取aliasFor注解
             AliasFor aliasFor = attribute.getAnnotation(AliasFor.class);
             if (aliasFor == null) {
                 return null;
             }
-
+            // aliasFor注解存在,构造AliasDescriptor
             descriptor = new AliasDescriptor(attribute, aliasFor);
             descriptor.validate();
             aliasDescriptorCache.put(attribute, descriptor);
