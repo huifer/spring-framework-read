@@ -94,6 +94,7 @@ public final class CollectionFactory {
      * collection or collection of {@link Object}.
      *
      * @param collection the original collection object, potentially {@code null}
+     *                   列表对象
      * @param capacity   the initial capacity
      * @return a new, empty collection instance
      * @see #isApproximableCollectionType
@@ -105,22 +106,24 @@ public final class CollectionFactory {
      */
     @SuppressWarnings({"rawtypes", "unchecked", "cast"})
     public static <E> Collection<E> createApproximateCollection(@Nullable Object collection, int capacity) {
+        // linkedList
         if (collection instanceof LinkedList) {
             return new LinkedList<>();
         }
+        // List
         else if (collection instanceof List) {
             return new ArrayList<>(capacity);
         }
+        // EnumSet
         else if (collection instanceof EnumSet) {
             // Cast is necessary for compilation in Eclipse 4.4.1.
+            // 拷贝对象
             Collection<E> enumSet = (Collection<E>) EnumSet.copyOf((EnumSet) collection);
             enumSet.clear();
             return enumSet;
-        }
-        else if (collection instanceof SortedSet) {
+        } else if (collection instanceof SortedSet) {
             return new TreeSet<>(((SortedSet<E>) collection).comparator());
-        }
-        else {
+        } else {
             return new LinkedHashSet<>(capacity);
         }
     }

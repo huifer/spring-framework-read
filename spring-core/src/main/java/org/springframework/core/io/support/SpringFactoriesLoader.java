@@ -58,6 +58,12 @@ public final class SpringFactoriesLoader {
 
     private static final Log logger = LogFactory.getLog(SpringFactoriesLoader.class);
 
+    /**
+     * key: classLoader
+     *  value:
+     *      key: factoryName
+     *      value: 类名
+     */
     private static final Map<ClassLoader, MultiValueMap<String, String>> cache = new ConcurrentReferenceHashMap<>();
 
 
@@ -71,6 +77,9 @@ public final class SpringFactoriesLoader {
      * <p>The returned factories are sorted through {@link AnnotationAwareOrderComparator}.
      * <p>If a custom instantiation strategy is required, use {@link #loadFactoryNames}
      * to obtain all registered factory names.
+     * <p>
+     * <p>
+     * 加载 factories文件
      *
      * @param factoryClass the interface or abstract class representing the factory
      * @param classLoader  the ClassLoader to use for loading (can be {@code null} to use the default)
@@ -84,6 +93,7 @@ public final class SpringFactoriesLoader {
         if (classLoaderToUse == null) {
             classLoaderToUse = SpringFactoriesLoader.class.getClassLoader();
         }
+        // 获取本地 spring.factories 文件
         List<String> factoryNames = loadFactoryNames(factoryClass, classLoaderToUse);
         if (logger.isTraceEnabled()) {
             logger.trace("Loaded [" + factoryClass.getName() + "] names: " + factoryNames);
@@ -113,6 +123,7 @@ public final class SpringFactoriesLoader {
     }
 
     private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
+        // key: factoryName , value: 类名
         MultiValueMap<String, String> result = cache.get(classLoader);
         if (result != null) {
             return result;
@@ -126,18 +137,21 @@ public final class SpringFactoriesLoader {
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 UrlResource resource = new UrlResource(url);
+                // 读取文件
                 Properties properties = PropertiesLoaderUtils.loadProperties(resource);
                 for (Map.Entry<?, ?> entry : properties.entrySet()) {
                     String factoryClassName = ((String) entry.getKey()).trim();
+                    // 等号右侧分隔符分割循环
                     for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
+                        // 添加
                         result.add(factoryClassName, factoryName.trim());
                     }
                 }
             }
+            // key: classLoader
             cache.put(classLoader, result);
             return result;
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load factories from location [" +
                     FACTORIES_RESOURCE_LOCATION + "]", ex);
         }
@@ -152,8 +166,7 @@ public final class SpringFactoriesLoader {
                         "Class [" + instanceClassName + "] is not assignable to [" + factoryClass.getName() + "]");
             }
             return (T) ReflectionUtils.accessibleConstructor(instanceClass).newInstance();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             throw new IllegalArgumentException("Unable to instantiate factory class: " + factoryClass.getName(), ex);
         }
     }

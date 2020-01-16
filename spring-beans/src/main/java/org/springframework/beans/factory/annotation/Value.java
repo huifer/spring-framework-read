@@ -45,6 +45,7 @@ import java.lang.annotation.*;
  * @see Autowired
  * @see org.springframework.beans.factory.config.BeanExpressionResolver
  * @see org.springframework.beans.factory.support.AutowireCandidateResolver#getSuggestedValue
+ * @see AutowiredAnnotationBeanPostProcessor#postProcessProperties(org.springframework.beans.PropertyValues, java.lang.Object, java.lang.String)
  * @since 3.0
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})

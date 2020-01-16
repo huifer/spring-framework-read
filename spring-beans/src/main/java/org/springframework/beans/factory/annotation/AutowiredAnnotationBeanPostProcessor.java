@@ -348,6 +348,13 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
         return (candidateConstructors.length > 0 ? candidateConstructors : null);
     }
 
+    /**
+     * todo: 2020年1月16日 暂时value注解解析
+     * @param pvs
+     * @param bean
+     * @param beanName
+     * @return
+     */
     @Override
     public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
         InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
