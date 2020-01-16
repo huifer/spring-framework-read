@@ -1626,6 +1626,7 @@ public abstract class AnnotationUtils {
 
         DefaultAnnotationAttributeExtractor attributeExtractor =
                 new DefaultAnnotationAttributeExtractor(annotation, annotatedElement);
+        // 别名处理
         InvocationHandler handler = new SynthesizedAnnotationInvocationHandler(attributeExtractor);
 
         // Can always expose Spring's SynthesizedAnnotation marker since we explicitly check for a
@@ -1825,6 +1826,9 @@ public abstract class AnnotationUtils {
      * any attributes that are configured as <em>aliased pairs</em> via
      * {@link AliasFor @AliasFor} or if any nested annotations used by the
      * annotation declare such <em>aliased pairs</em>.
+     * <p>
+     * <p>
+     * 是否代理
      *
      * @see SynthesizedAnnotation
      * @see SynthesizedAnnotationInvocationHandler

@@ -91,6 +91,11 @@ final class PostProcessorRegistrationDelegate {
             List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
             // First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+            /**
+             * 调用实现{@link PriorityOrdered}\{@link BeanDefinitionRegistryPostProcessor}
+             * todo: 2020年1月16日 解析方法
+             *  {@link DefaultListableBeanFactory#getBeanNamesForType(java.lang.Class, boolean, boolean)}
+             */
             String[] postProcessorNames =
                     beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
             for (String ppName : postProcessorNames) {
@@ -99,6 +104,7 @@ final class PostProcessorRegistrationDelegate {
                     processedBeans.add(ppName);
                 }
             }
+            // 排序Order
             sortPostProcessors(currentRegistryProcessors, beanFactory);
             registryProcessors.addAll(currentRegistryProcessors);
             invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);

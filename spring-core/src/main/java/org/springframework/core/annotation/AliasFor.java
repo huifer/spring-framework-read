@@ -204,6 +204,8 @@ public @interface AliasFor {
      * The type of annotation in which the aliased {@link #attribute} is declared.
      * <p>Defaults to {@link Annotation}, implying that the aliased attribute is
      * declared in the same annotation as <em>this</em> attribute.
+     *
+     * 其他注解
      */
     Class<? extends Annotation> annotation() default Annotation.class;
 

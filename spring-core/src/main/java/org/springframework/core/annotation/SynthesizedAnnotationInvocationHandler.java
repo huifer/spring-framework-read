@@ -78,6 +78,9 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
             throw new AnnotationConfigurationException(String.format(
                     "Method [%s] is unsupported for synthesized annotation type [%s]", method, annotationType()));
         }
+        /**
+         * 获取{@link AliasFor#attribute}
+         */
         return getAttributeValue(method);
     }
 
@@ -85,6 +88,11 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
         return this.attributeExtractor.getAnnotationType();
     }
 
+    /**
+     * 获取 attributeValue 属性值
+     * @param attributeMethod
+     * @return
+     */
     private Object getAttributeValue(Method attributeMethod) {
         String attributeName = attributeMethod.getName();
         Object value = this.valueCache.get(attributeName);

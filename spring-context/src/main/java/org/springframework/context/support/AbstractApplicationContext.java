@@ -551,7 +551,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
                 invokeBeanFactoryPostProcessors(beanFactory);
 
                 // Register bean processors that intercept bean creation.
-                // 后置处理器注册
+                // 后置处理器注册,只注册不创建
                 registerBeanPostProcessors(beanFactory);
 
                 // Initialize message source for this context.
@@ -626,11 +626,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         }
 
         // Initialize any placeholder property sources in the context environment.
-        // 初始化资源
+        // 初始化资源,子类实现
         initPropertySources();
 
         // Validate that all properties marked as required are resolvable:
         // see ConfigurablePropertyResolver#setRequiredProperties
+        // 验证需要的配置文件是否全部初始化
         getEnvironment().validateRequiredProperties();
 
         // Store pre-refresh ApplicationListeners...
@@ -671,6 +672,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
         /**
          * {@link AbstractRefreshableApplicationContext#refreshBeanFactory()}
+         * 初始化beanFactory 读取xml
          */
         refreshBeanFactory();
         return getBeanFactory();

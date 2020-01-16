@@ -522,6 +522,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         if (resolvedBeanNames != null) {
             return resolvedBeanNames;
         }
+        // 根据类型获取Name
         resolvedBeanNames = doGetBeanNamesForType(ResolvableType.forRawClass(type), includeNonSingletons, true);
         if (ClassUtils.isCacheSafe(type, getBeanClassLoader())) {
             cache.put(type, resolvedBeanNames);
@@ -546,6 +547,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             // 判断是否是别名
             if (!isAlias(beanName)) {
                 try {
+                    //
                     RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
                     // Only check bean definition if it is complete.
                     if (!mbd.isAbstract() && (allowEagerInit ||
@@ -562,6 +564,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
                                         isTypeMatch(beanName, type);
                         if (!matchFound && isFactoryBean) {
                             // In case of FactoryBean, try to match FactoryBean instance itself next.
+                            // 组装beanName
                             beanName = FACTORY_BEAN_PREFIX + beanName;
                             matchFound = (includeNonSingletons || mbd.isSingleton()) && isTypeMatch(beanName, type);
                         }

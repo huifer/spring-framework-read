@@ -304,6 +304,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
                 if (mbd.isSingleton()) {
                     sharedInstance = getSingleton(beanName, () -> {
                         try {
+                            // 创建bean
                             return createBean(beanName, mbd, args);
                         }
                         catch (BeansException ex) {
@@ -477,14 +478,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         String beanName = transformedBeanName(name);
 
         // Check manually registered singletons.
+        // 获取单例对象
         Object beanInstance = getSingleton(beanName, false);
         if (beanInstance != null && beanInstance.getClass() != NullBean.class) {
+            // 类型判断 FactoryBean
             if (beanInstance instanceof FactoryBean) {
                 if (!BeanFactoryUtils.isFactoryDereference(name)) {
+                    // 类型获取
                     Class<?> type = getTypeForFactoryBean((FactoryBean<?>) beanInstance);
                     return (type != null && typeToMatch.isAssignableFrom(type));
-                }
-                else {
+                } else {
                     return typeToMatch.isInstance(beanInstance);
                 }
             }
@@ -1519,7 +1522,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     /**
      * Check whether the given bean is defined as a {@link FactoryBean}.
-     *
+     *  判断是不是 {@link FactoryBean}
      * @param beanName the name of the bean
      * @param mbd      the corresponding bean definition
      */
