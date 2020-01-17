@@ -200,3 +200,204 @@ public class DatePropertyEditor extends PropertyEditorSupport {
 
 
 
+
+
+## applyPropertyValues
+
+- 应用属性值
+
+  
+
+  ```java
+      protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
+          if (pvs.isEmpty()) {
+              return;
+          }
+  
+          if (System.getSecurityManager() != null && bw instanceof BeanWrapperImpl) {
+              ((BeanWrapperImpl) bw).setSecurityContext(getAccessControlContext());
+          }
+  
+          MutablePropertyValues mpvs = null;
+          // 没有解析的属性
+          List<PropertyValue> original;
+  
+          if (pvs instanceof MutablePropertyValues) {
+              mpvs = (MutablePropertyValues) pvs;
+              if (mpvs.isConverted()) {
+                  //MutablePropertyValues 对象中存在转换后对象直接赋值
+                  // Shortcut: use the pre-converted values as-is.
+                  try {
+                      bw.setPropertyValues(mpvs);
+                      return;
+                  }
+                  catch (BeansException ex) {
+                      throw new BeanCreationException(
+                              mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+                  }
+              }
+              original = mpvs.getPropertyValueList();
+          }
+          else {
+              original = Arrays.asList(pvs.getPropertyValues());
+          }
+          // 自定义转换器
+          TypeConverter converter = getCustomTypeConverter();
+          if (converter == null) {
+              converter = bw;
+          }
+          //  创建BeanDefinitionValueResolver
+          BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
+  
+          // Create a deep copy, resolving any references for values.
+          // 解析后的对象集合
+          List<PropertyValue> deepCopy = new ArrayList<>(original.size());
+          boolean resolveNecessary = false;
+          for (PropertyValue pv : original) {
+              // 解析过的属性
+              if (pv.isConverted()) {
+                  deepCopy.add(pv);
+              }
+              // 没有解析过的属性
+              else {
+                  // 属性名称
+                  String propertyName = pv.getName();
+                  // 属性值,直接读取到的
+                  Object originalValue = pv.getValue();
+                  // 解析值
+                  Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
+                  Object convertedValue = resolvedValue;
+                  /**
+                   * 1. isWritableProperty: 属性可写
+                   * 2. isNestedOrIndexedProperty: 是否循环嵌套
+                   */
+                  boolean convertible = bw.isWritableProperty(propertyName) &&
+                          !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
+                  if (convertible) {
+                      // 转换器解析
+                      convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
+                  }
+                  // Possibly store converted value in merged bean definition,
+                  // in order to avoid re-conversion for every created bean instance.
+                  if (resolvedValue == originalValue) {
+                      if (convertible) {
+                          // 设置解析值
+                          pv.setConvertedValue(convertedValue);
+                      }
+                      deepCopy.add(pv);
+                  }
+                  // 类型解析
+                  else if (convertible && originalValue instanceof TypedStringValue &&
+                          !((TypedStringValue) originalValue).isDynamic() &&
+                          !(convertedValue instanceof Collection || ObjectUtils.isArray(convertedValue))) {
+                      pv.setConvertedValue(convertedValue);
+                      deepCopy.add(pv);
+                  }
+                  else {
+                      resolveNecessary = true;
+                      deepCopy.add(new PropertyValue(pv, convertedValue));
+                  }
+              }
+          }
+          if (mpvs != null && !resolveNecessary) {
+              // 转换成功的标记方法
+              mpvs.setConverted();
+          }
+  
+          // Set our (possibly massaged) deep copy.
+          try {
+              bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+          }
+          catch (BeansException ex) {
+              throw new BeanCreationException(
+                      mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+          }
+      }
+  
+  ```
+
+  
+
+  ![image-20200117133325461](assets/image-20200117133325461.png)
+
+  
+
+
+
+![image-20200117141309038](assets/image-20200117141309038.png)
+
+
+
+![image-20200117141519123](assets/image-20200117141519123.png)
+
+
+
+
+
+- 属性值解析
+
+  ![image-20200117142800671](assets/image-20200117142800671.png)
+
+  ```JAVA
+      @Nullable
+      private Object convertForProperty(
+              @Nullable Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
+  
+          if (converter instanceof BeanWrapperImpl) {
+              return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
+          }
+          else {
+              PropertyDescriptor pd = bw.getPropertyDescriptor(propertyName);
+              MethodParameter methodParam = BeanUtils.getWriteMethodParameter(pd);
+              return converter.convertIfNecessary(value, pd.getPropertyType(), methodParam);
+          }
+      }
+  
+  ```
+
+  
+
+```JAVA
+    private Object doConvertTextValue(@Nullable Object oldValue, String newTextValue, PropertyEditor editor) {
+        try {
+            editor.setValue(oldValue);
+        }
+        catch (Exception ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("PropertyEditor [" + editor.getClass().getName() + "] does not support setValue call", ex);
+            }
+            // Swallow and proceed.
+        }
+        // 调用子类实现方法
+        editor.setAsText(newTextValue);
+        return editor.getValue();
+    }
+
+```
+
+
+
+- 调用用例编写的方法
+
+  ```JAVA
+      @Override
+      public void setAsText(String text) throws IllegalArgumentException {
+          System.out.println(text);
+          SimpleDateFormat sdf = new SimpleDateFormat(format);
+          try {
+              Date date = sdf.parse(text);
+              this.setValue(date);
+          } catch (Exception e) {
+              e.printStackTrace();
+  
+          }
+      }
+  
+  ```
+
+  
+
+![image-20200117143022827](assets/image-20200117143022827.png)
+
+该值也是这个方法的返回`org.springframework.beans.TypeConverterDelegate#convertIfNecessary(java.lang.String, java.lang.Object, java.lang.Object, java.lang.Class<T>, org.springframework.core.convert.TypeDescriptor)`
+
