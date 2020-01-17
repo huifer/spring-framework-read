@@ -80,6 +80,7 @@ public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationC
     /**
      * Loads the bean definitions via an XmlBeanDefinitionReader.
      *
+     * 加载bean定义
      * @see org.springframework.beans.factory.xml.XmlBeanDefinitionReader
      * @see #initBeanDefinitionReader
      * @see #loadBeanDefinitions
@@ -87,17 +88,23 @@ public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationC
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
         // Create a new XmlBeanDefinitionReader for the given BeanFactory.
+        // 创建 XmlBeanDefinitionReader
         XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
         // Configure the bean definition reader with this context's
         // resource loading environment.
+        // 设置环境
         beanDefinitionReader.setEnvironment(getEnvironment());
+        // 设置资源加载器
         beanDefinitionReader.setResourceLoader(this);
+        // 设置资源解析器
         beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
         // Allow a subclass to provide custom initialization of the reader,
         // then proceed with actually loading the bean definitions.
+        // 初始化XmlBeanDefinitionReader,子类实现
         initBeanDefinitionReader(beanDefinitionReader);
+        // 加载bean对象
         loadBeanDefinitions(beanDefinitionReader);
     }
 
@@ -128,9 +135,12 @@ public class XmlWebApplicationContext extends AbstractRefreshableWebApplicationC
      * @see #getResourcePatternResolver
      */
     protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws IOException {
+        // 获取配置文件
         String[] configLocations = getConfigLocations();
         if (configLocations != null) {
+            // 循环
             for (String configLocation : configLocations) {
+                // 加载文件执行beanLoad
                 reader.loadBeanDefinitions(configLocation);
             }
         }

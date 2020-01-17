@@ -33,6 +33,8 @@ public interface Expression {
 
     /**
      * Return the original string used to create this expression (unmodified).
+     * <p>
+     * 返回el表达式内容
      *
      * @return the original expression string
      */
@@ -40,6 +42,8 @@ public interface Expression {
 
     /**
      * Evaluate this expression in the default standard context.
+     * <p>
+     * 获取el表达式执行结果
      *
      * @return the evaluation result
      * @throws EvaluationException if there is a problem during evaluation

@@ -103,6 +103,9 @@ class TypeConverterDelegate {
     /**
      * Convert the value to the required type (if necessary from a String),
      * for the specified property.
+     * <p>
+     * <p>
+     * todo: 测试用例如何编写
      *
      * @param propertyName   name of the property
      * @param oldValue       the previous value, if available (may be {@code null})
@@ -155,6 +158,7 @@ class TypeConverterDelegate {
             if (editor == null) {
                 editor = findDefaultEditor(requiredType);
             }
+            // 执行转换方法
             convertedValue = doConvertValue(oldValue, convertedValue, requiredType, editor);
         }
 
@@ -433,6 +437,7 @@ class TypeConverterDelegate {
             }
             // Swallow and proceed.
         }
+        // 调用子类实现方法
         editor.setAsText(newTextValue);
         return editor.getValue();
     }

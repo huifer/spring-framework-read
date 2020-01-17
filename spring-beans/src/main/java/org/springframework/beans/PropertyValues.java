@@ -29,6 +29,7 @@ import java.util.stream.StreamSupport;
  * Holder containing one or more {@link PropertyValue} objects,
  * typically comprising one update for a specific target bean.
  *
+ * 属性值接口
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see PropertyValue

@@ -65,6 +65,10 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
     @Nullable
     private Map<Class<?>, PropertyEditor> overriddenDefaultEditors;
 
+    /**
+     * key:数据类型
+     * value: 处理器
+     */
     @Nullable
     private Map<Class<?>, PropertyEditor> customEditors;
 
@@ -158,6 +162,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 
     /**
      * Actually register the default editors for this registry instance.
+     * 默认解析器.
      */
     private void createDefaultEditors() {
         this.defaultEditors = new HashMap<>(64);
@@ -252,6 +257,17 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
         registerCustomEditor(requiredType, null, propertyEditor);
     }
 
+    /**
+     * 注册 CustomEditor
+     * @param requiredType   the type of the property. This may be {@code null}
+     *                       if a property is given but should be specified in any case, in particular in
+     *                       case of a Collection - making clear whether the editor is supposed to apply
+     *                       to the entire Collection itself or to each of its entries. So as a general rule:
+     *                       <b>Do not specify {@code null} here in case of a Collection/array!</b>
+     * @param propertyPath   the path of the property (name or nested path), or
+     *                       {@code null} if registering an editor for all properties of the given type
+     * @param propertyEditor editor to register
+     */
     @Override
     public void registerCustomEditor(@Nullable Class<?> requiredType, @Nullable String propertyPath, PropertyEditor propertyEditor) {
         if (requiredType == null && propertyPath == null) {
@@ -267,6 +283,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
             if (this.customEditors == null) {
                 this.customEditors = new LinkedHashMap<>(16);
             }
+            // 放入 customEditors map对象中
             this.customEditors.put(requiredType, propertyEditor);
             this.customEditorCache = null;
         }

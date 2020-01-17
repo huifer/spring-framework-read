@@ -232,7 +232,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
      * if specified. Can be overridden in subclasses to customize any of
      * {@link DefaultListableBeanFactory}'s settings.
      * <p>
-     * 定制工厂
+     * 定制工厂(BeanFactory)
      *
      * @param beanFactory the newly created bean factory for this context
      * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
@@ -241,9 +241,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
      * @see DefaultListableBeanFactory#setAllowEagerClassLoading
      */
     protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
+        // 是否允许覆盖同名不同定义的对象
         if (this.allowBeanDefinitionOverriding != null) {
             beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
         }
+        // 是否允许bean之间的循环依赖
         if (this.allowCircularReferences != null) {
             beanFactory.setAllowCircularReferences(this.allowCircularReferences);
         }

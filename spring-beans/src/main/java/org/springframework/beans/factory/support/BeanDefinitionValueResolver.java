@@ -90,7 +90,9 @@ class BeanDefinitionValueResolver {
      * <li>An ordinary object or {@code null}, in which case it's left alone.
      *
      * @param argName the name of the argument that the value is defined for
+     *                参数名
      * @param value   the value object to resolve
+     *                属性值
      * @return the resolved object
      */
     @Nullable
@@ -179,6 +181,7 @@ class BeanDefinitionValueResolver {
         }
         else if (value instanceof TypedStringValue) {
             // Convert value to target type here.
+            // 字面量值
             TypedStringValue typedStringValue = (TypedStringValue) value;
             Object valueObject = evaluate(typedStringValue);
             try {

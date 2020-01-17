@@ -60,7 +60,9 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
      */
     @Override
     protected final AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+        //  创建Bean定义构造器
         BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition();
+        // 获取parentName
         String parentName = getParentName(element);
         if (parentName != null) {
             builder.getRawBeanDefinition().setParentName(parentName);
@@ -68,12 +70,13 @@ public abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDef
         // 调用自己实现的方法 com.huifer.source.spring.parser.UserBeanDefinitionParser.getBeanClass
         Class<?> beanClass = getBeanClass(element);
         if (beanClass != null) {
+            // 设置 class
             builder.getRawBeanDefinition().setBeanClass(beanClass);
-        }
-        else {
+        } else {
             // getBeanClassName 同样也是可以在自定义的解析类中实现
             String beanClassName = getBeanClassName(element);
             if (beanClassName != null) {
+                // 设置 class
                 builder.getRawBeanDefinition().setBeanClassName(beanClassName);
             }
         }

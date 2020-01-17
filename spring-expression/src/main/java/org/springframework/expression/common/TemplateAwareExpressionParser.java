@@ -43,6 +43,7 @@ public abstract class TemplateAwareExpressionParser implements ExpressionParser 
         return parseExpression(expressionString, null);
     }
 
+
     @Override
     public Expression parseExpression(String expressionString, @Nullable ParserContext context) throws ParseException {
         if (context != null && context.isTemplate()) {

@@ -19,6 +19,7 @@ package org.springframework.beans.factory.support;
 import org.springframework.beans.*;
 import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.*;
+import org.springframework.beans.support.ResourceEditorRegistrar;
 import org.springframework.core.DecoratingClassLoader;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.ResolvableType;
@@ -1178,6 +1179,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         if (!this.propertyEditorRegistrars.isEmpty()) {
             for (PropertyEditorRegistrar registrar : this.propertyEditorRegistrars) {
                 try {
+                    /**
+                     * {@link ResourceEditorRegistrar#registerCustomEditors(org.springframework.beans.PropertyEditorRegistry)}或者
+                     * {@link PropertyEditorRegistrar#registerCustomEditors(org.springframework.beans.PropertyEditorRegistry)}
+                     */
                     registrar.registerCustomEditors(registry);
                 }
                 catch (BeanCreationException ex) {
