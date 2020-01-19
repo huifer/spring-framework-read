@@ -254,3 +254,194 @@ public class BeanFactoryPostProcessorSourceCode {
 ![image-20200119085346675](assets/image-20200119085346675.png)
 
 ![image-20200119085655734](assets/image-20200119085655734.png)
+
+
+
+
+
+## InstantiationAwareBeanPostProcessor
+
+```java
+    protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+        PostProcessorRegistrationDelegate.registerBeanPostProcessors(beanFactory, this);
+    }
+```
+
+
+
+```java
+    public static void registerBeanPostProcessors(
+            ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext) {
+        // 获取 BeanPostProcessor
+        String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
+
+        // Register BeanPostProcessorChecker that logs an info message when
+        // a bean is created during BeanPostProcessor instantiation, i.e. when
+        // a bean is not eligible for getting processed by all BeanPostProcessors.
+        // 获取数量
+        int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
+        beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
+
+        // Separate between BeanPostProcessors that implement PriorityOrdered,
+        // Ordered, and the rest.
+        // BeanPostProcessor 通过PriorityOrdered保证顺序
+        List<BeanPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
+        // MergedBeanDefinitionPostProcessor
+        List<BeanPostProcessor> internalPostProcessors = new ArrayList<>();
+        // 有序的 BeanPostProcessor
+        List<String> orderedPostProcessorNames = new ArrayList<>();
+        // 无序的 BeanPostProcessor
+        List<String> nonOrderedPostProcessorNames = new ArrayList<>();
+        for (String ppName : postProcessorNames) {
+            if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+                BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+                priorityOrderedPostProcessors.add(pp);
+                // 类型判断放入相应的list
+                if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                    internalPostProcessors.add(pp);
+                }
+            }
+            else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
+                orderedPostProcessorNames.add(ppName);
+            }
+            else {
+                nonOrderedPostProcessorNames.add(ppName);
+            }
+        }
+
+        // First, register the BeanPostProcessors that implement PriorityOrdered.
+        /**
+         * 有{@link org.springframework.core.annotation.Order} 相关操作
+         */
+        sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
+        // 注册 BeanPostProcessor 和 PriorityOrdered 实现
+        registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
+
+        // Next, register the BeanPostProcessors that implement Ordered.
+        List<BeanPostProcessor> orderedPostProcessors = new ArrayList<>();
+        for (String ppName : orderedPostProcessorNames) {
+            BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+            orderedPostProcessors.add(pp);
+            if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                internalPostProcessors.add(pp);
+            }
+        }
+        sortPostProcessors(orderedPostProcessors, beanFactory);
+        // 注册 实现Order 和 BeanPostProcessor
+        registerBeanPostProcessors(beanFactory, orderedPostProcessors);
+
+        // Now, register all regular BeanPostProcessors.
+        List<BeanPostProcessor> nonOrderedPostProcessors = new ArrayList<>();
+        for (String ppName : nonOrderedPostProcessorNames) {
+            BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
+            nonOrderedPostProcessors.add(pp);
+            if (pp instanceof MergedBeanDefinitionPostProcessor) {
+                internalPostProcessors.add(pp);
+            }
+        }
+        // 注册无序的 BeanPostProcessor
+        registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);
+
+        // Finally, re-register all internal BeanPostProcessors.
+        sortPostProcessors(internalPostProcessors, beanFactory);
+        // 注册 MergedBeanDefinitionPostProcessor
+        registerBeanPostProcessors(beanFactory, internalPostProcessors);
+
+        // Re-register post-processor for detecting inner beans as ApplicationListeners,
+        // moving it to the end of the processor chain (for picking up proxies etc).
+        // 添加 ApplicationListenerDetector
+        beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
+    }
+
+
+```
+
+
+
+- 测试用Bean
+
+```java
+public class DemoInstantiationAwareBeanPostProcessor implements InstantiationAwareBeanPostProcessor {
+    @Override
+    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+        System.out.println("init bean beanClass = " + beanClass.getSimpleName() + " beanName = " + beanName);
+        return null;
+    }
+}
+```
+
+
+
+- 按照笔者的注释,可以知道`DemoInstantiationAwareBeanPostProcessor` 这个类是一个无序Bean
+
+  ![image-20200119101026726](assets/image-20200119101026726.png)
+
+  
+
+![image-20200119101017989](assets/image-20200119101017989.png)
+
+- 注册方法信息截图
+
+![image-20200119101107820](assets/image-20200119101107820.png)
+
+
+
+
+
+### 使用阶段(调用阶段)
+
+在`org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#createBean(java.lang.String, org.springframework.beans.factory.support.RootBeanDefinition, java.lang.Object[])`中有如下代码
+
+```JAVA
+            Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+```
+
+- `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation`
+
+```JAVA
+@Nullable
+    protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+        Object bean = null;
+        if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+            // Make sure bean class is actually resolved at this point.
+            if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+                Class<?> targetType = determineTargetType(beanName, mbd);
+                if (targetType != null) {
+                    /**
+                     * 主要实现{@link org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation(java.lang.Class, java.lang.String)}
+                     */
+                    bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                    if (bean != null) {
+                        bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                    }
+                }
+            }
+            mbd.beforeInstantiationResolved = (bean != null);
+        }
+        return bean;
+    }
+```
+
+- `org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInstantiation`
+
+```JAVA
+    @Nullable
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof InstantiationAwareBeanPostProcessor) {
+                InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+                // 调用自定义实现
+                Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+```
+
+这个地方已经可以看到`InstantiationAwareBeanPostProcessor`出现了,并且调用了方法`postProcessBeforeInstantiation`，此处就可以调用我们的自定义方法了
+
+![image-20200119101516591](assets/image-20200119101516591.png)
