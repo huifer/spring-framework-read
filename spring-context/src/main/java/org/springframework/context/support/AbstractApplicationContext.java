@@ -429,6 +429,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             this.earlyApplicationEvents.add(applicationEvent);
         }
         else {
+            /**
+             * 执行监听事件
+             * {@link ApplicationEventMulticaster} ->{@link SimpleApplicationEventMulticaster}
+             */
             getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
         }
 
@@ -817,6 +821,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
      */
     protected void initApplicationEventMulticaster() {
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        // 判断是否存在名字applicationEventMulticaster的bean
         if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
             this.applicationEventMulticaster =
                     beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
@@ -825,6 +830,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             }
         }
         else {
+            // 创建一个
             this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
             beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
             if (logger.isTraceEnabled()) {
@@ -879,14 +885,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
      */
     protected void registerListeners() {
         // Register statically specified listeners first.
+        // 读取 ApplicationListener
         for (ApplicationListener<?> listener : getApplicationListeners()) {
             getApplicationEventMulticaster().addApplicationListener(listener);
         }
 
         // Do not initialize FactoryBeans here: We need to leave all regular beans
         // uninitialized to let post-processors apply to them!
+        /**
+         * 寻找类型为{@link ApplicationListener} 的beanName,目标文件为用户配置文件
+         */
         String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
         for (String listenerBeanName : listenerBeanNames) {
+            /**
+             * 1. 获取 {@link applicationEventMulticaster}
+             * 2. 添加监听器名称
+             */
             getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
         }
 
@@ -929,9 +943,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         beanFactory.setTempClassLoader(null);
 
         // Allow for caching all bean definition metadata, not expecting further changes.
+        // 冻结bean
         beanFactory.freezeConfiguration();
 
         // Instantiate all remaining (non-lazy-init) singletons.
+        // 初始化 non-lazy-init 的bean
         beanFactory.preInstantiateSingletons();
     }
 
@@ -951,6 +967,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         getLifecycleProcessor().onRefresh();
 
         // Publish the final event.
+        // 发布事件做处理
         publishEvent(new ContextRefreshedEvent(this));
 
         // Participate in LiveBeansView MBean, if active.

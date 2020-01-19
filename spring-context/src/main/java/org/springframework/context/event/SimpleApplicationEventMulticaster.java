@@ -16,17 +16,16 @@
 
 package org.springframework.context.event;
 
-import java.util.concurrent.Executor;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ErrorHandler;
+
+import java.util.concurrent.Executor;
 
 /**
  * Simple implementation of the {@link ApplicationEventMulticaster} interface.
@@ -134,6 +133,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
         Executor executor = getTaskExecutor();
         for (ApplicationListener<?> listener : getApplicationListeners(event, type)) {
             if (executor != null) {
+                // 执行ApplicationListener
                 executor.execute(() -> invokeListener(listener, event));
             }
             else {
@@ -148,6 +148,8 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 
     /**
      * Invoke the given listener with the given event.
+     * <p>
+     * 执行监听方法
      *
      * @param listener the ApplicationListener to invoke
      * @param event    the current event to propagate
@@ -171,6 +173,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void doInvokeListener(ApplicationListener listener, ApplicationEvent event) {
         try {
+            // 最后调用方法
             listener.onApplicationEvent(event);
         }
         catch (ClassCastException ex) {
@@ -200,11 +203,8 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
         }
         // On Java 9, the message used to contain the module name: "java.base/java.lang.String cannot be cast..."
         int moduleSeparatorIndex = classCastMessage.indexOf('/');
-        if (moduleSeparatorIndex != -1 && classCastMessage.startsWith(eventClass.getName(), moduleSeparatorIndex + 1)) {
-            return true;
-        }
+        return moduleSeparatorIndex != -1 && classCastMessage.startsWith(eventClass.getName(), moduleSeparatorIndex + 1);
         // Assuming an unrelated class cast failure...
-        return false;
     }
 
 }
