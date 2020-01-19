@@ -32,6 +32,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import static org.junit.Assert.*;
 
 /**
+ * message.properties
  * @author Juergen Hoeller
  * @since 03.02.2004
  */

@@ -16,23 +16,17 @@
 
 package org.springframework.context.support;
 
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.Aware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.EmbeddedValueResolver;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.MessageSourceAware;
-import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
+
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor}
@@ -74,6 +68,14 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
     }
 
 
+    /**
+     * 后置处理器初始化方法
+     *
+     * @param bean     the new bean instance
+     * @param beanName the name of the bean
+     * @return
+     * @throws BeansException
+     */
     @Override
     @Nullable
     public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
@@ -88,6 +90,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 
         if (acc != null) {
             AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                // 调用接口
                 invokeAwareInterfaces(bean);
                 return null;
             }, acc);
@@ -99,6 +102,19 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * 调用接口{@link Aware},
+     * 设置
+     * <li>
+     *     <ol>Environment</ol>
+     *     <ol>EmbeddedValueResolver</ol>
+     *     <ol>ResourceLoader</ol>
+     *     <ol>ApplicationEventPublisher</ol>
+     *     <ol>MessageSource</ol>
+     *     <ol>ApplicationContext</ol>
+     * </li>
+     * @param bean
+     */
     private void invokeAwareInterfaces(Object bean) {
         if (bean instanceof Aware) {
             if (bean instanceof EnvironmentAware) {

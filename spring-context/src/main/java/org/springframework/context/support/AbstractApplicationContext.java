@@ -547,7 +547,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
                 postProcessBeanFactory(beanFactory);
 
                 // Invoke factory processors registered as beans in the context.
-                // 调用 beanFactory 后置处理器
+                // 调用 beanFactory 后置处理器 BeanFactoryPostProcessor
                 invokeBeanFactoryPostProcessors(beanFactory);
 
                 // Register bean processors that intercept bean creation.
@@ -555,7 +555,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
                 registerBeanPostProcessors(beanFactory);
 
                 // Initialize message source for this context.
-                // 获取上下文资源
+                // 初始化 消息资源,国际化相关
                 initMessageSource();
 
                 // Initialize event multicaster for this context.
@@ -706,13 +706,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
         // BeanFactory interface not registered as resolvable type in a plain factory.
         // MessageSource registered (and found for autowiring) as a bean.
-        //
+        // 注册依赖
         beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
         beanFactory.registerResolvableDependency(ResourceLoader.class, this);
         beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
         beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
         // Register early post-processor for detecting inner beans as ApplicationListeners.
+        // 激活 BeanPostProcessor
         beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
         // Detect a LoadTimeWeaver and prepare for weaving, if found.

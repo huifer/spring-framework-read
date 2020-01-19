@@ -38,6 +38,8 @@ import java.beans.PropertyDescriptor;
  * {@link InstantiationAwareBeanPostProcessorAdapter} in order to be shielded
  * from extensions to this interface.
  *
+ *
+ * 继承 BeanPostProcessor
  * @author Juergen Hoeller
  * @author Rod Johnson
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
