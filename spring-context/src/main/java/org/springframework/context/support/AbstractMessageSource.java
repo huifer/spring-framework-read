@@ -150,10 +150,12 @@ public abstract class AbstractMessageSource extends MessageSourceSupport impleme
 
     @Override
     public final String getMessage(String code, @Nullable Object[] args, Locale locale) throws NoSuchMessageException {
+        // 获取对应的信息
         String msg = getMessageInternal(code, args, locale);
         if (msg != null) {
             return msg;
         }
+        // 默认信息 null
         String fallback = getDefaultMessage(code);
         if (fallback != null) {
             return fallback;
@@ -186,9 +188,12 @@ public abstract class AbstractMessageSource extends MessageSourceSupport impleme
      * the code as default message. Invoked by {@code getMessage} methods.
      *
      * @param code   the code to lookup up, such as 'calculator.noRateSet'
+     *               message.properties文件中的编码
      * @param args   array of arguments that will be filled in for params
      *               within the message
+     *               参数
      * @param locale the locale in which to do the lookup
+     *               语言
      * @return the resolved message, or {@code null} if not found
      * @see #getMessage(String, Object[], String, Locale)
      * @see #getMessage(String, Object[], Locale)
@@ -201,6 +206,7 @@ public abstract class AbstractMessageSource extends MessageSourceSupport impleme
             return null;
         }
         if (locale == null) {
+            // 获取语言默认值
             locale = Locale.getDefault();
         }
         Object[] argsToUse = args;
@@ -318,6 +324,7 @@ public abstract class AbstractMessageSource extends MessageSourceSupport impleme
      */
     @Nullable
     protected String getDefaultMessage(String code) {
+        // 判断是否使用默认值
         if (isUseCodeAsDefaultMessage()) {
             return code;
         }
@@ -371,6 +378,7 @@ public abstract class AbstractMessageSource extends MessageSourceSupport impleme
      */
     @Nullable
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
+        // 解析code
         MessageFormat messageFormat = resolveCode(code, locale);
         if (messageFormat != null) {
             synchronized (messageFormat) {

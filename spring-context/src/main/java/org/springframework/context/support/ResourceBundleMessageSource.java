@@ -16,6 +16,11 @@
 
 package org.springframework.context.support;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,18 +31,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link org.springframework.context.MessageSource} implementation that
@@ -142,13 +137,20 @@ public class ResourceBundleMessageSource extends AbstractResourceBasedMessageSou
     /**
      * Resolves the given message code as key in the registered resource bundles,
      * returning the value found in the bundle as-is (without MessageFormat parsing).
+     * {@code         <property name="basenames">
+     * <list>
+     * <value>messages.message</value>
+     * </list>
+     * </property>} 获取basenames
      */
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
         Set<String> basenames = getBasenameSet();
         for (String basename : basenames) {
+            // 加载 basename
             ResourceBundle bundle = getResourceBundle(basename, locale);
             if (bundle != null) {
+                // 从basename对应的文件中获取对应的值
                 String result = getStringOrNull(bundle, code);
                 if (result != null) {
                     return result;
@@ -205,6 +207,7 @@ public class ResourceBundleMessageSource extends AbstractResourceBasedMessageSou
                 }
             }
             try {
+                // 加载 message.properties
                 ResourceBundle bundle = doGetBundle(basename, locale);
                 if (localeMap == null) {
                     localeMap = new ConcurrentHashMap<>();
@@ -244,6 +247,7 @@ public class ResourceBundleMessageSource extends AbstractResourceBasedMessageSou
         MessageSourceControl control = this.control;
         if (control != null) {
             try {
+                // 获取ResourceBundle
                 return ResourceBundle.getBundle(basename, locale, classLoader, control);
             }
             catch (UnsupportedOperationException ex) {
@@ -439,6 +443,7 @@ public class ResourceBundleMessageSource extends AbstractResourceBasedMessageSou
                     throw (IOException) ex.getException();
                 }
                 if (inputStream != null) {
+                    // 获取默认编码
                     String encoding = getDefaultEncoding();
                     if (encoding != null) {
                         try (InputStreamReader bundleReader = new InputStreamReader(inputStream, encoding)) {
@@ -457,6 +462,7 @@ public class ResourceBundleMessageSource extends AbstractResourceBasedMessageSou
             }
             else {
                 // Delegate handling of "java.class" format to standard Control
+                // "java.class"方法
                 return super.newBundle(baseName, locale, format, loader, reload);
             }
         }

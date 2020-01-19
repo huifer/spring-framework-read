@@ -778,7 +778,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
      */
     protected void initMessageSource() {
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        // 判断是否含有 messageSource
         if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
+            // 读取xml配置文件中 id="messageSource"的数据
             this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
             // Make MessageSource aware of parent MessageSource.
             if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
@@ -795,9 +797,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         }
         else {
             // Use empty MessageSource to be able to accept getMessage calls.
+            // 没有使用默认的 DelegatingMessageSource
             DelegatingMessageSource dms = new DelegatingMessageSource();
             dms.setParentMessageSource(getInternalParentMessageSource());
             this.messageSource = dms;
+            // 注册单例对象
             beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
             if (logger.isTraceEnabled()) {
                 logger.trace("No '" + MESSAGE_SOURCE_BEAN_NAME + "' bean, using [" + this.messageSource + "]");
@@ -1167,7 +1171,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     }
 
     /**
-     *
      * @param name         the name of the bean to retrieve
      *                     beanName bean的名称
      * @param requiredType type the bean must match; can be an interface or superclass
@@ -1189,7 +1192,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     }
 
     /**
-     *
      * @param requiredType type the bean must match; can be an interface or superclass
      * @param <T>
      * @return
@@ -1421,6 +1423,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
     /**
      * 资源路径解析
+     *
      * @param locationPattern the location pattern to resolve
      * @return
      * @throws IOException
