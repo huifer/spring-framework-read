@@ -158,6 +158,10 @@ public class ProxyFactory extends ProxyCreatorSupport {
      * @return the proxy object
      */
     public Object getProxy(@Nullable ClassLoader classLoader) {
+        /**
+         * 1. createAopProxy() 创建代理
+         * 2. getProxy() 获取代理
+         */
         return createAopProxy().getProxy(classLoader);
     }
 

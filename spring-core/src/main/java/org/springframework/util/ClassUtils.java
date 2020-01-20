@@ -890,6 +890,8 @@ public abstract class ClassUtils {
 
     /**
      * Check whether the specified class is a CGLIB-generated class.
+     * <p>
+     * 判断是否是CGLIB代理对象
      *
      * @param clazz the class to check
      * @see #isCglibProxyClassName(String)
@@ -900,6 +902,8 @@ public abstract class ClassUtils {
 
     /**
      * Check whether the specified class name is a CGLIB-generated class.
+     * <p>
+     * 判断是否是CGLIB类名$$
      *
      * @param className the class name to check
      */

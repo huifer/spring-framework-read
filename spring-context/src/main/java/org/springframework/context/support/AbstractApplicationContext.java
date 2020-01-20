@@ -963,7 +963,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         // Initialize lifecycle processor for this context.
         initLifecycleProcessor();
 
-        // Propagate refresh to lifecycle processor first.
+        /**
+         * Propagate refresh to lifecycle processor first.
+         * 启动 实现{@link Lifecycle}接口的
+         */
         getLifecycleProcessor().onRefresh();
 
         // Publish the final event.

@@ -80,6 +80,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
      * @see #isEligibleBean
      */
     public List<Advisor> buildAspectJAdvisors() {
+        // 获取aop类路径
         List<String> aspectNames = this.aspectBeanNames;
 
         if (aspectNames == null) {
@@ -88,6 +89,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
                 if (aspectNames == null) {
                     List<Advisor> advisors = new ArrayList<>();
                     aspectNames = new ArrayList<>();
+                    // 获取beanName
                     String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
                             this.beanFactory, Object.class, true, false);
                     for (String beanName : beanNames) {
@@ -96,16 +98,22 @@ public class BeanFactoryAspectJAdvisorsBuilder {
                         }
                         // We must be careful not to instantiate beans eagerly as in this case they
                         // would be cached by the Spring container but would not have been weaved.
+                        // 获取类型
                         Class<?> beanType = this.beanFactory.getType(beanName);
                         if (beanType == null) {
                             continue;
                         }
+                        // 判断是否有Aspect注解
                         if (this.advisorFactory.isAspect(beanType)) {
+                            // aspect 列表添加当前beanName
                             aspectNames.add(beanName);
+                            // 获取Aspect注解信息
                             AspectMetadata amd = new AspectMetadata(beanType, beanName);
+
                             if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
                                 MetadataAwareAspectInstanceFactory factory =
                                         new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+                                // 获取增强方法
                                 List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
                                 if (this.beanFactory.isSingleton(beanName)) {
                                     this.advisorsCache.put(beanName, classAdvisors);
@@ -137,7 +145,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
         if (aspectNames.isEmpty()) {
             return Collections.emptyList();
         }
+        // 缓存注解
         List<Advisor> advisors = new ArrayList<>();
+        // aspectNames 获取增强
         for (String aspectName : aspectNames) {
             List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
             if (cachedAdvisors != null) {

@@ -52,6 +52,12 @@ public class DefaultAdvisorAdapterRegistry implements AdvisorAdapterRegistry, Se
     }
 
 
+    /**
+     * 包装
+     * @param adviceObject
+     * @return
+     * @throws UnknownAdviceTypeException
+     */
     @Override
     public Advisor wrap(Object adviceObject) throws UnknownAdviceTypeException {
         if (adviceObject instanceof Advisor) {
