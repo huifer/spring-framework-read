@@ -45,6 +45,11 @@ public class StandardReflectionParameterNameDiscoverer implements ParameterNameD
         return getParameterNames(ctor.getParameters());
     }
 
+    /**
+     * 获取函数的参数列表
+     * @param parameters
+     * @return
+     */
     @Nullable
     private String[] getParameterNames(Parameter[] parameters) {
         String[] parameterNames = new String[parameters.length];

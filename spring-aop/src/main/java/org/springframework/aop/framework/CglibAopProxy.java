@@ -189,6 +189,7 @@ class CglibAopProxy implements AopProxy, Serializable {
             // 判断是不是 CGLIB代理对象
             if (ClassUtils.isCglibProxyClass(rootClass)) {
                 proxySuperClass = rootClass.getSuperclass();
+                // 获取接口列表
                 Class<?>[] additionalInterfaces = rootClass.getInterfaces();
                 for (Class<?> additionalInterface : additionalInterfaces) {
                     this.advised.addInterface(additionalInterface);
@@ -213,7 +214,7 @@ class CglibAopProxy implements AopProxy, Serializable {
             enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
             enhancer.setStrategy(new ClassLoaderAwareUndeclaredThrowableStrategy(classLoader));
 
-            // 获取回掉
+            // 获取回调
             Callback[] callbacks = getCallbacks(rootClass);
             Class<?>[] types = new Class<?>[callbacks.length];
             for (int x = 0; x < types.length; x++) {
@@ -309,6 +310,7 @@ class CglibAopProxy implements AopProxy, Serializable {
         boolean isStatic = this.advised.getTargetSource().isStatic();
 
         // Choose an "aop" interceptor (used for AOP calls).
+        // 回调组装
         Callback aopInterceptor = new DynamicAdvisedInterceptor(this.advised);
 
         // Choose a "straight to target" interceptor. (used for calls that are

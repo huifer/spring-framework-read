@@ -153,6 +153,10 @@ public class ContextLoader {
         // This is currently strictly internal and not meant to be customized
         // by application developers.
         try {
+            /**
+             * 加载 ContextLoader.properties 文件
+             * {@code org.springframework.web.context.WebApplicationContext=org.springframework.web.context.support.XmlWebApplicationContext}
+             */
             ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, ContextLoader.class);
             defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
         }
@@ -292,12 +296,14 @@ public class ContextLoader {
         if (logger.isInfoEnabled()) {
             logger.info("Root WebApplicationContext: initialization started");
         }
+        // 启动时间
         long startTime = System.currentTimeMillis();
 
         try {
             // Store context in local instance variable, to guarantee that
             // it is available on ServletContext shutdown.
             if (this.context == null) {
+                // 初始化 web 应用上下文
                 this.context = createWebApplicationContext(servletContext);
             }
             if (this.context instanceof ConfigurableWebApplicationContext) {
@@ -314,6 +320,7 @@ public class ContextLoader {
                     configureAndRefreshWebApplicationContext(cwac, servletContext);
                 }
             }
+            // 设置servlet属性
             servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
             ClassLoader ccl = Thread.currentThread().getContextClassLoader();
@@ -352,6 +359,7 @@ public class ContextLoader {
      * @see ConfigurableWebApplicationContext
      */
     protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
+        //
         Class<?> contextClass = determineContextClass(sc);
         if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
             throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
@@ -381,8 +389,10 @@ public class ContextLoader {
             }
         }
         else {
+            // 获取 ContextLoader.properties 文件中数据
             contextClassName = defaultStrategies.getProperty(WebApplicationContext.class.getName());
             try {
+                // 创建类
                 return ClassUtils.forName(contextClassName, ContextLoader.class.getClassLoader());
             }
             catch (ClassNotFoundException ex) {
