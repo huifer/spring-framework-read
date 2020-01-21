@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class JSONController {
     @ResponseBody
     @GetMapping(value = "/json")
-    public HashMap ob() {
+    public Object ob() {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("1", "a");
         return hashMap;

@@ -292,6 +292,7 @@ public class ContextLoader {
         }
 
         servletContext.log("Initializing Spring root WebApplicationContext");
+        // 日志
         Log logger = LogFactory.getLog(ContextLoader.class);
         if (logger.isInfoEnabled()) {
             logger.info("Root WebApplicationContext: initialization started");
@@ -359,7 +360,7 @@ public class ContextLoader {
      * @see ConfigurableWebApplicationContext
      */
     protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
-        //
+        // contextClass = XmlWebApplicationContext
         Class<?> contextClass = determineContextClass(sc);
         if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
             throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
@@ -378,6 +379,7 @@ public class ContextLoader {
      * @see org.springframework.web.context.support.XmlWebApplicationContext
      */
     protected Class<?> determineContextClass(ServletContext servletContext) {
+
         String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
         if (contextClassName != null) {
             try {
