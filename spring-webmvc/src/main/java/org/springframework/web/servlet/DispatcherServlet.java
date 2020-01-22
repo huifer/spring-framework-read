@@ -1069,21 +1069,27 @@ public class DispatcherServlet extends FrameworkServlet {
             Exception dispatchException = null;
 
             try {
+                // 校验是否 multipart 类型
                 processedRequest = checkMultipart(request);
                 multipartRequestParsed = (processedRequest != request);
 
                 // Determine handler for the current request.
+                // 获取 handler
                 mappedHandler = getHandler(processedRequest);
                 if (mappedHandler == null) {
+                    // 没有 handler 返回异常
                     noHandlerFound(processedRequest, response);
                     return;
                 }
 
                 // Determine handler adapter for the current request.
+                // 获取 HandlerAdapter
                 HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
                 // Process last-modified header, if supported by the handler.
+                // 请求方法
                 String method = request.getMethod();
+                // 是否为 get 请求
                 boolean isGet = "GET".equals(method);
                 if (isGet || "HEAD".equals(method)) {
                     long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
@@ -1219,6 +1225,8 @@ public class DispatcherServlet extends FrameworkServlet {
      * Convert the request into a multipart request, and make multipart resolver available.
      * <p>If no multipart resolver is set, simply use the existing request.
      *
+     *
+     * 校验 Multipart 类型
      * @param request current HTTP request
      * @return the processed request (multipart wrapper if necessary)
      * @see MultipartResolver#resolveMultipart
@@ -1294,6 +1302,7 @@ public class DispatcherServlet extends FrameworkServlet {
     protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
         if (this.handlerMappings != null) {
             for (HandlerMapping mapping : this.handlerMappings) {
+                //  获取handler
                 HandlerExecutionChain handler = mapping.getHandler(request);
                 if (handler != null) {
                     return handler;

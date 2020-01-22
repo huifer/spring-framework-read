@@ -158,7 +158,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
         this.config.setTrailingSlashMatch(this.useTrailingSlashMatch);
         this.config.setRegisteredSuffixPatternMatch(this.useRegisteredSuffixPatternMatch);
         this.config.setContentNegotiationManager(getContentNegotiationManager());
-
+        // 后置属性设置
         super.afterPropertiesSet();
     }
 

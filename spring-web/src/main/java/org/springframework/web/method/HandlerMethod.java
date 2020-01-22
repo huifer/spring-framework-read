@@ -65,17 +65,29 @@ public class HandlerMethod {
      */
     protected final Log logger = LogFactory.getLog(getClass());
 
+    /**
+     * controller 对象
+     */
     private final Object bean;
 
     @Nullable
     private final BeanFactory beanFactory;
 
+    /**
+     * controller 的类型
+     */
     private final Class<?> beanType;
 
+    /**
+     * controller 中的函数
+     */
     private final Method method;
 
     private final Method bridgedMethod;
 
+    /**
+     * 参数列表
+     */
     private final MethodParameter[] parameters;
 
     @Nullable
@@ -87,6 +99,9 @@ public class HandlerMethod {
     @Nullable
     private HandlerMethod resolvedFromHandlerMethod;
 
+    /**
+     * 注解列表
+     */
     @Nullable
     private volatile List<Annotation[][]> interfaceParameterAnnotations;
 
@@ -134,10 +149,12 @@ public class HandlerMethod {
         Assert.notNull(method, "Method is required");
         this.bean = beanName;
         this.beanFactory = beanFactory;
+        // 获取处理类
         Class<?> beanType = beanFactory.getType(beanName);
         if (beanType == null) {
             throw new IllegalStateException("Cannot resolve bean type for bean with name '" + beanName + "'");
         }
+        // 设置bean 类型
         this.beanType = ClassUtils.getUserClass(beanType);
         this.method = method;
         this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
@@ -195,6 +212,10 @@ public class HandlerMethod {
                 param.getExecutable().toGenericString() + (StringUtils.hasText(message) ? ": " + message : "");
     }
 
+    /**
+     * 初始化函数参数
+     * @return
+     */
     private MethodParameter[] initMethodParameters() {
         int count = this.bridgedMethod.getParameterCount();
         MethodParameter[] result = new MethodParameter[count];

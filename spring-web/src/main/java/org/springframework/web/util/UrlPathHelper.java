@@ -195,8 +195,11 @@ public class UrlPathHelper {
      * @see #getLookupPathForRequest
      */
     public String getPathWithinServletMapping(HttpServletRequest request) {
+        // 获取请求路径 去掉contextPath
         String pathWithinApp = getPathWithinApplication(request);
+        // 获取servletPath
         String servletPath = getServletPath(request);
+        //
         String sanitizedPathWithinApp = getSanitizedPath(pathWithinApp);
         String path;
 
@@ -205,6 +208,7 @@ public class UrlPathHelper {
             path = getRemainingPath(sanitizedPathWithinApp, servletPath, false);
         }
         else {
+            // 路径处理
             path = getRemainingPath(pathWithinApp, servletPath, false);
         }
 
@@ -244,8 +248,11 @@ public class UrlPathHelper {
      * @see #getLookupPathForRequest
      */
     public String getPathWithinApplication(HttpServletRequest request) {
+        // 获取 context path
         String contextPath = getContextPath(request);
+        // 获取请求路径
         String requestUri = getRequestUri(request);
+        // 在请求路径中去掉 contextPath
         String path = getRemainingPath(requestUri, contextPath, true);
         if (path != null) {
             // Normal case: URI contains context path.
@@ -321,6 +328,8 @@ public class UrlPathHelper {
      * <p>The URI that the web container resolves <i>should</i> be correct, but some
      * containers like JBoss/Jetty incorrectly include ";" strings like ";jsessionid"
      * in the URI. This method cuts off such incorrect appendices.
+     * <p>
+     * 获取请求地址
      *
      * @param request current HTTP request
      * @return the request URI
@@ -338,6 +347,8 @@ public class UrlPathHelper {
      * URL if called within a RequestDispatcher include.
      * <p>As the value returned by {@code request.getContextPath()} is <i>not</i>
      * decoded by the servlet container, this method will decode it.
+     * <p>
+     * 获取 contextPath
      *
      * @param request current HTTP request
      * @return the context path
@@ -345,12 +356,14 @@ public class UrlPathHelper {
     public String getContextPath(HttpServletRequest request) {
         String contextPath = (String) request.getAttribute(WebUtils.INCLUDE_CONTEXT_PATH_ATTRIBUTE);
         if (contextPath == null) {
+            // 从 HttpServletRequest 获取
             contextPath = request.getContextPath();
         }
         if ("/".equals(contextPath)) {
             // Invalid case, but happens for includes on Jetty: silently adapt it.
             contextPath = "";
         }
+        // decode contextPath
         return decodeRequestString(request, contextPath);
     }
 
@@ -359,6 +372,8 @@ public class UrlPathHelper {
      * URL if called within a RequestDispatcher include.
      * <p>As the value returned by {@code request.getServletPath()} is already
      * decoded by the servlet container, this method will not attempt to decode it.
+     * <p>
+     * 获取servletPath
      *
      * @param request current HTTP request
      * @return the servlet path
@@ -474,8 +489,10 @@ public class UrlPathHelper {
 
     @SuppressWarnings("deprecation")
     private String decodeInternal(HttpServletRequest request, String source) {
+        // 获取编码
         String enc = determineEncoding(request);
         try {
+            // decode
             return UriUtils.decode(source, enc);
         }
         catch (UnsupportedCharsetException ex) {

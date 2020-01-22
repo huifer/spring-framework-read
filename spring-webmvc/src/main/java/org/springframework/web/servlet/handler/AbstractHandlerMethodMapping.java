@@ -188,6 +188,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      */
     @Override
     public void afterPropertiesSet() {
+        // 初始化 controller 相关信息
         initHandlerMethods();
     }
 
@@ -300,8 +301,11 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      * each detected handler method.
      *
      * @param handler the bean name of the handler or the handler instance
+     *                处理类
      * @param method  the method to register
+     *                函数
      * @param mapping the mapping conditions associated with the handler method
+     *                请求地址
      * @throws IllegalStateException if another method was already registered
      *                               under the same mapping
      */
@@ -313,13 +317,16 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      * Create the HandlerMethod instance.
      *
      * @param handler either a bean name or an actual handler instance
+     *                处理器名称(controller name)
      * @param method  the target method
+     *                请求方式
      * @return the created HandlerMethod
      */
     protected HandlerMethod createHandlerMethod(Object handler, Method method) {
         HandlerMethod handlerMethod;
         if (handler instanceof String) {
             String beanName = (String) handler;
+            // 创建对象
             handlerMethod = new HandlerMethod(beanName,
                     obtainApplicationContext().getAutowireCapableBeanFactory(), method);
         }
@@ -358,13 +365,17 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      */
     @Override
     protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+        // 请求路径
         String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+        // 上锁
         this.mappingRegistry.acquireReadLock();
         try {
+            // 请求处理
             HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
             return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
         }
         finally {
+            // 开锁
             this.mappingRegistry.releaseReadLock();
         }
     }
@@ -382,6 +393,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
     @Nullable
     protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
         List<Match> matches = new ArrayList<>();
+        //  url的mapping
         List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
         if (directPathMatches != null) {
             addMatchingMappings(directPathMatches, matches, request);
@@ -576,12 +588,19 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
         private final Map<T, MappingRegistration<T>> registry = new HashMap<>();
 
+        /**
+         * key:请求地址
+         * value:{@link HandlerMapping}
+         */
         private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
 
         private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
 
         private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
 
+        /**
+         *
+         */
         private final Map<HandlerMethod, CorsConfiguration> corsLookup = new ConcurrentHashMap<>();
 
         private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -634,15 +653,27 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
             this.readWriteLock.readLock().unlock();
         }
 
+        /**
+         * 注册方法 将controller 相关信息存储
+         *
+         * @param mapping 请求地址
+         * @param handler 处理类
+         * @param method  函数
+         */
         public void register(T mapping, Object handler, Method method) {
+            // 上锁
             this.readWriteLock.writeLock().lock();
             try {
+                // 创建 HandlerMethod , 通过 handler 创建处理的对象(controller)
                 HandlerMethod handlerMethod = createHandlerMethod(handler, method);
                 assertUniqueMethodMapping(handlerMethod, mapping);
+                // 设置值
                 this.mappingLookup.put(mapping, handlerMethod);
 
+                // 获取url
                 List<String> directUrls = getDirectUrls(mapping);
                 for (String url : directUrls) {
+                    // 设置
                     this.urlLookup.add(url, mapping);
                 }
 
@@ -660,6 +691,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
                 this.registry.put(mapping, new MappingRegistration<>(mapping, handlerMethod, directUrls, name));
             }
             finally {
+                // 开锁
                 this.readWriteLock.writeLock().unlock();
             }
         }

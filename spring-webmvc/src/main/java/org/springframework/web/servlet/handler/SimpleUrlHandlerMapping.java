@@ -52,6 +52,10 @@ import java.util.*;
  */
 public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
+    /**
+     * key: url地址
+     * value: controller?
+     */
     private final Map<String, Object> urlMap = new LinkedHashMap<>();
 
 
