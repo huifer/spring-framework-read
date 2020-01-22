@@ -504,6 +504,7 @@ public class HandlerMethod {
         public Annotation[] getParameterAnnotations() {
             Annotation[] anns = this.combinedAnnotations;
             if (anns == null) {
+                // 获取参数的注解
                 anns = super.getParameterAnnotations();
                 int index = getParameterIndex();
                 if (index >= 0) {

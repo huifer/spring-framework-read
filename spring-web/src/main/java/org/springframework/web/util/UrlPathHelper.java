@@ -66,6 +66,9 @@ public class UrlPathHelper {
 
     private boolean removeSemicolonContent = true;
 
+    /**
+     * 默认编码
+     */
     private String defaultEncoding = WebUtils.DEFAULT_CHARACTER_ENCODING;
 
 

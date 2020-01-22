@@ -349,6 +349,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
     /**
      * {@link CrossOrigin} 注解解析,跨域请求
+     *
      * @param handler
      * @param method
      * @param mappingInfo
@@ -356,6 +357,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
      */
     @Override
     protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mappingInfo) {
+        // 重新创建,为什么不作为参数传递: 还有别的实现方法
         HandlerMethod handlerMethod = createHandlerMethod(handler, method);
         Class<?> beanType = handlerMethod.getBeanType();
 

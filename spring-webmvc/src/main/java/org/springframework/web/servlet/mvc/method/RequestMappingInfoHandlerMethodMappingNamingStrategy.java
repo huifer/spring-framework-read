@@ -41,12 +41,20 @@ public class RequestMappingInfoHandlerMethodMappingNamingStrategy
     public static final String SEPARATOR = "#";
 
 
+    /**
+     * @param handlerMethod the handler method
+     *                      controller + 函数 的分装
+     * @param mapping       the mapping
+     *                      请求信息
+     * @return
+     */
     @Override
     public String getName(HandlerMethod handlerMethod, RequestMappingInfo mapping) {
         if (mapping.getName() != null) {
             return mapping.getName();
         }
         StringBuilder sb = new StringBuilder();
+        // 获取bean类型,再获取短路径类名
         String simpleTypeName = handlerMethod.getBeanType().getSimpleName();
         for (int i = 0; i < simpleTypeName.length(); i++) {
             if (Character.isUpperCase(simpleTypeName.charAt(i))) {

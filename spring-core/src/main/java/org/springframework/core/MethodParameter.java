@@ -201,9 +201,11 @@ public class MethodParameter {
      */
     public static MethodParameter forExecutable(Executable executable, int parameterIndex) {
         if (executable instanceof Method) {
+            // 转换成  method 类型创建 MethodParameter 类
             return new MethodParameter((Method) executable, parameterIndex);
         }
         else if (executable instanceof Constructor) {
+            // 转换成  Constructor 类型创建 MethodParameter 类
             return new MethodParameter((Constructor<?>) executable, parameterIndex);
         }
         else {
@@ -643,6 +645,7 @@ public class MethodParameter {
     public Annotation[] getParameterAnnotations() {
         Annotation[] paramAnns = this.parameterAnnotations;
         if (paramAnns == null) {
+            // 注解数组
             Annotation[][] annotationArray = this.executable.getParameterAnnotations();
             int index = this.parameterIndex;
             if (this.executable instanceof Constructor &&
@@ -678,6 +681,7 @@ public class MethodParameter {
     @SuppressWarnings("unchecked")
     @Nullable
     public <A extends Annotation> A getParameterAnnotation(Class<A> annotationType) {
+        // 获取参数上的注解
         Annotation[] anns = getParameterAnnotations();
         for (Annotation ann : anns) {
             if (annotationType.isInstance(ann)) {

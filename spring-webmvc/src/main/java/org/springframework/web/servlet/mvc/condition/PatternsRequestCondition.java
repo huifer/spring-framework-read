@@ -34,10 +34,19 @@ import java.util.*;
  */
 public final class PatternsRequestCondition extends AbstractRequestCondition<PatternsRequestCondition> {
 
+    /**
+     * 请求地址
+     */
     private final Set<String> patterns;
 
+    /**
+     * url 地址处理器
+     */
     private final UrlPathHelper pathHelper;
 
+    /**
+     * 地址匹配工具
+     */
     private final PathMatcher pathMatcher;
 
     private final boolean useSuffixPatternMatch;

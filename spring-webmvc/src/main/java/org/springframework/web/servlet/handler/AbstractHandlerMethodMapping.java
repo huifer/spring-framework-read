@@ -29,6 +29,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMethodMappingNamingStrategy;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -596,6 +598,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
         private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
 
+        /**
+         * key: 方法名的编码{@link RequestMappingInfoHandlerMethodMappingNamingStrategy#getName(org.springframework.web.method.HandlerMethod, org.springframework.web.servlet.mvc.method.RequestMappingInfo)}
+         * value: {@link HandlerMethod}
+         */
         private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
 
         /**
@@ -683,6 +689,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
                     addMappingName(name, handlerMethod);
                 }
 
+                /**
+                 * 跨域设置
+                 * {@link org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#initCorsConfiguration(Object, Method, RequestMappingInfo)}
+                 **/
                 CorsConfiguration corsConfig = initCorsConfiguration(handler, method, mapping);
                 if (corsConfig != null) {
                     this.corsLookup.put(handlerMethod, corsConfig);
@@ -708,11 +718,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
         private List<String> getDirectUrls(T mapping) {
             List<String> urls = new ArrayList<>(1);
+            // 获取 mapping 对应的url
             for (String path : getMappingPathPatterns(mapping)) {
+                // url 校验
                 if (!getPathMatcher().isPattern(path)) {
                     urls.add(path);
                 }
             }
+            // 返回
             return urls;
         }
 
