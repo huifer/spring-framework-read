@@ -240,6 +240,11 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
         nestedPa.setPropertyValue(tokens, new PropertyValue(propertyName, value));
     }
 
+    /**
+     * TODO: 2020年1月22日
+     * @param pv
+     * @throws BeansException
+     */
     @Override
     public void setPropertyValue(PropertyValue pv) throws BeansException {
         PropertyTokenHolder tokens = (PropertyTokenHolder) pv.resolvedTokens;
@@ -923,6 +928,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
     /**
      * Parse the given property name into the corresponding property name tokens.
      *
+     * todo: 2020年1月22日
      * @param propertyName the property name to parse
      * @return representation of the parsed property tokens
      */

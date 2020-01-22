@@ -101,6 +101,7 @@ public abstract class WebApplicationContextUtils {
      *
      * @param sc       the ServletContext to find the web application context for
      * @param attrName the name of the ServletContext attribute to look for
+     *                  {@link WebApplicationContext#ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE}
      * @return the desired WebApplicationContext for this web app, or {@code null} if none
      */
     @Nullable

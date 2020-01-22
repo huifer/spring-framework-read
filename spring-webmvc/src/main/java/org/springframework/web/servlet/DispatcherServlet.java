@@ -290,6 +290,7 @@ public class DispatcherServlet extends FrameworkServlet {
         // This is currently strictly internal and not meant to be customized
         // by application developers.
         try {
+            // 加载默认的bean
             ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
             defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
         }
@@ -782,6 +783,8 @@ public class DispatcherServlet extends FrameworkServlet {
      * Initialize the ViewResolvers used by this class.
      * <p>If no ViewResolver beans are defined in the BeanFactory for this
      * namespace, we default to InternalResourceViewResolver.
+     * 解析{@code     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+     *           p:prefix="/WEB-INF/views/" p:suffix=".jsp"/>}
      */
     private void initViewResolvers(ApplicationContext context) {
         this.viewResolvers = null;
@@ -907,6 +910,7 @@ public class DispatcherServlet extends FrameworkServlet {
      * package as the DispatcherServlet class) to determine the class names. It instantiates
      * the strategy objects through the context's BeanFactory.
      *
+     * 尝试寻找 ,如果找不到使用默认bean进行初始化,默认bean={@link DEFAULT_STRATEGIES_PATH} 在文件中有存放
      * @param context           the current WebApplicationContext
      * @param strategyInterface the strategy interface
      * @return the List of corresponding strategy objects
