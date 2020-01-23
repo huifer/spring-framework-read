@@ -134,6 +134,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
     public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
                                    Object... providedArgs) throws Exception {
 
+        // 获取请求参数
         Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
         if (logger.isTraceEnabled()) {
             logger.trace("Arguments: " + Arrays.toString(args));
@@ -151,6 +152,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
     protected Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
                                                Object... providedArgs) throws Exception {
 
+        // 获取参数列表
         MethodParameter[] parameters = getMethodParameters();
         if (ObjectUtils.isEmpty(parameters)) {
             return EMPTY_ARGS;
@@ -158,6 +160,8 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
         Object[] args = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
+            // 处理参数
+
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
             args[i] = findProvidedArgument(parameter, providedArgs);

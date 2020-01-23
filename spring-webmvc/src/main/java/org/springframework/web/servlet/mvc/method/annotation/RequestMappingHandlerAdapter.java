@@ -104,12 +104,21 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
     private final Map<ControllerAdviceBean, Set<Method>> modelAttributeAdviceCache = new LinkedHashMap<>();
     @Nullable
     private List<HandlerMethodArgumentResolver> customArgumentResolvers;
+    /**
+     * {@link ModelAttribute} 注解处理
+     */
     @Nullable
     private HandlerMethodArgumentResolverComposite argumentResolvers;
+    /**
+     * {@link InitBinder} 注解处理
+     */
     @Nullable
     private HandlerMethodArgumentResolverComposite initBinderArgumentResolvers;
     @Nullable
     private List<HandlerMethodReturnValueHandler> customReturnValueHandlers;
+    /**
+     * {@link ModelAndView}
+     */
     @Nullable
     private HandlerMethodReturnValueHandlerComposite returnValueHandlers;
     @Nullable
@@ -723,11 +732,14 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
     protected ModelAndView handleInternal(HttpServletRequest request,
                                           HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
+        // 初始化
         ModelAndView mav;
+        // 请求校验
         checkRequest(request);
 
         // Execute invokeHandlerMethod in synchronized block if required.
         if (this.synchronizeOnSession) {
+            // 获取session
             HttpSession session = request.getSession(false);
             if (session != null) {
                 Object mutex = WebUtils.getSessionMutex(session);
@@ -800,7 +812,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
         ServletWebRequest webRequest = new ServletWebRequest(request, response);
         try {
+            // 参数绑定,web参数绑定
             WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+            // model工厂 获取model 更新model
             ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
 
             ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
@@ -949,10 +963,12 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
     private ModelAndView getModelAndView(ModelAndViewContainer mavContainer,
                                          ModelFactory modelFactory, NativeWebRequest webRequest) throws Exception {
 
+        // 更新 modelAndView
         modelFactory.updateModel(webRequest, mavContainer);
         if (mavContainer.isRequestHandled()) {
             return null;
         }
+        // 获取model
         ModelMap model = mavContainer.getModel();
         ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model, mavContainer.getStatus());
         if (!mavContainer.isViewReference()) {

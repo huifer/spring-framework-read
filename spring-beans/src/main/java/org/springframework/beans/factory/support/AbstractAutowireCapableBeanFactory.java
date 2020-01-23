@@ -1112,6 +1112,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * Create a new instance for the specified bean, using an appropriate instantiation strategy:
      * factory method, constructor autowiring, or simple instantiation.
      *
+     *
+     * bean 初始化
      * @param beanName the name of the bean
      * @param mbd      the bean definition for the bean
      * @param args     explicit arguments to use for constructor or factory method invocation
@@ -1330,6 +1332,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * Populate the bean instance in the given BeanWrapper with the property values
      * from the bean definition.
      *
+     * 属性设置
      * @param beanName the name of the bean
      * @param mbd      the bean definition for the bean
      * @param bw       the BeanWrapper with bean instance
@@ -1751,6 +1754,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * <p>Called from {@link #createBean} for traditionally defined beans,
      * and from {@link #initializeBean} for existing bean instances.
      *
+     * 初始化后执行回调
      * @param beanName the bean name in the factory (for debugging purposes)
      * @param bean     the new bean instance we may need to initialize
      * @param mbd      the bean definition that the bean was created with
@@ -1827,7 +1831,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
             throws Throwable {
 
+        // 判断 bean 是否实现 InitializingBean
         boolean isInitializingBean = (bean instanceof InitializingBean);
+        // 并且有 afterPropertiesSet 方法
         if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Invoking afterPropertiesSet() on bean with name '" + beanName + "'");
@@ -1835,6 +1841,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (System.getSecurityManager() != null) {
                 try {
                     AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+                        // 执行 InitializingBean.afterPropertiesSet()
                         ((InitializingBean) bean).afterPropertiesSet();
                         return null;
                     }, getAccessControlContext());
@@ -1844,15 +1851,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 }
             }
             else {
+                // 执行 InitializingBean.afterPropertiesSet()
                 ((InitializingBean) bean).afterPropertiesSet();
             }
         }
 
         if (mbd != null && bean.getClass() != NullBean.class) {
+            // 是否有 init-method 属性
             String initMethodName = mbd.getInitMethodName();
             if (StringUtils.hasLength(initMethodName) &&
                     !(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
                     !mbd.isExternallyManagedInitMethod(initMethodName)) {
+                //  执行 init-method 方法
                 invokeCustomInitMethod(beanName, bean, mbd);
             }
         }
@@ -1869,8 +1879,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     protected void invokeCustomInitMethod(String beanName, final Object bean, RootBeanDefinition mbd)
             throws Throwable {
 
+        // 获取 init-method 属性值
         String initMethodName = mbd.getInitMethodName();
         Assert.state(initMethodName != null, "No init method set");
+        // 获取 init-method 对应的方法对象
         Method initMethod = (mbd.isNonPublicAccessAllowed() ?
                 BeanUtils.findMethod(bean.getClass(), initMethodName) :
                 ClassUtils.getMethodIfAvailable(bean.getClass(), initMethodName));
@@ -1893,6 +1905,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         if (logger.isTraceEnabled()) {
             logger.trace("Invoking init method  '" + initMethodName + "' on bean with name '" + beanName + "'");
         }
+        // init-method 方法对象放射
         Method methodToInvoke = ClassUtils.getInterfaceMethodIfPossible(initMethod);
 
         if (System.getSecurityManager() != null) {
@@ -1901,6 +1914,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 return null;
             });
             try {
+                // 执行 init-method 方法
                 AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () ->
                         methodToInvoke.invoke(bean), getAccessControlContext());
             }
@@ -1912,6 +1926,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         else {
             try {
                 ReflectionUtils.makeAccessible(methodToInvoke);
+                // 执行 init-method 方法
                 methodToInvoke.invoke(bean);
             }
             catch (InvocationTargetException ex) {

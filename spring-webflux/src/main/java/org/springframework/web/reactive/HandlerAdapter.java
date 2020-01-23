@@ -35,6 +35,7 @@ public interface HandlerAdapter {
     /**
      * Whether this {@code HandlerAdapter} supports the given {@code handler}.
      *
+     * 判断handler 是否支持的
      * @param handler handler object to check
      * @return whether or not the handler is supported
      */

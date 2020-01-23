@@ -265,6 +265,9 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
         destroy();
     }
 
+    /**
+     * 摧毁方法
+     */
     @Override
     public void destroy() {
         if (!CollectionUtils.isEmpty(this.beanPostProcessors)) {
@@ -280,11 +283,13 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
             try {
                 if (System.getSecurityManager() != null) {
                     AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+                        // 实现 DisposableBean 接口调用
                         ((DisposableBean) this.bean).destroy();
                         return null;
                     }, this.acc);
                 }
                 else {
+                    // 实现 DisposableBean 接口调用
                     ((DisposableBean) this.bean).destroy();
                 }
             }
@@ -305,6 +310,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
         else if (this.destroyMethodName != null) {
             Method methodToInvoke = determineDestroyMethod(this.destroyMethodName);
             if (methodToInvoke != null) {
+                // 反射执行 destroy-method 属性的对应的方法
                 invokeCustomDestroyMethod(ClassUtils.getInterfaceMethodIfPossible(methodToInvoke));
             }
         }
@@ -338,6 +344,9 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
      * <p>This implementation invokes a no-arg method if found, else checking
      * for a method with a single boolean argument (passing in "true",
      * assuming a "force" parameter), else logging an error.
+     *
+     *
+     *
      */
     private void invokeCustomDestroyMethod(final Method destroyMethod) {
         int paramCount = destroyMethod.getParameterCount();

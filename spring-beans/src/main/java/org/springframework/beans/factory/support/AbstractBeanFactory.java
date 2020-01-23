@@ -1094,6 +1094,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
      * Destroy the given bean instance (usually a prototype instance
      * obtained from this factory) according to the given bean definition.
      *
+     * 摧毁bean
      * @param beanName the name of the bean definition
      * @param bean     the bean instance to destroy
      * @param mbd      the merged bean definition

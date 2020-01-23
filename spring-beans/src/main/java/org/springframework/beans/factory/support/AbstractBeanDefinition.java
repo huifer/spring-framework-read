@@ -203,9 +203,15 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
      */
     private MethodOverrides methodOverrides = new MethodOverrides();
 
+    /**
+     * {@code <bean init-method=""/>}  初始化 bean 时执行的方法名称
+     */
     @Nullable
     private String initMethodName;
 
+    /**
+     * {@code <bean destroy-method=""/>} 摧毁 bean 时执行的方法名称
+     */
     @Nullable
     private String destroyMethodName;
 
