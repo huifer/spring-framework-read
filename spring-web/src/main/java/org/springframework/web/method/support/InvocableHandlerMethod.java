@@ -186,6 +186,8 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
     /**
      * Invoke the handler method with the given argument values.
+     *
+     * controller return 后的处理方法
      */
     @Nullable
     protected Object doInvoke(Object... args) throws Exception {

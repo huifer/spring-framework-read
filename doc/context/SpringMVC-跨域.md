@@ -553,6 +553,8 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 
 ### DefaultCorsProcessor
 
+- 经过跨域拦截器 **`CorsInterceptor`**之后会调用
+
 ![image-20200123093733129](assets/image-20200123093733129.png)
 
 
