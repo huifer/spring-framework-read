@@ -30,5 +30,5 @@ rootProject.children.each { project ->
     project.buildFileName = "${project.name}.gradle"
 }
 include 'huifer-source-spring'
-include 'a-mvc'
+//include 'a-mvc'
 
