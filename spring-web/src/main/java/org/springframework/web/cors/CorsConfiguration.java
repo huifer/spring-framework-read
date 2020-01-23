@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * initialization model to start with open defaults that permit all cross-origin
  * requests for GET, HEAD, and POST requests.
  *
- * 跨域配置类
+ * 跨域配置类,跨域配置信息
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller

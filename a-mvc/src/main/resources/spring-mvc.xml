@@ -45,5 +45,15 @@
         </mvc:message-converters>
     </mvc:annotation-driven>
 
+<!--    <mvc:cors>-->
+<!--        <mvc:mapping path="/api/**"-->
+<!--                     allowed-origins="http://domain1.com, http://domain2.com"-->
+<!--                     allowed-methods="GET, PUT"-->
+<!--                     allowed-headers="header1, header2, header3"-->
+<!--                     exposed-headers="header1, header2" allow-credentials="false"-->
+<!--                     max-age="123" />-->
 
+<!--        <mvc:mapping path="/resources/**"-->
+<!--                     allowed-origins="http://domain1.com" />-->
+<!--    </mvc:cors>-->
 </beans>

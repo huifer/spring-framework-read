@@ -175,8 +175,9 @@ public abstract class MvcNamespaceUtils {
     public static RuntimeBeanReference registerCorsConfigurations(
             @Nullable Map<String, CorsConfiguration> corsConfigurations,
             ParserContext context, @Nullable Object source) {
-
+        // 判断是否包含跨域bean(beanName:mvcCorsConfigurations)
         if (!context.getRegistry().containsBeanDefinition(CORS_CONFIGURATION_BEAN_NAME)) {
+            // 不存在则创建
             RootBeanDefinition corsDef = new RootBeanDefinition(LinkedHashMap.class);
             corsDef.setSource(source);
             corsDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -187,6 +188,7 @@ public abstract class MvcNamespaceUtils {
             context.registerComponent(new BeanComponentDefinition(corsDef, CORS_CONFIGURATION_BEAN_NAME));
         }
         else if (corsConfigurations != null) {
+            // 存在则添加
             BeanDefinition corsDef = context.getRegistry().getBeanDefinition(CORS_CONFIGURATION_BEAN_NAME);
             corsDef.getConstructorArgumentValues().addIndexedArgumentValue(0, corsConfigurations);
         }

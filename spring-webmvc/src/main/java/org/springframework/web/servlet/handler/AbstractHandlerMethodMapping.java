@@ -605,7 +605,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
         private final Map<String, List<HandlerMethod>> nameLookup = new ConcurrentHashMap<>();
 
         /**
-         *
+         * 跨域相关配置
          */
         private final Map<HandlerMethod, CorsConfiguration> corsLookup = new ConcurrentHashMap<>();
 

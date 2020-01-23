@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Utility class for CORS request handling based on the
  * <a href="https://www.w3.org/TR/cors/">CORS W3C recommendation</a>.
+ * <p>
+ * 跨域工具
  *
  * @author Sebastien Deleuze
  * @since 4.2
@@ -32,6 +34,8 @@ public abstract class CorsUtils {
 
     /**
      * Returns {@code true} if the request is a valid CORS one.
+     * <p>
+     * 判断是否为跨域
      */
     public static boolean isCorsRequest(HttpServletRequest request) {
         return (request.getHeader(HttpHeaders.ORIGIN) != null);
@@ -39,6 +43,7 @@ public abstract class CorsUtils {
 
     /**
      * Returns {@code true} if the request is a valid CORS pre-flight one.
+     * 判断是否是一个有效的跨域请求
      */
     public static boolean isPreFlightRequest(HttpServletRequest request) {
         return (isCorsRequest(request) && HttpMethod.OPTIONS.matches(request.getMethod()) &&

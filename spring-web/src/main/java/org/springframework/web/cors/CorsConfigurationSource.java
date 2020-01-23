@@ -31,6 +31,8 @@ public interface CorsConfigurationSource {
 
     /**
      * Return a {@link CorsConfiguration} based on the incoming request.
+     * <p>
+     * 从请求中获取跨域信息
      *
      * @return the associated {@link CorsConfiguration}, or {@code null} if none
      */

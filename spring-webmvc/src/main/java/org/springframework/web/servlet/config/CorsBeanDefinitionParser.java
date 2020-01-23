@@ -61,6 +61,7 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
             for (Element mapping : mappings) {
                 // 跨域配置
                 CorsConfiguration config = new CorsConfiguration();
+                // 处理每个属性值,并且赋值
                 if (mapping.hasAttribute("allowed-origins")) {
                     String[] allowedOrigins = StringUtils.tokenizeToStringArray(mapping.getAttribute("allowed-origins"), ",");
                     config.setAllowedOrigins(Arrays.asList(allowedOrigins));
