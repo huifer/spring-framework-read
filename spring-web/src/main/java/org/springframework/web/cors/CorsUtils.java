@@ -38,6 +38,7 @@ public abstract class CorsUtils {
      * 判断是否为跨域
      */
     public static boolean isCorsRequest(HttpServletRequest request) {
+        // 是否携带 请求头:Origin
         return (request.getHeader(HttpHeaders.ORIGIN) != null);
     }
 

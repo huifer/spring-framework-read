@@ -427,10 +427,13 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
             logger.debug("Mapped to " + executionChain.getHandler());
         }
 
+        // 判断是否为跨域请求
         if (CorsUtils.isCorsRequest(request)) {
             CorsConfiguration globalConfig = this.corsConfigurationSource.getCorsConfiguration(request);
+            // 当前请求的跨域配置
             CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
             CorsConfiguration config = (globalConfig != null ? globalConfig.combine(handlerConfig) : handlerConfig);
+            // 获取处理器
             executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
         }
 
@@ -528,6 +531,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
      * <p>For actual requests, the default implementation inserts a
      * HandlerInterceptor that makes CORS-related checks and adds CORS headers.
      *
+     * 添加跨域处理
      * @param request the current request
      * @param chain   the handler chain
      * @param config  the applicable CORS configuration (possibly {@code null})
@@ -541,6 +545,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
             chain = new HandlerExecutionChain(new PreFlightHandler(config), interceptors);
         }
         else {
+            // 创建跨域拦截器
             chain.addInterceptor(new CorsInterceptor(config));
         }
         return chain;
@@ -569,6 +574,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
     }
 
 
+    /**
+     * 跨域拦截器
+     */
     private class CorsInterceptor extends HandlerInterceptorAdapter implements CorsConfigurationSource {
 
         @Nullable
