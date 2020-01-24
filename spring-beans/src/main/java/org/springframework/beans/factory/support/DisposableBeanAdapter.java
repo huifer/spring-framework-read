@@ -305,6 +305,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
         }
 
         if (this.destroyMethod != null) {
+            // 调用 bean 标签中的摧毁方法
             invokeCustomDestroyMethod(this.destroyMethod);
         }
         else if (this.destroyMethodName != null) {

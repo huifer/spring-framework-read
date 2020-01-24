@@ -39,7 +39,7 @@ public interface InitializingBean {
      * <p>This method allows the bean instance to perform validation of its overall
      * configuration and final initialization when all bean properties have been set.
      *
-     * bean加载时执行
+     * 设置属性后执行
      * @throws Exception in the event of misconfiguration (such as failure to set an
      *                   essential property) or if initialization fails for any other reason
      */

@@ -1125,6 +1125,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      */
     protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
         // Make sure bean class is actually resolved at this point.
+        // 获取 bean class
         Class<?> beanClass = resolveBeanClass(mbd, beanName);
 
         if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
@@ -1157,6 +1158,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 return autowireConstructor(beanName, mbd, null, null);
             }
             else {
+                // 实例化bean
                 return instantiateBean(beanName, mbd);
             }
         }
@@ -1775,6 +1777,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }, getAccessControlContext());
         }
         else {
+            // 执行 aware 相关方法
             invokeAwareMethods(beanName, bean);
         }
 
@@ -1784,6 +1787,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
 
         try {
+            // 执行 init method
             invokeInitMethods(beanName, wrappedBean, mbd);
         }
         catch (Throwable ex) {
@@ -1798,17 +1802,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         return wrappedBean;
     }
 
+    /**
+     * 执行 aware 方法
+     * @see BeanNameAware
+     * @see BeanClassLoaderAware
+     * @see BeanFactoryAware
+     */
     private void invokeAwareMethods(final String beanName, final Object bean) {
         if (bean instanceof Aware) {
+            // 是否实现 BeanNameAware
             if (bean instanceof BeanNameAware) {
                 ((BeanNameAware) bean).setBeanName(beanName);
             }
+            // 是否实现 BeanClassLoaderAware
             if (bean instanceof BeanClassLoaderAware) {
                 ClassLoader bcl = getBeanClassLoader();
                 if (bcl != null) {
                     ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
                 }
             }
+            // 是否实现 BeanFactoryAware
             if (bean instanceof BeanFactoryAware) {
                 ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
             }
