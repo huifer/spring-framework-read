@@ -47,6 +47,8 @@ public class DefaultResponseErrorHandler implements ResponseErrorHandler {
      * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum value) or
      * {@link #hasError(int)} (for an unknown status code) with the response status code.
      *
+     *
+     * 响应码是否异常 4xx,5xx
      * @see ClientHttpResponse#getRawStatusCode()
      * @see #hasError(HttpStatus)
      * @see #hasError(int)
@@ -124,12 +126,15 @@ public class DefaultResponseErrorHandler implements ResponseErrorHandler {
         Charset charset = getCharset(response);
         switch (statusCode.series()) {
             case CLIENT_ERROR:
+                // 客户端错误处理
                 throw HttpClientErrorException.create(statusCode, statusText, headers, body, charset);
             case SERVER_ERROR:
+                // 服务端错误处理
                 throw HttpServerErrorException.create(statusCode, statusText, headers, body, charset);
             default:
                 throw new UnknownHttpStatusCodeException(statusCode.value(), statusText, headers, body, charset);
         }
+
     }
 
     /**

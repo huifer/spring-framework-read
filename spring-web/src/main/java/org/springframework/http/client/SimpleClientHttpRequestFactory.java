@@ -27,6 +27,8 @@ import java.net.*;
 /**
  * {@link ClientHttpRequestFactory} implementation that uses standard JDK facilities.
  *
+ *
+ * 实现{@link ClientHttpRequestFactory},从包导入上看可以知道是一个java 网络通讯实现
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @see java.net.HttpURLConnection
@@ -42,16 +44,28 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory,
     @Nullable
     private Proxy proxy;
 
+    /**
+     * 是否缓冲body
+     */
     private boolean bufferRequestBody = true;
 
     private int chunkSize = DEFAULT_CHUNK_SIZE;
 
+    /**
+     * 链接超时,单位毫秒
+     */
     private int connectTimeout = -1;
 
+    /**
+     * 读取超时时间,单位毫秒
+     */
     private int readTimeout = -1;
 
     private boolean outputStreaming = true;
 
+    /**
+     * 异步用
+     */
     @Nullable
     private AsyncListenableTaskExecutor taskExecutor;
 
@@ -142,15 +156,26 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory,
     }
 
 
+    /**
+     * 创建一个链接并且返回请求
+     * @param uri        the URI to create a request for
+     * @param httpMethod the HTTP method to execute
+     * @return
+     * @throws IOException
+     */
     @Override
     public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+        // 创建http链接
         HttpURLConnection connection = openConnection(uri.toURL(), this.proxy);
+        // 设置参数
         prepareConnection(connection, httpMethod.name());
 
         if (this.bufferRequestBody) {
+            // 请求封装
             return new SimpleBufferingClientHttpRequest(connection, this.outputStreaming);
         }
         else {
+            // 请求封装
             return new SimpleStreamingClientHttpRequest(connection, this.chunkSize, this.outputStreaming);
         }
     }

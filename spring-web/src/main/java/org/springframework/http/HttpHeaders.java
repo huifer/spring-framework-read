@@ -845,6 +845,8 @@ public class HttpHeaders implements MultiValueMap<String, String>, Serializable 
      * Set the value of the {@linkplain #AUTHORIZATION Authorization} header to
      * Basic Authentication based on the given username and password.
      *
+     *
+     * 设置头信息
      * @param username the username
      * @param password the password
      * @param charset  the charset to use to convert the credentials into an octet
@@ -868,6 +870,7 @@ public class HttpHeaders implements MultiValueMap<String, String>, Serializable 
         }
 
         String credentialsString = username + ":" + password;
+        // base64 加密
         byte[] encodedBytes = Base64.getEncoder().encode(credentialsString.getBytes(charset));
         String encodedCredentials = new String(encodedBytes, charset);
         set(AUTHORIZATION, "Basic " + encodedCredentials);

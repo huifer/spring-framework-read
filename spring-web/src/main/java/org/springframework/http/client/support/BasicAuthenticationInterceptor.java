@@ -38,8 +38,14 @@ import java.nio.charset.Charset;
  */
 public class BasicAuthenticationInterceptor implements ClientHttpRequestInterceptor {
 
+    /**
+     * 用户名
+     */
     private final String username;
 
+    /**
+     * 密码
+     */
     private final String password;
 
     @Nullable
@@ -50,6 +56,7 @@ public class BasicAuthenticationInterceptor implements ClientHttpRequestIntercep
      * Create a new interceptor which adds Basic Authentication for the
      * given username and password.
      *
+     * 构造器
      * @param username the username to use
      * @param password the password to use
      * @see HttpHeaders#setBasicAuth(String, String)
@@ -75,12 +82,22 @@ public class BasicAuthenticationInterceptor implements ClientHttpRequestIntercep
     }
 
 
+    /**
+     * 拦截器创建?
+     * @param request   the request, containing method, URI, and headers
+     * @param body      the body of the request
+     * @param execution the request execution
+     * @return
+     * @throws IOException
+     */
     @Override
     public ClientHttpResponse intercept(
             HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
 
         HttpHeaders headers = request.getHeaders();
+        // 是否存在 Authorization 头信息
         if (!headers.containsKey(HttpHeaders.AUTHORIZATION)) {
+            // 设置头信息 Authorization base64 加密
             headers.setBasicAuth(this.username, this.password, this.charset);
         }
         return execution.execute(request, body);

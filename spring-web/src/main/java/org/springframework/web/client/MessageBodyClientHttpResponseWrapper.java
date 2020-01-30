@@ -55,6 +55,8 @@ class MessageBodyClientHttpResponseWrapper implements ClientHttpResponse {
      * <li>a {@code Content-Length} header of {@code 0}</li>
      * </ul>
      *
+     *
+     * 是否存在 body , 1xx,204,304 外的存在
      * @return {@code true} if the response has a message body, {@code false} otherwise
      * @throws IOException in case of I/O errors
      */

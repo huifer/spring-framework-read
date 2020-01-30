@@ -604,6 +604,7 @@ public enum HttpStatus {
      * {@link org.springframework.http.HttpStatus.Series#SERVER_ERROR}.
      * This is a shortcut for checking the value of {@link #series()}.
      *
+     * 响应码是否为4xx,5xx 有一个认为错误
      * @see #is4xxClientError()
      * @see #is5xxServerError()
      * @since 5.0

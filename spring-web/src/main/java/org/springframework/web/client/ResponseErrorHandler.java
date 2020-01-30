@@ -36,6 +36,8 @@ public interface ResponseErrorHandler {
      * <p>Implementations will typically inspect the
      * {@link ClientHttpResponse#getStatusCode() HttpStatus} of the response.
      *
+     *
+     * response 是否有错误
      * @param response the response to inspect
      * @return {@code true} if the response indicates an error; {@code false} otherwise
      * @throws IOException in case of I/O errors
@@ -47,6 +49,7 @@ public interface ResponseErrorHandler {
      * <p>This method is only called when {@link #hasError(ClientHttpResponse)}
      * has returned {@code true}.
      *
+     * 存在 {@link #hasError(ClientHttpResponse)} 时候调用
      * @param response the response with the error
      * @throws IOException in case of I/O errors
      */

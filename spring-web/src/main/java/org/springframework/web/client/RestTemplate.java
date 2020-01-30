@@ -709,6 +709,7 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
      * <p>The {@link ClientHttpRequest} is processed using the {@link RequestCallback};
      * the response with the {@link ResponseExtractor}.
      *
+     * 提取结果对象
      * @param url               the fully-expanded URL to connect to
      * @param method            the HTTP method to execute (GET, POST, etc.)
      * @param requestCallback   object that prepares the request (can be {@code null})
@@ -723,12 +724,15 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
         Assert.notNull(method, "HttpMethod is required");
         ClientHttpResponse response = null;
         try {
+            // 创建请求
             ClientHttpRequest request = createRequest(url, method);
             if (requestCallback != null) {
                 requestCallback.doWithRequest(request);
             }
             response = request.execute();
+            // 处理请求
             handleResponse(url, method, response);
+            // 处理结果提取并且返回
             return (responseExtractor != null ? responseExtractor.extractData(response) : null);
         }
         catch (IOException ex) {
@@ -750,6 +754,8 @@ public class RestTemplate extends InterceptingHttpAccessor implements RestOperat
      * invoking the {@link ResponseErrorHandler} if necessary.
      * <p>Can be overridden in subclasses.
      *
+     *
+     * 处理头
      * @param url      the fully-expanded URL to connect to
      * @param method   the HTTP method to execute (GET, POST, etc.)
      * @param response the resulting {@link ClientHttpResponse}

@@ -30,6 +30,10 @@ import java.io.IOException;
  * <p>The main entry point for interceptors is
  * {@link #intercept(HttpRequest, byte[], ClientHttpRequestExecution)}.
  *
+ *
+ * 请求拦截器
+ * 1. {@link BasicAuthorizationInterceptor}
+ * 1. {@link BasicAuthenticationInterceptor}
  * @author Arjen Poutsma
  * @since 3.1
  */

@@ -34,6 +34,9 @@ import java.util.List;
  */
 public class InterceptingClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
 
+    /**
+     * 请求拦截器
+     */
     private final List<ClientHttpRequestInterceptor> interceptors;
 
 
@@ -51,6 +54,9 @@ public class InterceptingClientHttpRequestFactory extends AbstractClientHttpRequ
     }
 
 
+    /***
+     * 创建请求
+     */
     @Override
     protected ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod, ClientHttpRequestFactory requestFactory) {
         return new InterceptingClientHttpRequest(requestFactory, this.interceptors, uri, httpMethod);

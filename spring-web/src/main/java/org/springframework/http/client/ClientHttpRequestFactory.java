@@ -25,6 +25,7 @@ import java.net.URI;
  * Factory for {@link ClientHttpRequest} objects.
  * Requests are created by the {@link #createRequest(URI, HttpMethod)} method.
  *
+ * 函数接口{@link FunctionalInterface}
  * @author Arjen Poutsma
  * @since 3.0
  */
@@ -36,6 +37,8 @@ public interface ClientHttpRequestFactory {
      * <p>The returned request can be written to, and then executed by calling
      * {@link ClientHttpRequest#execute()}.
      *
+     *
+     * 创建{@link ClientHttpRequest}
      * @param uri        the URI to create a request for
      * @param httpMethod the HTTP method to execute
      * @return the created request

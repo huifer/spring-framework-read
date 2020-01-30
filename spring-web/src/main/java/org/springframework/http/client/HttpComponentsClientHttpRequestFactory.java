@@ -249,6 +249,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
     /**
      * Create a Commons HttpMethodBase object for the given HTTP method and URI specification.
      *
+     * 不同请求
      * @param httpMethod the HTTP method
      * @param uri        the URI
      * @return the Commons HttpMethodBase object
