@@ -1168,11 +1168,13 @@ public class DispatcherServlet extends FrameworkServlet {
         boolean errorView = false;
 
         if (exception != null) {
+            // 判断是否是 ModelAndViewDefiningException 异常
             if (exception instanceof ModelAndViewDefiningException) {
                 logger.debug("ModelAndViewDefiningException encountered", exception);
                 mv = ((ModelAndViewDefiningException) exception).getModelAndView();
             }
             else {
+                // 获取 mappedHandler
                 Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
                 mv = processHandlerException(request, response, handler, exception);
                 errorView = (mv != null);
