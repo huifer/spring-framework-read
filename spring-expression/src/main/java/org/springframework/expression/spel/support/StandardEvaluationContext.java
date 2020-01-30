@@ -61,23 +61,36 @@ import org.springframework.util.Assert;
  */
 public class StandardEvaluationContext implements EvaluationContext {
 
+    /**
+     * 上下文变量
+     */
     private final Map<String, Object> variables = new ConcurrentHashMap<>();
+
     private TypedValue rootObject;
+
     @Nullable
     private volatile List<PropertyAccessor> propertyAccessors;
+
     @Nullable
     private volatile List<ConstructorResolver> constructorResolvers;
+
     @Nullable
     private volatile List<MethodResolver> methodResolvers;
+
     @Nullable
     private volatile ReflectiveMethodResolver reflectiveMethodResolver;
+
     @Nullable
     private BeanResolver beanResolver;
+
     @Nullable
     private TypeLocator typeLocator;
+
     @Nullable
     private TypeConverter typeConverter;
+
     private TypeComparator typeComparator = new StandardTypeComparator();
+
     private OperatorOverloader operatorOverloader = new StandardOperatorOverloader();
 
 
@@ -241,6 +254,11 @@ public class StandardEvaluationContext implements EvaluationContext {
         variables.forEach(this::setVariable);
     }
 
+    /**
+     * 注册
+     * @param name 上下文
+     * @param method 函数
+     */
     public void registerFunction(String name, Method method) {
         this.variables.put(name, method);
     }

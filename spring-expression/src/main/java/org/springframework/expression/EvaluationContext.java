@@ -38,11 +38,15 @@ public interface EvaluationContext {
      * Return the default root context object against which unqualified
      * properties/methods/etc should be resolved. This can be overridden
      * when evaluating an expression.
+     *
+     *
+     * 获取根对象
      */
     TypedValue getRootObject();
 
     /**
      * Return a list of accessors that will be asked in turn to read/write a property.
+     *
      */
     List<PropertyAccessor> getPropertyAccessors();
 
@@ -58,6 +62,8 @@ public interface EvaluationContext {
 
     /**
      * Return a bean resolver that can look up beans by name.
+     *
+     * 返回bean处理器
      */
     @Nullable
     BeanResolver getBeanResolver();
@@ -65,6 +71,8 @@ public interface EvaluationContext {
     /**
      * Return a type locator that can be used to find types, either by short or
      * fully qualified name.
+     *
+     * 返回类型定位器
      */
     TypeLocator getTypeLocator();
 
@@ -81,12 +89,16 @@ public interface EvaluationContext {
     /**
      * Return an operator overloader that may support mathematical operations
      * between more than the standard set of types.
+     *
+     * 重载方法处理
      */
     OperatorOverloader getOperatorOverloader();
 
     /**
      * Set a named variable within this evaluation context to a specified value.
      *
+     *
+     * 设置值,对于spring上下文中的对象进行设置
      * @param name  variable to set
      * @param value value to be placed in the variable
      */

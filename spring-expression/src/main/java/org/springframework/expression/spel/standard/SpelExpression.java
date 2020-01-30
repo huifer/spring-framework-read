@@ -47,14 +47,17 @@ import org.springframework.util.Assert;
 public class SpelExpression implements Expression {
 
     // Number of times to interpret an expression before compiling it
+    // 尝试的次数
     private static final int INTERPRETED_COUNT_THRESHOLD = 100;
 
     // Number of times to try compiling an expression before giving up
+    // 放弃的次数
     private static final int FAILED_ATTEMPTS_THRESHOLD = 100;
 
 
     private final String expression;
 
+    // spEl节点信息,多种实现,boolean,int....等等
     private final SpelNodeImpl ast;
 
     private final SpelParserConfiguration configuration;
@@ -64,6 +67,7 @@ public class SpelExpression implements Expression {
     private EvaluationContext evaluationContext;
 
     // Holds the compiled form of the expression (if it has been compiled)
+    // 表达式编译后放在这个对象中
     @Nullable
     private CompiledExpression compiledAst;
 
@@ -117,6 +121,7 @@ public class SpelExpression implements Expression {
     @Override
     @Nullable
     public Object getValue() throws EvaluationException {
+        // 是否编译
         if (this.compiledAst != null) {
             try {
                 EvaluationContext context = getEvaluationContext();
@@ -136,7 +141,9 @@ public class SpelExpression implements Expression {
         }
 
         ExpressionState expressionState = new ExpressionState(getEvaluationContext(), this.configuration);
+        // 获取当前解析结果
         Object result = this.ast.getValue(expressionState);
+        // 检查是否需要编译
         checkCompile(expressionState);
         return result;
     }
@@ -472,6 +479,7 @@ public class SpelExpression implements Expression {
      * Compile the expression if it has been evaluated more than the threshold number
      * of times to trigger compilation.
      *
+     * 检查是否需要编译
      * @param expressionState the expression state used to determine compilation mode
      */
     private void checkCompile(ExpressionState expressionState) {

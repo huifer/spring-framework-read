@@ -22,6 +22,8 @@ import org.springframework.lang.Nullable;
 /**
  * Configuration object for the SpEL expression parser.
  *
+ *
+ * SpEL 配置类
  * @author Juergen Hoeller
  * @author Phillip Webb
  * @author Andy Clement
@@ -30,10 +32,13 @@ import org.springframework.lang.Nullable;
  */
 public class SpelParserConfiguration {
 
+
     private static final SpelCompilerMode defaultCompilerMode;
 
     static {
+        // 读取 spring.expression.compiler.mode 中信息 ,该信息可放在spring.properties文件中
         String compilerMode = SpringProperties.getProperty("spring.expression.compiler.mode");
+
         defaultCompilerMode = (compilerMode != null ?
                 SpelCompilerMode.valueOf(compilerMode.toUpperCase()) : SpelCompilerMode.OFF);
     }
@@ -44,10 +49,11 @@ public class SpelParserConfiguration {
     @Nullable
     private final ClassLoader compilerClassLoader;
 
+    // 遇到null,创建新对象用
     private final boolean autoGrowNullReferences;
-
+    // 集合类型遇到null创建对象
     private final boolean autoGrowCollections;
-
+    // 最大值
     private final int maximumAutoGrowSize;
 
 

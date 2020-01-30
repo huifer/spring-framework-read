@@ -34,16 +34,28 @@ public interface ParserContext {
      */
     ParserContext TEMPLATE_EXPRESSION = new ParserContext() {
 
+        /**
+         * 是否是模板表达式
+         * @return
+         */
         @Override
         public boolean isTemplate() {
             return true;
         }
 
+        /**
+         * 前缀
+         * @return
+         */
         @Override
         public String getExpressionPrefix() {
             return "#{";
         }
 
+        /**
+         * 后缀
+         * @return
+         */
         @Override
         public String getExpressionSuffix() {
             return "}";

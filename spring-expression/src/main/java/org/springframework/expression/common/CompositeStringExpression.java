@@ -65,6 +65,11 @@ public class CompositeStringExpression implements Expression {
         return this.expressions;
     }
 
+    /**
+     * 表达式组装
+     * @return
+     * @throws EvaluationException
+     */
     @Override
     public String getValue() throws EvaluationException {
         StringBuilder sb = new StringBuilder();
@@ -77,6 +82,13 @@ public class CompositeStringExpression implements Expression {
         return sb.toString();
     }
 
+    /**
+     * 返回表达式解析结果
+     * @param expectedResultType
+     * @param <T>
+     * @return
+     * @throws EvaluationException
+     */
     @Override
     @Nullable
     public <T> T getValue(@Nullable Class<T> expectedResultType) throws EvaluationException {

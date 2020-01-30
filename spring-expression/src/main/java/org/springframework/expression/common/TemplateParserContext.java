@@ -22,13 +22,21 @@ import org.springframework.expression.ParserContext;
  * Configurable {@link ParserContext} implementation for template parsing. Expects the
  * expression prefix and suffix as constructor arguments.
  *
+ *
+ * 模板解析器{@link ParserContext} 唯一实现 主要解析{@code #{}}
  * @author Juergen Hoeller
  * @since 3.0
  */
 public class TemplateParserContext implements ParserContext {
 
+    /**
+     * 前缀
+     */
     private final String expressionPrefix;
 
+    /**
+     * 后缀
+     */
     private final String expressionSuffix;
 
 

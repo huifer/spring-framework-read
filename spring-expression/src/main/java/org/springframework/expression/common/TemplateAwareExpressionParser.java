@@ -31,6 +31,8 @@ import org.springframework.lang.Nullable;
  * An expression parser that understands templates. It can be subclassed by expression
  * parsers that do not offer first class support for templating.
  *
+ *
+ * 模板解析器
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Andy Clement
@@ -46,25 +48,33 @@ public abstract class TemplateAwareExpressionParser implements ExpressionParser 
 
     @Override
     public Expression parseExpression(String expressionString, @Nullable ParserContext context) throws ParseException {
+        // 存在上下文, 且 是模板
         if (context != null && context.isTemplate()) {
+            // 执行模板解析方法
             return parseTemplate(expressionString, context);
         }
         else {
+            // 子类实现
             return doParseExpression(expressionString, context);
         }
     }
 
 
     private Expression parseTemplate(String expressionString, ParserContext context) throws ParseException {
+        // 字符串判空
         if (expressionString.isEmpty()) {
+            // 返回空字符串类型
             return new LiteralExpression("");
         }
 
+        // 解析表达式
         Expression[] expressions = parseExpressions(expressionString, context);
+        // 表达式只有一个
         if (expressions.length == 1) {
             return expressions[0];
         }
         else {
+            // 多个表达式返回
             return new CompositeStringExpression(expressionString, expressions);
         }
     }
@@ -84,6 +94,7 @@ public abstract class TemplateAwareExpressionParser implements ExpressionParser 
      * they are within a string literal and a string literal starts and terminates with a
      * single quote '.
      *
+     * 表达式解析
      * @param expressionString the expression string
      * @return the parsed expressions
      * @throws ParseException when the expressions cannot be parsed
@@ -148,11 +159,8 @@ public abstract class TemplateAwareExpressionParser implements ExpressionParser 
                 return false;
             }
         }
-        if (suffixPosition != suffix.length()) {
-            // the expressionString ran out before the suffix could entirely be found
-            return false;
-        }
-        return true;
+        // the expressionString ran out before the suffix could entirely be found
+        return suffixPosition == suffix.length();
     }
 
     /**

@@ -24,6 +24,7 @@ import org.springframework.lang.Nullable;
  * Encapsulates the details of a previously parsed expression string.
  * Provides a common abstraction for expression evaluation.
  *
+ * 表达式对象
  * @author Keith Donald
  * @author Andy Clement
  * @author Juergen Hoeller

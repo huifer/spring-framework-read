@@ -93,12 +93,14 @@ class InternalSpelExpressionParser extends TemplateAwareExpressionParser {
     private final SpelParserConfiguration configuration;
 
     // For rules that build nodes, they are stacked here for return
+    // 队列 存储spel节点信息
     private final Deque<SpelNodeImpl> constructedNodes = new ArrayDeque<>();
 
     // The expression being parsed
     private String expressionString = "";
 
     // The token stream constructed from that expression string
+    // 存储符号类型
     private List<Token> tokenStream = Collections.emptyList();
 
     // length of a populated token stream
@@ -124,7 +126,9 @@ class InternalSpelExpressionParser extends TemplateAwareExpressionParser {
 
         try {
             this.expressionString = expressionString;
+            // 分词器
             Tokenizer tokenizer = new Tokenizer(expressionString);
+            // 获取符号
             this.tokenStream = tokenizer.process();
             this.tokenStreamLength = this.tokenStream.size();
             this.tokenStreamPointer = 0;
