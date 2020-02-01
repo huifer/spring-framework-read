@@ -240,6 +240,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
      * {@link Conditional @Conditional}-annotated component classes.
      * <p>The default is a {@link StandardEnvironment}.
      *
+     * 环境变量设置
      * @param environment the Environment to use
      */
     public void setEnvironment(Environment environment) {

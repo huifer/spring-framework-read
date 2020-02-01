@@ -86,8 +86,12 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
      *                         {@link Configuration @Configuration} classes
      */
     public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
+
+        // 无参构造 初始化 reader 和 scanner
         this();
+        // 注册
         register(componentClasses);
+        // 刷新
         refresh();
     }
 
@@ -165,6 +169,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
     @Override
     public void register(Class<?>... componentClasses) {
         Assert.notEmpty(componentClasses, "At least one component class must be specified");
+        // 注册带有 configuration 的类
         this.reader.register(componentClasses);
     }
 
