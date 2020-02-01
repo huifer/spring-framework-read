@@ -52,11 +52,14 @@ public class SQLErrorCodesFactory {
     /**
      * The name of custom SQL error codes file, loading from the root
      * of the class path (e.g. from the "/WEB-INF/classes" directory).
+     *
+     * sql 异常code列表
      */
     public static final String SQL_ERROR_CODE_OVERRIDE_PATH = "sql-error-codes.xml";
 
     /**
      * The name of default SQL error code files, loading from the class path.
+     *  sql 异常code列表
      */
     public static final String SQL_ERROR_CODE_DEFAULT_PATH = "org/springframework/jdbc/support/sql-error-codes.xml";
 
@@ -95,6 +98,7 @@ public class SQLErrorCodesFactory {
             XmlBeanDefinitionReader bdr = new XmlBeanDefinitionReader(lbf);
 
             // Load default SQL error codes.
+            // 加载默认的sql异常code
             Resource resource = loadResource(SQL_ERROR_CODE_DEFAULT_PATH);
             if (resource != null && resource.exists()) {
                 bdr.loadBeanDefinitions(resource);

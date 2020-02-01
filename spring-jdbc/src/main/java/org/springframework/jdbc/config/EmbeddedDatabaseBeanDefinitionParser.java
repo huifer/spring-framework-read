@@ -44,6 +44,7 @@ class EmbeddedDatabaseBeanDefinitionParser extends AbstractBeanDefinitionParser 
 
     /**
      * Constant for the "database-name" attribute.
+     * 数据库名称
      */
     static final String DB_NAME_ATTRIBUTE = "database-name";
 
