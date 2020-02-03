@@ -100,18 +100,21 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
     /**
      * If this variable is set to a non-negative value, it will be used for setting the
      * fetchSize property on statements used for query processing.
+     * 缓存大小
      */
     private int fetchSize = -1;
 
     /**
      * If this variable is set to a non-negative value, it will be used for setting the
      * maxRows property on statements used for query processing.
+     * 最大行数限制 ResultSet 的数量
      */
     private int maxRows = -1;
 
     /**
      * If this variable is set to a non-negative value, it will be used for setting the
      * queryTimeout property on statements used for query processing.
+     * 查询的超时时间
      */
     private int queryTimeout = -1;
 
@@ -153,7 +156,9 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
      * @param dataSource the JDBC DataSource to obtain connections from
      */
     public JdbcTemplate(DataSource dataSource) {
+        // 设置数据源
         setDataSource(dataSource);
+        // 属性设置
         afterPropertiesSet();
     }
 
@@ -167,6 +172,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
      */
     public JdbcTemplate(DataSource dataSource, boolean lazyInit) {
         setDataSource(dataSource);
+        // 延迟加载设置
         setLazyInit(lazyInit);
         afterPropertiesSet();
     }

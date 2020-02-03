@@ -101,6 +101,7 @@ public abstract class RdbmsOperation implements InitializingBean {
      * @see org.springframework.jdbc.core.JdbcTemplate#setDataSource
      */
     public void setDataSource(DataSource dataSource) {
+        // 设置数据源
         this.jdbcTemplate.setDataSource(dataSource);
     }
 
@@ -111,6 +112,7 @@ public abstract class RdbmsOperation implements InitializingBean {
      * avoid transferring row data that will never be read by the application.
      * <p>Default is -1, indicating to use the driver's default.
      *
+     * 缓存大小
      * @see org.springframework.jdbc.core.JdbcTemplate#setFetchSize
      */
     public void setFetchSize(int fetchSize) {
@@ -123,6 +125,7 @@ public abstract class RdbmsOperation implements InitializingBean {
      * the entire result set in the database or in the JDBC driver.
      * <p>Default is -1, indicating to use the driver's default.
      *
+     * 最大行数
      * @see org.springframework.jdbc.core.JdbcTemplate#setMaxRows
      */
     public void setMaxRows(int maxRows) {
@@ -135,6 +138,8 @@ public abstract class RdbmsOperation implements InitializingBean {
      * <p>Note: Any timeout specified here will be overridden by the remaining
      * transaction timeout when executing within a transaction that has a
      * timeout specified at the transaction level.
+     *
+     * 查询超时时间
      */
     public void setQueryTimeout(int queryTimeout) {
         this.jdbcTemplate.setQueryTimeout(queryTimeout);

@@ -30,6 +30,8 @@ import java.io.Serializable;
  * <p>Base class for both {@link TransactionTemplate} and
  * {@link org.springframework.transaction.interceptor.DefaultTransactionAttribute}.
  *
+ *
+ * 对于{@link TransactionDefinition } 定义的默认值
  * @author Juergen Hoeller
  * @since 08.05.2003
  */

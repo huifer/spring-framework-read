@@ -135,6 +135,7 @@ public class DefaultTransactionAttribute extends DefaultTransactionDefinition im
      * (a corner case). For declarative transactions, we expect checked exceptions to be
      * intentionally declared as business exceptions, leading to a commit by default.
      *
+     *对类型为  {@link RuntimeException} 或者 {@link Error} 判断true
      * @see org.springframework.transaction.support.TransactionTemplate#execute
      */
     @Override

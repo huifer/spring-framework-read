@@ -82,6 +82,8 @@ public @interface Transactional {
      * The transaction propagation type.
      * <p>Defaults to {@link Propagation#REQUIRED}.
      *
+     *
+     * 可选的事务传播行为设置
      * @see org.springframework.transaction.interceptor.TransactionAttribute#getPropagationBehavior()
      */
     Propagation propagation() default Propagation.REQUIRED;
@@ -96,6 +98,8 @@ public @interface Transactional {
      * to get rejected when participating in an existing transaction with a different
      * isolation level.
      *
+     *
+     * 可选的事务隔离级别设置
      * @see org.springframework.transaction.interceptor.TransactionAttribute#getIsolationLevel()
      * @see org.springframework.transaction.support.AbstractPlatformTransactionManager#setValidateExistingTransaction
      */
@@ -108,6 +112,8 @@ public @interface Transactional {
      * {@link Propagation#REQUIRES_NEW} since it only applies to newly started
      * transactions.
      *
+     *
+     * 事务超时时间设置
      * @see org.springframework.transaction.interceptor.TransactionAttribute#getTimeout()
      */
     int timeout() default TransactionDefinition.TIMEOUT_DEFAULT;
@@ -122,6 +128,8 @@ public @interface Transactional {
      * <i>not</i> throw an exception when asked for a read-only transaction
      * but rather silently ignore the hint.
      *
+     *
+     * 读写或只读事务，默认读写
      * @see org.springframework.transaction.interceptor.TransactionAttribute#isReadOnly()
      * @see org.springframework.transaction.support.TransactionSynchronizationManager#isCurrentTransactionReadOnly()
      */
@@ -139,6 +147,8 @@ public @interface Transactional {
      * {@link #rollbackForClassName}), matching the exception class and its subclasses.
      * <p>Similar to {@link org.springframework.transaction.interceptor.RollbackRuleAttribute#RollbackRuleAttribute(Class clazz)}.
      *
+     *
+     * 导致事务回滚的异常类数组
      * @see #rollbackForClassName
      * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
      */
@@ -174,6 +184,8 @@ public @interface Transactional {
      * its subclasses.
      * <p>Similar to {@link org.springframework.transaction.interceptor.NoRollbackRuleAttribute#NoRollbackRuleAttribute(Class clazz)}.
      *
+     *
+     * 不会导致事务回滚的异常类数组
      * @see #noRollbackForClassName
      * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
      */
@@ -187,6 +199,8 @@ public @interface Transactional {
      * information on how the specified names are treated.
      * <p>Similar to {@link org.springframework.transaction.interceptor.NoRollbackRuleAttribute#NoRollbackRuleAttribute(String exceptionName)}.
      *
+     *
+     * 不会导致事务回滚的异常类名字数组
      * @see #noRollbackFor
      * @see org.springframework.transaction.interceptor.DefaultTransactionAttribute#rollbackOn(Throwable)
      */

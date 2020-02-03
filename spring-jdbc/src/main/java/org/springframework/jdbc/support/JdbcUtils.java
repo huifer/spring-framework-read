@@ -94,6 +94,7 @@ public abstract class JdbcUtils {
      * Close the given JDBC ResultSet and ignore any thrown exception.
      * This is useful for typical finally blocks in manual JDBC code.
      *
+     * 关闭{@link ResultSet}
      * @param rs the JDBC ResultSet to close (may be {@code null})
      */
     public static void closeResultSet(@Nullable ResultSet rs) {
@@ -119,6 +120,7 @@ public abstract class JdbcUtils {
      * required type, in case of an unknown type. Calling code needs to deal
      * with this case appropriately, e.g. throwing a corresponding exception.
      *
+     * 获取结果值,根据不同类型返回不同的对象
      * @param rs           is the ResultSet holding the data
      * @param index        is the column index
      * @param requiredType the required value type (may be {@code null})
