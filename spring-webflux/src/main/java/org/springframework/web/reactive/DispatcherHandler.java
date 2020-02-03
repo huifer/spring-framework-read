@@ -59,6 +59,8 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * {@link org.springframework.web.reactive.config.EnableWebFlux @EnableWebFlux}
  * configuration.
  *
+ *
+ * spring webflux 处理核心
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
  * @author Juergen Hoeller
@@ -72,12 +74,21 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
             new ResponseStatusException(HttpStatus.NOT_FOUND, "No matching handler");
 
 
+    /**
+     * 将请求映射到处理对象
+     */
     @Nullable
     private List<HandlerMapping> handlerMappings;
 
+    /**
+     * 使用相应的处理程序接口
+     */
     @Nullable
     private List<HandlerAdapter> handlerAdapters;
 
+    /**
+     * 流程处理程序返回值
+     */
     @Nullable
     private List<HandlerResultHandler> resultHandlers;
 
@@ -106,6 +117,8 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
      * <p><strong>Note:</strong> This method may return {@code null} if invoked
      * prior to {@link #setApplicationContext(ApplicationContext)}.
      *
+     *
+     * 获取spring上下文中的所有{@link HandlerMapping}
      * @return immutable list with the configured mappings or {@code null}
      */
     @Nullable
@@ -119,6 +132,10 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
     }
 
 
+    /**
+     * 初始化环境
+     * @param context
+     */
     protected void initStrategies(ApplicationContext context) {
         Map<String, HandlerMapping> mappingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
                 context, HandlerMapping.class, true, false);
@@ -141,6 +158,11 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
     }
 
 
+    /**
+     * 核心处理方法
+     * @param exchange the current server exchange
+     * @return
+     */
     @Override
     public Mono<Void> handle(ServerWebExchange exchange) {
         if (this.handlerMappings == null) {

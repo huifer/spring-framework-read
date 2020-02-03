@@ -74,6 +74,7 @@ public class BindingContext {
      * Create a {@link WebExchangeDataBinder} to apply data binding and
      * validation with on the target, command object.
      *
+     * 创建一个WebExchangeDataBinder，以在目标命令对象上应用数据绑定和验证。
      * @param exchange the current exchange
      * @param target   the object to create a data binder for
      * @param name     the name of the target object
@@ -91,6 +92,7 @@ public class BindingContext {
     /**
      * Initialize the data binder instance for the given exchange.
      *
+     * 始化给定交换的数据绑定实例。
      * @throws ServerErrorException if {@code @InitBinder} method invocation fails
      */
     protected WebExchangeDataBinder initDataBinder(WebExchangeDataBinder binder, ServerWebExchange exchange) {

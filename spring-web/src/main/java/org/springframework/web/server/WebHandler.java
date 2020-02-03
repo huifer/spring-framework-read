@@ -36,6 +36,8 @@ public interface WebHandler {
     /**
      * Handle the web server exchange.
      *
+     *
+     * spring  web 处理方法
      * @param exchange the current server exchange
      * @return {@code Mono<Void>} to indicate when request handling is complete
      */

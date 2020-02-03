@@ -39,17 +39,20 @@ public interface WebSocketSession {
 
     /**
      * Return the id for the session.
+     * 获取会话id sessionId
      */
     String getId();
 
     /**
      * Return information from the handshake request.
+     * 获取握手后的信息
      */
     HandshakeInfo getHandshakeInfo();
 
     /**
      * Return a {@code DataBuffer} Factory to create message payloads.
      *
+     * 返回{@link DataBufferFactory} 数据工厂
      * @return the buffer factory for the session
      */
     DataBufferFactory bufferFactory();
@@ -57,6 +60,8 @@ public interface WebSocketSession {
     /**
      * Return the map with attributes associated with the WebSocket session.
      *
+     *
+     * 获取属性
      * @return a Map with the session attributes (never {@code null})
      * @since 5.1
      */
@@ -71,6 +76,8 @@ public interface WebSocketSession {
      *
      * <p>See the class-level doc of {@link WebSocketHandler} and the reference
      * for more details and examples of how to handle the session.
+     *
+     * 获取传入的信息流
      */
     Flux<WebSocketMessage> receive();
 
@@ -81,11 +88,16 @@ public interface WebSocketSession {
      *
      * <p>See the class-level doc of {@link WebSocketHandler} and the reference
      * for more details and examples of how to handle the session.
+     *
+     *
+     * 发送消息
      */
     Mono<Void> send(Publisher<WebSocketMessage> messages);
 
     /**
      * Close the WebSocket session with {@link CloseStatus#NORMAL}.
+     *
+     * 关闭链接 webSocket链接
      */
     default Mono<Void> close() {
         return close(CloseStatus.NORMAL);
@@ -93,6 +105,7 @@ public interface WebSocketSession {
 
     /**
      * Close the WebSocket session with the given status.
+     * 关闭链接 webSocket链接
      *
      * @param status the close status
      */
@@ -104,24 +117,31 @@ public interface WebSocketSession {
     /**
      * Factory method to create a text {@link WebSocketMessage} using the
      * {@link #bufferFactory()} for the session.
+     *
+     * 创建文本信息
      */
     WebSocketMessage textMessage(String payload);
 
     /**
      * Factory method to create a binary WebSocketMessage using the
      * {@link #bufferFactory()} for the session.
+     *
+     * 创建二进制信息
      */
     WebSocketMessage binaryMessage(Function<DataBufferFactory, DataBuffer> payloadFactory);
 
     /**
      * Factory method to create a ping WebSocketMessage using the
      * {@link #bufferFactory()} for the session.
+     *
+     * 创建ping-message
      */
     WebSocketMessage pingMessage(Function<DataBufferFactory, DataBuffer> payloadFactory);
 
     /**
      * Factory method to create a pong WebSocketMessage using the
      * {@link #bufferFactory()} for the session.
+     * 创建 pong-message
      */
     WebSocketMessage pongMessage(Function<DataBufferFactory, DataBuffer> payloadFactory);
 

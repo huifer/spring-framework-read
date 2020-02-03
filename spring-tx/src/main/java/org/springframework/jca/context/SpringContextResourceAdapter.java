@@ -179,17 +179,22 @@ public class SpringContextResourceAdapter implements ResourceAdapter {
      * @return the Spring ApplicationContext instance
      */
     protected ConfigurableApplicationContext createApplicationContext(BootstrapContext bootstrapContext) {
+        // 实例化
         ResourceAdapterApplicationContext applicationContext =
                 new ResourceAdapterApplicationContext(bootstrapContext);
 
         // Set ResourceAdapter's ClassLoader as bean class loader.
+        // 设置类加载器
         applicationContext.setClassLoader(getClass().getClassLoader());
 
         // Extract individual config locations.
+        // 读取配置文件获取配置信息
         String[] configLocations =
                 StringUtils.tokenizeToStringArray(getContextConfigLocation(), CONFIG_LOCATION_DELIMITERS);
 
+        // 加载bean配置
         loadBeanDefinitions(applicationContext, configLocations);
+        // 刷新
         applicationContext.refresh();
 
         return applicationContext;

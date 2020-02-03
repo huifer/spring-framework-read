@@ -38,17 +38,23 @@ public interface WebSocketSession extends Closeable {
 
     /**
      * Return a unique session identifier.
+     *
+     * 获取会话id sessionId
      */
     String getId();
 
     /**
      * Return the URI used to open the WebSocket connection.
+     *
+     * 获取uri
      */
     @Nullable
     URI getUri();
 
     /**
      * Return the headers used in the handshake request (never {@code null}).
+     *
+     * 获取握手后的信息
      */
     HttpHeaders getHandshakeHeaders();
 

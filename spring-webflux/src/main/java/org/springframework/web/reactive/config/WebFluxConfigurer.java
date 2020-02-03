@@ -59,6 +59,8 @@ public interface WebFluxConfigurer {
      * further declare more fine-grained configuration via
      * {@link org.springframework.web.bind.annotation.CrossOrigin @CrossOrigin}.
      *
+     *
+     * 添加跨域信息
      * @see CorsRegistry
      */
     default void addCorsMappings(CorsRegistry registry) {

@@ -42,6 +42,9 @@ import org.springframework.util.Assert;
  *
  * <p>See {@link Configuration @Configuration}'s javadoc for usage examples.
  *
+ *
+ *
+ * 注解配置应用上下文
  * @author Juergen Hoeller
  * @author Chris Beams
  * @see #register
@@ -130,12 +133,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
      * <p>Any call to this method must occur prior to calls to {@link #register(Class...)}
      * and/or {@link #scan(String...)}.
      *
+     * 设置beanName创建器
      * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
      * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
      */
     public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
         this.reader.setBeanNameGenerator(beanNameGenerator);
         this.scanner.setBeanNameGenerator(beanNameGenerator);
+        // 注册单例bean
         getBeanFactory().registerSingleton(
                 AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, beanNameGenerator);
     }
@@ -178,6 +183,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
      * <p>Note that {@link #refresh()} must be called in order for the context
      * to fully process the new classes.
      *
+     * 包扫描
      * @param basePackages the packages to scan for component classes
      * @see #register(Class...)
      * @see #refresh()
@@ -199,6 +205,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
      * arguments for consideration in the autowiring process.
      * <p>The bean name will be generated according to annotated component rules.
      *
+     * 注册bean
      * @param beanClass            the class of the bean
      * @param constructorArguments argument values to be fed into Spring's
      *                             constructor resolution algorithm, resolving either all arguments or just
