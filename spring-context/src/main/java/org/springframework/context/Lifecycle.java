@@ -55,6 +55,8 @@ public interface Lifecycle {
      * <p>In the case of a container, this will propagate the start signal to all
      * components that apply.
      *
+     *
+     * 开始链接
      * @see SmartLifecycle#isAutoStartup()
      */
     void start();
@@ -72,6 +74,7 @@ public interface Lifecycle {
      * <p>In the case of a container, this will propagate the stop signal to all components
      * that apply.
      *
+     * 停止连接
      * @see SmartLifecycle#stop(Runnable)
      * @see org.springframework.beans.factory.DisposableBean#destroy()
      */
@@ -82,6 +85,8 @@ public interface Lifecycle {
      * <p>In the case of a container, this will return {@code true} only if <i>all</i>
      * components that apply are currently running.
      *
+     *
+     * 是否属于运行状态
      * @return whether the component is currently running
      */
     boolean isRunning();

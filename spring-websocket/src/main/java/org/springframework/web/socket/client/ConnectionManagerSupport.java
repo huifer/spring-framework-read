@@ -38,6 +38,9 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
+    /**
+     * 链接地址
+     */
     private final URI uri;
     private final Object lifecycleMonitor = new Object();
     private boolean autoStartup = false;

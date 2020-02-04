@@ -132,18 +132,34 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
         this.taskExecutor = taskExecutor;
     }
 
+    /**
+     * 握手实现
+     * @param webSocketHandler the client-side handler for WebSocket messages
+     * @param headers          the HTTP headers to use for the handshake, with unwanted (forbidden)
+     *                         headers filtered out (never {@code null})
+     * @param uri              the target URI for the handshake (never {@code null})
+     * @param protocols
+     * @param extensions       requested WebSocket extensions, or an empty list
+     * @param attributes       attributes to associate with the WebSocketSession, i.e. via
+     *                         {@link WebSocketSession#getAttributes()}; currently always an empty map.
+     * @return
+     */
     @Override
     protected ListenableFuture<WebSocketSession> doHandshakeInternal(WebSocketHandler webSocketHandler,
                                                                      HttpHeaders headers, final URI uri, List<String> protocols,
                                                                      List<WebSocketExtension> extensions, Map<String, Object> attributes) {
 
+        // 获取端口
         int port = getPort(uri);
+        // 地址获取
         InetSocketAddress localAddress = new InetSocketAddress(getLocalHost(), port);
         InetSocketAddress remoteAddress = new InetSocketAddress(uri.getHost(), port);
 
+        // 创建链接对象
         final StandardWebSocketSession session = new StandardWebSocketSession(headers,
                 attributes, localAddress, remoteAddress);
 
+        // 连接信息
         final ClientEndpointConfig endpointConfig = ClientEndpointConfig.Builder.create()
                 .configurator(new StandardWebSocketClientConfigurator(headers))
                 .preferredSubprotocols(protocols)
@@ -163,13 +179,19 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
         }
         else {
             ListenableFutureTask<WebSocketSession> task = new ListenableFutureTask<>(connectTask);
+            // 运行链接任务
             task.run();
             return task;
         }
     }
 
+    /**
+     * 获取host
+     * @return {@link InetAddress} host
+     */
     private InetAddress getLocalHost() {
         try {
+            // 获取host
             return InetAddress.getLocalHost();
         }
         catch (UnknownHostException ex) {
@@ -177,7 +199,13 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
         }
     }
 
+    /**
+     * 获取端口号
+     * @param uri
+     * @return
+     */
     private int getPort(URI uri) {
+        // 根据协议返回端口
         if (uri.getPort() == -1) {
             String scheme = uri.getScheme().toLowerCase(Locale.ENGLISH);
             return ("wss".equals(scheme) ? 443 : 80);
@@ -186,8 +214,14 @@ public class StandardWebSocketClient extends AbstractWebSocketClient {
     }
 
 
+    /**
+     * 配置信息
+     */
     private class StandardWebSocketClientConfigurator extends Configurator {
 
+        /**
+         * http 头信息
+         */
         private final HttpHeaders headers;
 
         public StandardWebSocketClientConfigurator(HttpHeaders headers) {

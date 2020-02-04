@@ -46,6 +46,9 @@ public abstract class AbstractWebSocketClient implements WebSocketClient {
 
     private static final Set<String> specialHeaders = new HashSet<>();
 
+    /**
+     * 静态方法添加头名称
+     */
     static {
         specialHeaders.add("cache-control");
         specialHeaders.add("connection");
@@ -62,6 +65,13 @@ public abstract class AbstractWebSocketClient implements WebSocketClient {
     protected final Log logger = LogFactory.getLog(getClass());
 
 
+    /**
+     * 握手
+     * @param webSocketHandler
+     * @param uriTemplate
+     * @param uriVars
+     * @return
+     */
     @Override
     public ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler webSocketHandler,
                                                           String uriTemplate, Object... uriVars) {
@@ -81,9 +91,10 @@ public abstract class AbstractWebSocketClient implements WebSocketClient {
         if (logger.isDebugEnabled()) {
             logger.debug("Connecting to " + uri);
         }
-
+        // http 请求头
         HttpHeaders headersToUse = new HttpHeaders();
         if (headers != null) {
+            // 循环设置请求头信息
             headers.forEach((header, values) -> {
                 if (values != null && !specialHeaders.contains(header.toLowerCase())) {
                     headersToUse.put(header, values);
@@ -91,11 +102,14 @@ public abstract class AbstractWebSocketClient implements WebSocketClient {
             });
         }
 
+        // webSocket 协议中的 subProtocols
         List<String> subProtocols =
                 (headers != null ? headers.getSecWebSocketProtocol() : Collections.emptyList());
+        // 拓展列表
         List<WebSocketExtension> extensions =
                 (headers != null ? headers.getSecWebSocketExtensions() : Collections.emptyList());
 
+        // 握手
         return doHandshakeInternal(webSocketHandler, headersToUse, uri, subProtocols, extensions,
                 Collections.emptyMap());
     }
@@ -103,6 +117,7 @@ public abstract class AbstractWebSocketClient implements WebSocketClient {
     protected void assertUri(URI uri) {
         Assert.notNull(uri, "URI must not be null");
         String scheme = uri.getScheme();
+        // 类型判断 属于ws 还是wss
         if (!"ws".equals(scheme) && !"wss".equals(scheme)) {
             throw new IllegalArgumentException("Invalid scheme: " + scheme);
         }

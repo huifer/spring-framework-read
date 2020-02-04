@@ -54,11 +54,14 @@ import org.springframework.web.util.UriComponentsBuilder;
  * {@link org.springframework.web.socket.client.WebSocketConnectionManager
  * WebSocketConnectionManager} instead to auto-start a WebSocket connection.
  *
+ *
+ * jetty webSocket 客户端
  * @author Rossen Stoyanchev
  * @since 4.0
  */
 public class JettyWebSocketClient extends AbstractWebSocketClient implements Lifecycle {
 
+    // 客户端
     private final org.eclipse.jetty.websocket.client.WebSocketClient client;
 
     @Nullable
@@ -102,6 +105,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
     @Override
     public void start() {
         try {
+            // 开始
             this.client.start();
         }
         catch (Exception ex) {
@@ -112,6 +116,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
     @Override
     public void stop() {
         try {
+            // 关闭
             this.client.stop();
         }
         catch (Exception ex) {
@@ -121,6 +126,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 
     @Override
     public boolean isRunning() {
+        // 是否属于运行状态
         return this.client.isStarted();
     }
 
