@@ -132,6 +132,9 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
         this.taskExecutor = taskExecutor;
     }
 
+    /**
+     * 打开链接
+     */
     @Override
     protected void openConnection() {
         this.taskExecutor.execute(() -> {
@@ -154,6 +157,10 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
         });
     }
 
+    /**
+     * 关闭链接
+     * @throws Exception
+     */
     @Override
     protected void closeConnection() throws Exception {
         try {

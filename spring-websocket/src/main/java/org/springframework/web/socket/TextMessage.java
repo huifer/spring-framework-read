@@ -35,6 +35,7 @@ public final class TextMessage extends AbstractWebSocketMessage<String> {
     /**
      * Create a new text WebSocket message from the given CharSequence payload.
      *
+     * 构造方法
      * @param payload the non-null payload
      */
     public TextMessage(CharSequence payload) {
@@ -46,6 +47,7 @@ public final class TextMessage extends AbstractWebSocketMessage<String> {
      * Create a new text WebSocket message from the given byte[]. It is assumed
      * the byte array can be encoded into an UTF-8 String.
      *
+     * 构造方法
      * @param payload the non-null payload
      */
     public TextMessage(byte[] payload) {
@@ -73,10 +75,18 @@ public final class TextMessage extends AbstractWebSocketMessage<String> {
         return asBytes().length;
     }
 
+    /**
+     * 获取字节数组
+     * @return
+     */
     public byte[] asBytes() {
         return (this.bytes != null ? this.bytes : getPayload().getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * 转换成string返回
+     * @return
+     */
     @Override
     protected String toStringPayload() {
         String payload = getPayload();

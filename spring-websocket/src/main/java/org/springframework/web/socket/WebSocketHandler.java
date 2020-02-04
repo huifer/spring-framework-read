@@ -38,6 +38,7 @@ public interface WebSocketHandler {
      * Invoked after WebSocket negotiation has succeeded and the WebSocket connection is
      * opened and ready for use.
      *
+     * 链接准备就绪
      * @throws Exception this method can handle or propagate exceptions; see class-level
      *                   Javadoc for details.
      */
@@ -46,6 +47,8 @@ public interface WebSocketHandler {
     /**
      * Invoked when a new WebSocket message arrives.
      *
+     *
+     * 处理消息{@link WebSocketMessage}
      * @throws Exception this method can handle or propagate exceptions; see class-level
      *                   Javadoc for details.
      */
@@ -54,6 +57,7 @@ public interface WebSocketHandler {
     /**
      * Handle an error from the underlying WebSocket message transport.
      *
+     * 处理传输消息时候的异常
      * @throws Exception this method can handle or propagate exceptions; see class-level
      *                   Javadoc for details.
      */
@@ -65,6 +69,7 @@ public interface WebSocketHandler {
      * depending on the underlying implementation, sending messages at this point is
      * discouraged and most likely will not succeed.
      *
+     * 关闭链接的时候做
      * @throws Exception this method can handle or propagate exceptions; see class-level
      *                   Javadoc for details.
      */
@@ -78,6 +83,9 @@ public interface WebSocketHandler {
      * {@link #handleMessage(WebSocketSession, WebSocketMessage)}. The flag
      * {@link org.springframework.web.socket.WebSocketMessage#isLast()} indicates if
      * the message is partial and whether it is the last part.
+     *
+     *
+     * 是否支持分包
      */
     boolean supportsPartialMessages();
 

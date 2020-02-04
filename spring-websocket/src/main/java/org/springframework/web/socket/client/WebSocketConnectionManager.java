@@ -50,7 +50,7 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 
 
     public WebSocketConnectionManager(WebSocketClient client,
-                                      WebSocketHandler webSocketHandler, String uriTemplate, Object... uriVariables) {
+            WebSocketHandler webSocketHandler, String uriTemplate, Object... uriVariables) {
 
         super(uriTemplate, uriVariables);
         this.client = client;
@@ -85,6 +85,8 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 
     /**
      * Return the configured origin.
+     *
+     * 获取远端配置
      */
     @Nullable
     public String getOrigin() {
@@ -93,6 +95,7 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 
     /**
      * Set the origin to use.
+     * 设置远端
      */
     public void setOrigin(@Nullable String origin) {
         this.headers.setOrigin(origin);
@@ -113,6 +116,9 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
         this.headers.putAll(headers);
     }
 
+    /**
+     * 开始链接
+     */
     @Override
     public void startInternal() {
         if (this.client instanceof Lifecycle && !((Lifecycle) this.client).isRunning()) {
@@ -121,6 +127,10 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
         super.startInternal();
     }
 
+    /**
+     * 关闭暂停链接
+     * @throws Exception
+     */
     @Override
     public void stopInternal() throws Exception {
         if (this.client instanceof Lifecycle && ((Lifecycle) this.client).isRunning()) {
@@ -129,22 +139,35 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
         super.stopInternal();
     }
 
+    /**
+     * 开启链接
+     */
     @Override
     protected void openConnection() {
         if (logger.isInfoEnabled()) {
             logger.info("Connecting to WebSocket at " + getUri());
         }
 
+        // 执行握手方法
         ListenableFuture<WebSocketSession> future =
                 this.client.doHandshake(this.webSocketHandler, this.headers, getUri());
 
+        // 执行成功失败的对应调用
         future.addCallback(new ListenableFutureCallback<WebSocketSession>() {
+            /**
+             * 成功开启
+             * @param result the result
+             */
             @Override
             public void onSuccess(@Nullable WebSocketSession result) {
                 webSocketSession = result;
                 logger.info("Successfully connected");
             }
 
+            /**
+             * 开启失败
+             * @param ex the failure
+             */
             @Override
             public void onFailure(Throwable ex) {
                 logger.error("Failed to connect", ex);

@@ -146,6 +146,9 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
         this.createSession = createSession;
     }
 
+    /**
+     * 握手之前做什么
+     */
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
@@ -166,6 +169,11 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
         return true;
     }
 
+    /**
+     * 获取链接的session
+     * @param request
+     * @return
+     */
     @Nullable
     private HttpSession getSession(ServerHttpRequest request) {
         if (request instanceof ServletServerHttpRequest) {
@@ -175,6 +183,13 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
         return null;
     }
 
+    /**
+     * 握手后做什么
+     * @param request   the current request
+     * @param response  the current response
+     * @param wsHandler the target WebSocket handler
+     * @param ex
+     */
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                WebSocketHandler wsHandler, @Nullable Exception ex) {

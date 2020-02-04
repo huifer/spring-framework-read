@@ -28,6 +28,9 @@ import org.springframework.util.ObjectUtils;
  */
 public abstract class AbstractWebSocketMessage<T> implements WebSocketMessage<T> {
 
+    /**
+     * 对象，消息体
+     */
     private final T payload;
 
     private final boolean last;
@@ -60,6 +63,7 @@ public abstract class AbstractWebSocketMessage<T> implements WebSocketMessage<T>
 
     /**
      * Return the message payload (never {@code null}).
+     * 返回消息体
      */
     public T getPayload() {
         return this.payload;
@@ -96,6 +100,10 @@ public abstract class AbstractWebSocketMessage<T> implements WebSocketMessage<T>
                 "], byteCount=" + getPayloadLength() + ", last=" + isLast() + "]";
     }
 
+    /**
+     * 消息体转换成String方法{@link payload}
+     * @return
+     */
     protected abstract String toStringPayload();
 
 }

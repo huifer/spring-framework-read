@@ -27,11 +27,13 @@ public interface WebSocketMessage<T> {
 
     /**
      * Return the message payload (never {@code null}).
+     * 获取消息
      */
     T getPayload();
 
     /**
      * Return the number of bytes contained in the message.
+     * 获取字节数
      */
     int getPayloadLength();
 
@@ -41,6 +43,8 @@ public interface WebSocketMessage<T> {
      * this method returns {@code true} if the current message is the last part of the
      * complete WebSocket message sent by the client. Otherwise {@code false} is returned
      * if partial message support is either not available or not enabled.
+     *
+     * 是否为最后一个
      */
     boolean isLast();
 

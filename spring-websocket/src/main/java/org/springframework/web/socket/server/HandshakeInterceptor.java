@@ -38,6 +38,7 @@ public interface HandshakeInterceptor {
     /**
      * Invoked before the handshake is processed.
      *
+     * 握手之前做什么
      * @param request    the current request
      * @param response   the current response
      * @param wsHandler  the target WebSocket handler
@@ -52,6 +53,7 @@ public interface HandshakeInterceptor {
      * Invoked after the handshake is done. The response status and headers indicate
      * the results of the handshake, i.e. whether it was successful or not.
      *
+     * 握手后做什么
      * @param request   the current request
      * @param response  the current response
      * @param wsHandler the target WebSocket handler

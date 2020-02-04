@@ -37,6 +37,7 @@ public interface ListenableFuture<T> extends Future<T> {
     /**
      * Register the given {@code ListenableFutureCallback}.
      *
+     * 添加回调
      * @param callback the callback to register
      */
     void addCallback(ListenableFutureCallback<? super T> callback);
@@ -44,6 +45,7 @@ public interface ListenableFuture<T> extends Future<T> {
     /**
      * Java 8 lambda-friendly alternative with success and failure callbacks.
      *
+     * 添加回调 JDK8版本
      * @param successCallback the success callback
      * @param failureCallback the failure callback
      * @since 4.1
