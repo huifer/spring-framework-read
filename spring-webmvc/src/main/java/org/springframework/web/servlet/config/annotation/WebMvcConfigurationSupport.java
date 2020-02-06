@@ -252,16 +252,22 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
     /**
      * Return a {@link RequestMappingHandlerMapping} ordered at 0 for mapping
      * requests to annotated controllers.
+     *
+     *
      */
     @Bean
     public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+        // 创建请求处理器
         RequestMappingHandlerMapping mapping = createRequestMappingHandlerMapping();
+        // 设置基本属性,排序，连接器，mvc配置，跨域配置
         mapping.setOrder(0);
         mapping.setInterceptors(getInterceptors());
         mapping.setContentNegotiationManager(mvcContentNegotiationManager());
         mapping.setCorsConfigurations(getCorsConfigurations());
 
+        // 地址匹配器
         PathMatchConfigurer configurer = getPathMatchConfigurer();
+
 
         Boolean useSuffixPatternMatch = configurer.isUseSuffixPatternMatch();
         if (useSuffixPatternMatch != null) {
@@ -296,9 +302,11 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
      * Protected method for plugging in a custom subclass of
      * {@link RequestMappingHandlerMapping}.
      *
+     * 创建请求处理器
      * @since 4.0
      */
     protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+        // 创建请求处理器
         return new RequestMappingHandlerMapping();
     }
 
@@ -331,6 +339,7 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
      * Callback for building the {@link PathMatchConfigurer}.
      * Delegates to {@link #configurePathMatch}.
      *
+     * 获取地址匹配器
      * @since 4.1
      */
     protected PathMatchConfigurer getPathMatchConfigurer() {
@@ -393,6 +402,10 @@ public class WebMvcConfigurationSupport implements ApplicationContextAware, Serv
         return this.contentNegotiationManager;
     }
 
+    /**
+     * 获取默认的媒体类型
+     * @return
+     */
     protected Map<String, MediaType> getDefaultMediaTypes() {
         Map<String, MediaType> map = new HashMap<>(4);
         if (romePresent) {

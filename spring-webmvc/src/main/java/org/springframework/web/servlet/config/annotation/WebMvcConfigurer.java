@@ -63,6 +63,7 @@ public interface WebMvcConfigurer {
 
     /**
      * Configure content negotiation options.
+     *
      */
     default void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
     }
@@ -94,6 +95,8 @@ public interface WebMvcConfigurer {
      * controller method invocations and resource handler requests.
      * Interceptors can be registered to apply to all requests or be limited
      * to a subset of URL patterns.
+     *
+     * 添加拦截器
      */
     default void addInterceptors(InterceptorRegistry registry) {
     }
@@ -102,6 +105,8 @@ public interface WebMvcConfigurer {
      * Add handlers to serve static resources such as images, js, and, css
      * files from specific locations under web application root, the classpath,
      * and others.
+     *
+     * 添加资源处理器(静态资源)
      */
     default void addResourceHandlers(ResourceHandlerRegistry registry) {
     }
@@ -120,6 +125,8 @@ public interface WebMvcConfigurer {
      * cases where there is no need for custom controller logic -- e.g. render a
      * home page, perform simple site URL redirects, return a 404 status with
      * HTML content, a 204 with no content, and more.
+     *
+     * 添加视图控制器
      */
     default void addViewControllers(ViewControllerRegistry registry) {
     }
@@ -129,6 +136,7 @@ public interface WebMvcConfigurer {
      * controllers into concrete {@link org.springframework.web.servlet.View}
      * implementations to perform rendering with.
      *
+     * 配置视图解析器
      * @since 4.1
      */
     default void configureViewResolvers(ViewResolverRegistry registry) {
@@ -140,6 +148,7 @@ public interface WebMvcConfigurer {
      * method arguments. To customize the built-in support for argument
      * resolution, configure {@link RequestMappingHandlerAdapter} directly.
      *
+     * 添加参数解析器
      * @param resolvers initially an empty list
      */
     default void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -151,6 +160,7 @@ public interface WebMvcConfigurer {
      * return values. To customize the built-in support for handling return
      * values, configure RequestMappingHandlerAdapter directly.
      *
+     * 添加返回值处理器
      * @param handlers initially an empty list
      */
     default void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {
@@ -165,6 +175,7 @@ public interface WebMvcConfigurer {
      * default registration, consider using the method
      * {@link #extendMessageConverters(java.util.List)} instead.
      *
+     * 配置消息转换器
      * @param converters initially an empty list of converters
      */
     default void configureMessageConverters(List<HttpMessageConverter<?>> converters) {

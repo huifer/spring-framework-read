@@ -35,6 +35,8 @@ import java.util.function.Predicate;
  * <li>ResourcesMappings</li>
  * </ul>
  *
+ *
+ * 地址匹配配置
  * @author Brian Clozel
  * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
  * @see org.springframework.web.servlet.handler.SimpleUrlHandlerMapping
@@ -66,6 +68,7 @@ public class PathMatchConfigurer {
      * requests. If enabled a method mapped to "/users" also matches to "/users.*".
      * <p>By default this is set to {@code true}.
      *
+     * 最后是否匹配.*
      * @see #registeredSuffixPatternMatch
      */
     public PathMatchConfigurer setUseSuffixPatternMatch(Boolean suffixPatternMatch) {
@@ -77,6 +80,8 @@ public class PathMatchConfigurer {
      * Whether to match to URLs irrespective of the presence of a trailing slash.
      * If enabled a method mapped to "/users" also matches to "/users/".
      * <p>The default value is {@code true}.
+     *
+     * 最后添加/和不添加/是否相同,默认相同
      */
     public PathMatchConfigurer setUseTrailingSlashMatch(Boolean trailingSlashMatch) {
         this.trailingSlashMatch = trailingSlashMatch;

@@ -928,10 +928,12 @@ public abstract class ClassUtils {
      * Return the user-defined class for the given class: usually simply the given
      * class, but the original class in case of a CGLIB-generated subclass.
      *
+     * 找到开发者自定义的类 , 避免CGLIB创建
      * @param clazz the class to check
      * @return the user-defined class
      */
     public static Class<?> getUserClass(Class<?> clazz) {
+        // 类名里面是否有 $$ 符号
         if (clazz.getName().contains(CGLIB_CLASS_SEPARATOR)) {
             Class<?> superclass = clazz.getSuperclass();
             if (superclass != null && superclass != Object.class) {

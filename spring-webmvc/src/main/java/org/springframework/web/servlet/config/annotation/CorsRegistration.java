@@ -35,6 +35,9 @@ public class CorsRegistration {
 
     private final String pathPattern;
 
+    /**
+     * 跨域配置
+     */
     private final CorsConfiguration config;
 
 
@@ -58,6 +61,8 @@ public class CorsRegistration {
      * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
      * central place whether to extract and use, or to discard such headers.
      * See the Spring Framework reference for more on this filter.
+     *
+     * 添加远端
      */
     public CorsRegistration allowedOrigins(String... origins) {
         this.config.setAllowedOrigins(Arrays.asList(origins));
@@ -70,6 +75,8 @@ public class CorsRegistration {
      * The special value {@code "*"} allows all methods.
      * <p>By default "simple" methods, i.e. {@code GET}, {@code HEAD}, and
      * {@code POST} are allowed.
+     *
+     * 添加方法
      */
     public CorsRegistration allowedMethods(String... methods) {
         this.config.setAllowedMethods(Arrays.asList(methods));
@@ -84,6 +91,8 @@ public class CorsRegistration {
      * {@code Cache-Control}, {@code Content-Language}, {@code Expires},
      * {@code Last-Modified}, or {@code Pragma} as per the CORS spec.
      * <p>By default all headers are allowed.
+     *
+     * 添加头
      */
     public CorsRegistration allowedHeaders(String... headers) {
         this.config.setAllowedHeaders(Arrays.asList(headers));
@@ -125,6 +134,7 @@ public class CorsRegistration {
      * Configure how long in seconds the response from a pre-flight request
      * can be cached by clients.
      * <p>By default this is set to 1800 seconds (30 minutes).
+     * 最大时间
      */
     public CorsRegistration maxAge(long maxAge) {
         this.config.setMaxAge(maxAge);

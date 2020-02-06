@@ -34,6 +34,9 @@ import java.util.Map;
  */
 public class CorsRegistry {
 
+    /**
+     * 跨域注册信息
+     */
     private final List<CorsRegistration> registrations = new ArrayList<>();
 
 
@@ -53,6 +56,8 @@ public class CorsRegistry {
      *     <li>Allow all headers.</li>
      *     <li>Set max age to 1800 seconds (30 minutes).</li>
      * </ul>
+     *
+     * 添加路由地址
      */
     public CorsRegistration addMapping(String pathPattern) {
         CorsRegistration registration = new CorsRegistration(pathPattern);
@@ -63,6 +68,8 @@ public class CorsRegistry {
     /**
      * Return the registered {@link CorsConfiguration} objects,
      * keyed by path pattern.
+     *
+     * 获取跨域配置
      */
     protected Map<String, CorsConfiguration> getCorsConfigurations() {
         Map<String, CorsConfiguration> configs = new LinkedHashMap<>(this.registrations.size());

@@ -110,6 +110,8 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
      * <p>The default implementation is empty. Called by
      * {@link #initApplicationContext(org.springframework.context.ApplicationContext)}.
      *
+     *
+     * 初始化应用上下文w
      * @throws ApplicationContextException in case of initialization errors
      * @throws BeansException              if thrown by ApplicationContext methods
      * @see #setApplicationContext
@@ -120,6 +122,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
     /**
      * Return the ApplicationContext that this object is associated with.
      *
+     * 获取应用上下文
      * @throws IllegalStateException if not running in an ApplicationContext
      */
     @Nullable
@@ -131,6 +134,11 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
         return this.applicationContext;
     }
 
+    /**
+     * 设置应用上下文
+     * @param context
+     * @throws BeansException
+     */
     @Override
     public final void setApplicationContext(@Nullable ApplicationContext context) throws BeansException {
         if (context == null && !isContextRequired()) {
@@ -166,6 +174,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
      * @since 5.0
      */
     protected final ApplicationContext obtainApplicationContext() {
+        // 获取应用上下文
         ApplicationContext applicationContext = getApplicationContext();
         Assert.state(applicationContext != null, "No ApplicationContext");
         return applicationContext;

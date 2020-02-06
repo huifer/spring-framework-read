@@ -92,9 +92,11 @@ public class ViewResolverRegistry {
      * <p>If invoked multiple times the provided default views will be added to
      * any other default views that may have been configured already.
      *
+     * 启动视图解析器(默认的)
      * @see ContentNegotiatingViewResolver#setDefaultViews
      */
     public void enableContentNegotiation(View... defaultViews) {
+        // 初始化视图解析器
         initContentNegotiatingViewResolver(defaultViews);
     }
 
@@ -143,6 +145,8 @@ public class ViewResolverRegistry {
      * if a JSP exists without forwarding to it, using multiple JSP-based view
      * resolvers only makes sense in combination with the "viewNames" property
      * on the resolver indicating which view names are handled by which resolver.
+     *
+     * jsp 视图解析器
      */
     public UrlBasedViewResolverRegistration jsp() {
         return jsp("/WEB-INF/", ".jsp");
@@ -158,7 +162,9 @@ public class ViewResolverRegistry {
      */
     public UrlBasedViewResolverRegistration jsp(String prefix, String suffix) {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        // 设置前缀
         resolver.setPrefix(prefix);
+        // 设置后缀
         resolver.setSuffix(suffix);
         this.viewResolvers.add(resolver);
         return new UrlBasedViewResolverRegistration(resolver);
@@ -245,6 +251,8 @@ public class ViewResolverRegistry {
      * configure a custom (or 3rd party) resolver implementation. It may also be
      * used as an alternative to other registration methods in this class when
      * they don't expose some more advanced property that needs to be set.
+     *
+     * 注冊视图
      */
     public void viewResolver(ViewResolver viewResolver) {
         if (viewResolver instanceof ContentNegotiatingViewResolver) {

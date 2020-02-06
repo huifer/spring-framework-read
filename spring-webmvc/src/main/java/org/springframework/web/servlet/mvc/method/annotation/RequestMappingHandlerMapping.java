@@ -149,6 +149,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
         this.embeddedValueResolver = resolver;
     }
 
+    /**
+     * 生命周期：afterPropertiesSet
+     */
     @Override
     public void afterPropertiesSet() {
         this.config = new RequestMappingInfo.BuilderConfiguration();
@@ -197,6 +200,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
      * {@inheritDoc}
      * <p>Expects a handler to have either a type-level @{@link Controller}
      * annotation or a type-level @{@link RequestMapping} annotation.
+     *
+     * 是否是handler,判断是否存在注解{@link Controller} 或者{@link RequestMapping}
      */
     @Override
     protected boolean isHandler(Class<?> beanType) {
@@ -208,6 +213,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
      * Uses method and type-level @{@link RequestMapping} annotations to create
      * the RequestMappingInfo.
      *
+     *
+     * 解析 {@link RequestMapping}
      * @return the created RequestMappingInfo, or {@code null} if the method
      * does not have a {@code @RequestMapping} annotation.
      * @see #getCustomMethodCondition(Method)
@@ -216,6 +223,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
     @Override
     @Nullable
     protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+        // 获取controller-method信息
         RequestMappingInfo info = createRequestMappingInfo(method);
         if (info != null) {
             RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
@@ -254,6 +262,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
      */
     @Nullable
     private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
+        // 获取 RequestMapping 注解
         RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
         RequestCondition<?> condition = (element instanceof Class ?
                 getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
@@ -299,10 +308,12 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
      * {@link RequestMapping @RequestMapping} annotation, which is either
      * a directly declared annotation, a meta-annotation, or the synthesized
      * result of merging annotation attributes within an annotation hierarchy.
+     * 创建 {@link RequestMappingInfo}
      */
     protected RequestMappingInfo createRequestMappingInfo(
             RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
 
+        // 设置基本信息
         RequestMappingInfo.Builder builder = RequestMappingInfo
                 .paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
                 .methods(requestMapping.method())

@@ -16,6 +16,25 @@
 
 package org.springframework.web.servlet.handler;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,21 +44,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMethodMappingNamingStrategy;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
  * Abstract base class for {@link HandlerMapping} implementations that define
@@ -82,7 +94,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
     }
 
     private final MappingRegistry mappingRegistry = new MappingRegistry();
+
     private boolean detectHandlerMethodsInAncestorContexts = false;
+
     @Nullable
     private HandlerMethodMappingNamingStrategy<T> namingStrategy;
 
@@ -197,6 +211,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
     /**
      * Scan beans in the ApplicationContext, detect and register handler methods.
      *
+     * 初始化 controller 相关信息
      * @see #getCandidateBeanNames()
      * @see #processCandidateBean
      * @see #handlerMethodsInitialized
@@ -238,6 +253,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
     protected void processCandidateBean(String beanName) {
         Class<?> beanType = null;
         try {
+            // 获取这个bean的类
             beanType = obtainApplicationContext().getType(beanName);
         }
         catch (Throwable ex) {
@@ -246,6 +262,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
                 logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
             }
         }
+        /**
+         * 是否是handler
+         * {@link RequestMappingHandlerMapping#isHandler(java.lang.Class)}
+         */
         if (beanType != null && isHandler(beanType)) {
             detectHandlerMethods(beanName);
         }
@@ -254,6 +274,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
     /**
      * Look for handler methods in the specified handler bean.
      *
+     * 解析controller 中的每一个方法
      * @param handler either a bean name or an actual handler instance
      * @see #getMappingForMethod
      */
@@ -262,10 +283,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
                 obtainApplicationContext().getType((String) handler) : handler.getClass());
 
         if (handlerType != null) {
+            // 找到开发者自定义的类
             Class<?> userType = ClassUtils.getUserClass(handlerType);
+
             Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
                     (MethodIntrospector.MetadataLookup<T>) method -> {
                         try {
+                            /**
+                             * 解析{@link  RequestMapping} 接口方法,子类实现,请求处理->{@link  RequestMappingHandlerMapping#getMappingForMethod(java.lang.reflect.Method, java.lang.Class)}
+                             */
                             return getMappingForMethod(method, userType);
                         }
                         catch (Throwable ex) {
@@ -276,10 +302,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
             if (logger.isTraceEnabled()) {
                 logger.trace(formatMappings(userType, methods));
             }
+            /**
+             * 循环controller中的方法
+             */
             methods.forEach((method, mapping) -> {
                 Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
+                // 注册controller的处理器
                 registerHandlerMethod(handler, invocableMethod, mapping);
             });
+
         }
     }
 
@@ -545,7 +576,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
         private final String mappingName;
 
         public MappingRegistration(T mapping, HandlerMethod handlerMethod,
-                                   @Nullable List<String> directUrls, @Nullable String mappingName) {
+                @Nullable List<String> directUrls, @Nullable String mappingName) {
 
             Assert.notNull(mapping, "Mapping must not be null");
             Assert.notNull(handlerMethod, "HandlerMethod must not be null");
