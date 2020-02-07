@@ -70,6 +70,7 @@ import java.util.*;
  * that has the {@code text/html} content type (based on the {@code html} file extension). A request
  * for {@code /view} with a {@code text/html} request {@code Accept} header has the same result.
  *
+ * 内容协调器,可以对不同类型的数据进行包装,做不同的返回值,如context-type=json，或者context-type=xml
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @author Rossen Stoyanchev

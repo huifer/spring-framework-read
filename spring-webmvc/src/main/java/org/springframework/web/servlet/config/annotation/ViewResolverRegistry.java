@@ -114,13 +114,21 @@ public class ViewResolverRegistry {
         vr.setUseNotAcceptableStatusCode(useNotAcceptableStatus);
     }
 
+    /**
+     *
+     * @param defaultViews
+     * @return 内容协调器,可以对不同类型的数据进行包装,做不同的返回值,如context-type=json，或者context-type=xml
+     */
     private ContentNegotiatingViewResolver initContentNegotiatingViewResolver(View[] defaultViews) {
         // ContentNegotiatingResolver in the registry: elevate its precedence!
+        // 设置order
         this.order = (this.order != null ? this.order : Ordered.HIGHEST_PRECEDENCE);
+
 
         if (this.contentNegotiatingResolver != null) {
             if (!ObjectUtils.isEmpty(defaultViews) &&
                     !CollectionUtils.isEmpty(this.contentNegotiatingResolver.getDefaultViews())) {
+                // 视图设置
                 List<View> views = new ArrayList<>(this.contentNegotiatingResolver.getDefaultViews());
                 views.addAll(Arrays.asList(defaultViews));
                 this.contentNegotiatingResolver.setDefaultViews(views);
