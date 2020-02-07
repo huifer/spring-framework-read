@@ -238,6 +238,11 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
         return info;
     }
 
+    /**
+     * 获取地址前缀
+     * @param handlerType
+     * @return
+     */
     @Nullable
     String getPathPrefix(Class<?> handlerType) {
         for (Map.Entry<String, Predicate<Class<?>>> entry : this.pathPrefixes.entrySet()) {

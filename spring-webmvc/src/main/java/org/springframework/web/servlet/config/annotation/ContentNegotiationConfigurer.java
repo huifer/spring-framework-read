@@ -123,6 +123,8 @@ public class ContentNegotiationConfigurer {
      * <p>By default this is set to {@code true} in which case a request
      * for {@code /hotels.pdf} will be interpreted as a request for
      * {@code "application/pdf"} regardless of the 'Accept' header.
+     *
+     * 是否通过路径指定返回数据类型
      */
     public ContentNegotiationConfigurer favorPathExtension(boolean favorPathExtension) {
         this.factory.setFavorPathExtension(favorPathExtension);
@@ -217,6 +219,8 @@ public class ContentNegotiationConfigurer {
      * register {@link #mediaType(String, MediaType) media type mappings}.
      * <p>By default this is set to {@code false}.
      *
+     *
+     * 是否使用url上的参数来指定数据返回类型
      * @see #parameterName(String)
      */
     public ContentNegotiationConfigurer favorParameter(boolean favorParameter) {
@@ -227,6 +231,8 @@ public class ContentNegotiationConfigurer {
     /**
      * Set the query parameter name to use when {@link #favorParameter} is on.
      * <p>The default parameter name is {@code "format"}.
+     *
+     * 设置url上的参数名称
      */
     public ContentNegotiationConfigurer parameterName(String parameterName) {
         this.factory.setParameterName(parameterName);
@@ -236,6 +242,8 @@ public class ContentNegotiationConfigurer {
     /**
      * Whether to disable checking the 'Accept' request header.
      * <p>By default this value is set to {@code false}.
+     *
+     * 是否忽略HttpHeader上的Accept
      */
     public ContentNegotiationConfigurer ignoreAcceptHeader(boolean ignoreAcceptHeader) {
         this.factory.setIgnoreAcceptHeader(ignoreAcceptHeader);
@@ -249,6 +257,8 @@ public class ContentNegotiationConfigurer {
      * types, consider appending {@link MediaType#ALL} at the end.
      * <p>By default this is not set.
      *
+     *
+     * 默认媒体类型
      * @see #defaultContentTypeStrategy
      */
     public ContentNegotiationConfigurer defaultContentType(MediaType... defaultContentTypes) {
