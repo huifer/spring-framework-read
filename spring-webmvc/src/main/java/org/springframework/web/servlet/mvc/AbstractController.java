@@ -149,22 +149,33 @@ public abstract class AbstractController extends WebContentGenerator implements 
         this.synchronizeOnSession = synchronizeOnSession;
     }
 
+    /**
+     * 处理请求
+     * @param request  current HTTP request 请求
+     * @param response current HTTP response 返回
+     * @return
+     * @throws Exception
+     */
     @Override
     @Nullable
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
+        // 请求方法判断是否匹配,options
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             response.setHeader("Allow", getAllowHeader());
             return null;
         }
 
         // Delegate to WebContentGenerator for checking and preparing.
+        // 校验请求
         checkRequest(request);
+        // 设置response
         prepareResponse(response);
 
         // Execute handleRequestInternal in synchronized block if required.
         if (this.synchronizeOnSession) {
+            // 获取session
             HttpSession session = request.getSession(false);
             if (session != null) {
                 Object mutex = WebUtils.getSessionMutex(session);

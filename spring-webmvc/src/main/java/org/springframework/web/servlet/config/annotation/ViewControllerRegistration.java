@@ -32,6 +32,9 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
  */
 public class ViewControllerRegistration {
 
+    /**
+     * url路径
+     */
     private final String urlPath;
 
     private final ParameterizableViewController controller = new ParameterizableViewController();
@@ -59,6 +62,7 @@ public class ViewControllerRegistration {
      * will select the view name. The {@code DefaultRequestToViewNameTranslator}
      * for example translates "/foo/bar" to "foo/bar".
      *
+     * 设置视图名称
      * @see org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator
      */
     public void setViewName(String viewName) {

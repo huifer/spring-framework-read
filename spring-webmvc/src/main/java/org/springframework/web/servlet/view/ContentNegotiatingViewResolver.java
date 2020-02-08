@@ -181,8 +181,13 @@ public class ContentNegotiatingViewResolver extends WebApplicationObjectSupport
         this.order = order;
     }
 
+    /**
+     * 初始化 servlet上下文
+     * @param servletContext the ServletContext that this application object runs in
+     */
     @Override
     protected void initServletContext(ServletContext servletContext) {
+
         Collection<ViewResolver> matchingBeans =
                 BeanFactoryUtils.beansOfTypeIncludingAncestors(obtainApplicationContext(), ViewResolver.class).values();
         if (this.viewResolvers == null) {

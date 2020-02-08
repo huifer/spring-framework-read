@@ -82,6 +82,7 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
      * {@link #initApplicationContext(org.springframework.context.ApplicationContext)}
      * as well as {@link #setServletContext(javax.servlet.ServletContext)}.
      *
+     * 初始化servlet上下文
      * @param servletContext the ServletContext that this application object runs in
      *                       (never {@code null})
      */
@@ -100,8 +101,11 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
      */
     @Nullable
     protected final WebApplicationContext getWebApplicationContext() throws IllegalStateException {
+        // 获取app上下文
         ApplicationContext ctx = getApplicationContext();
+        // 类型判断
         if (ctx instanceof WebApplicationContext) {
+            // 强制转换
             return (WebApplicationContext) getApplicationContext();
         }
         else if (isContextRequired()) {
@@ -125,6 +129,7 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
             return this.servletContext;
         }
         ServletContext servletContext = null;
+        // 获取 webapp 上下文
         WebApplicationContext wac = getWebApplicationContext();
         if (wac != null) {
             servletContext = wac.getServletContext();

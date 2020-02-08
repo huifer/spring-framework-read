@@ -16,15 +16,15 @@
 
 package org.springframework.web.servlet.mvc;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContextUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Trivial controller that always returns a pre-configured view and optionally
@@ -55,12 +55,15 @@ public class ParameterizableViewController extends AbstractController {
     /**
      * Return the name of the view to delegate to, or {@code null} if using a
      * View instance.
+     *
+     * 获取视图名称
      */
     @Nullable
     public String getViewName() {
         if (this.view instanceof String) {
             String viewName = (String) this.view;
             if (getStatusCode() != null && getStatusCode().is3xxRedirection()) {
+                // 转发路由组装
                 return viewName.startsWith("redirect:") ? viewName : "redirect:" + viewName;
             }
             else {
@@ -156,13 +159,17 @@ public class ParameterizableViewController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
+        // 获取视图名称
         String viewName = getViewName();
 
+        // 状态码判空
         if (getStatusCode() != null) {
+            // 是不是3XX
             if (getStatusCode().is3xxRedirection()) {
                 request.setAttribute(View.RESPONSE_STATUS_ATTRIBUTE, getStatusCode());
             }
             else {
+                // 设置状态码
                 response.setStatus(getStatusCode().value());
                 if (getStatusCode().equals(HttpStatus.NO_CONTENT) && viewName == null) {
                     return null;
@@ -170,10 +177,12 @@ public class ParameterizableViewController extends AbstractController {
             }
         }
 
+        // 是否独立状态
         if (isStatusOnly()) {
             return null;
         }
 
+        // 模型和视图组装
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addAllObjects(RequestContextUtils.getInputFlashMap(request));
         if (viewName != null) {

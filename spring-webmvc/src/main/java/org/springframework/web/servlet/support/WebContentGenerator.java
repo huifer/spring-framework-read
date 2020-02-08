@@ -62,6 +62,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
     /**
      * HTTP method "GET".
+     * 请求方式
      */
     public static final String METHOD_GET = "GET";
 
@@ -79,18 +80,31 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
     private static final String HEADER_EXPIRES = "Expires";
     /**
      * Set of supported HTTP methods.
+     * 支持的请求
      */
     @Nullable
     private Set<String> supportedMethods;
 
+    /**
+     * 头信息
+     */
     @Nullable
     private String allowHeader;
 
+    /**
+     * 是否一定要有session
+     */
     private boolean requireSession = false;
 
+    /**
+     * 缓存
+     */
     @Nullable
     private CacheControl cacheControl;
 
+    /**
+     * 缓存过期时间,小于零不操作,大于零需要缓存
+     */
     private int cacheSeconds = -1;
 
     @Nullable
@@ -388,6 +402,7 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
     /**
      * Check the given request for supported methods and a required session, if any.
      *
+     * 校验请求
      * @param request current HTTP request
      * @throws ServletException if the request cannot be handled because a check failed
      * @since 4.2
@@ -411,18 +426,22 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
      * Prepare the given response according to the settings of this generator.
      * Applies the number of cache seconds specified for this generator.
      *
+     * 设置response
      * @param response current HTTP response
      * @since 4.2
      */
     protected final void prepareResponse(HttpServletResponse response) {
         if (this.cacheControl != null) {
+            // 缓存
             applyCacheControl(response, this.cacheControl);
         }
         else {
+            // 缓存时间
             applyCacheSeconds(response, this.cacheSeconds);
         }
         if (this.varyByRequestHeaders != null) {
             for (String value : getVaryRequestHeadersToAdd(response, this.varyByRequestHeaders)) {
+                // 头信息
                 response.addHeader("Vary", value);
             }
         }

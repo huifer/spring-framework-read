@@ -30,6 +30,8 @@ import java.util.Map;
  * Assists with the registration of simple automated controllers pre-configured
  * with status code and/or a view.
  *
+ *
+ * 视图控制器注册
  * @author Rossen Stoyanchev
  * @author Keith Donald
  * @since 3.1
@@ -59,6 +61,9 @@ public class ViewControllerRegistry {
      * <p>Patterns like {@code "/admin/**"} or {@code "/articles/{articlename:\\w+}"}
      * are allowed. See {@link org.springframework.util.AntPathMatcher} for more details on the
      * syntax.
+     *
+     *
+     * 添加视图名称对应的url
      */
     public ViewControllerRegistration addViewController(String urlPath) {
         ViewControllerRegistration registration = new ViewControllerRegistration(urlPath);
@@ -72,6 +77,8 @@ public class ViewControllerRegistry {
      * to another URL. By default the redirect URL is expected to be relative to
      * the current ServletContext, i.e. as relative to the web application root.
      *
+     * @param urlPath 原始url
+     * @param redirectUrl  跳转url
      * @since 4.1
      */
     public RedirectViewControllerRegistration addRedirectViewController(String urlPath, String redirectUrl) {
