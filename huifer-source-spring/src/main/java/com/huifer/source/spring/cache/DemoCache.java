@@ -1,6 +1,29 @@
 package com.huifer.source.spring.cache;
 
 public class DemoCache {
+    private Integer id;
+
+    public DemoCache(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "DemoCache{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     private String name;
 
     public String getName() {
@@ -18,10 +41,4 @@ public class DemoCache {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "DemoCache{" +
-                "name='" + name + '\'' +
-                '}';
-    }
 }
