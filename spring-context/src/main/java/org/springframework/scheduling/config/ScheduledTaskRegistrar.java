@@ -345,6 +345,9 @@ public class ScheduledTaskRegistrar implements ScheduledTaskHolder, Initializing
     /**
      * Schedule all registered tasks against the underlying
      * {@linkplain #setTaskScheduler(TaskScheduler) task scheduler}.
+     *
+     *
+     * 任务执行
      */
     @SuppressWarnings("deprecation")
     protected void scheduleTasks() {
@@ -410,23 +413,31 @@ public class ScheduledTaskRegistrar implements ScheduledTaskHolder, Initializing
      * Schedule the specified cron task, either right away if possible
      * or on initialization of the scheduler.
      *
+     *
+     * 执行定时任务
      * @return a handle to the scheduled task, allowing to cancel it
      * (or {@code null} if processing a previously registered task)
      * @since 4.3
      */
     @Nullable
     public ScheduledTask scheduleCronTask(CronTask task) {
+        // 从未执行的任务列表中删除,并且获取这个任务
         ScheduledTask scheduledTask = this.unresolvedTasks.remove(task);
         boolean newTask = false;
+        // 没有这个任务
         if (scheduledTask == null) {
             scheduledTask = new ScheduledTask(task);
             newTask = true;
         }
+        // 任务调度器是否为空
         if (this.taskScheduler != null) {
+
             scheduledTask.future = this.taskScheduler.schedule(task.getRunnable(), task.getTrigger());
         }
         else {
+            // 添加到cron任务列表
             addCronTask(task);
+            // 保存到没有执行的任务中
             this.unresolvedTasks.put(task, scheduledTask);
         }
         return (newTask ? scheduledTask : null);

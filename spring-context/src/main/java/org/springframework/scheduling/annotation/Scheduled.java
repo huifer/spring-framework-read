@@ -73,6 +73,7 @@ public @interface Scheduled {
      * <p>The special value {@link #CRON_DISABLED "-"} indicates a disabled cron trigger,
      * primarily meant for externally specified values resolved by a ${...} placeholder.
      *
+     * 定时任务描述语句
      * @return an expression that can be parsed to a cron schedule
      * @see org.springframework.scheduling.support.CronSequenceGenerator
      */
@@ -82,6 +83,8 @@ public @interface Scheduled {
      * A time zone for which the cron expression will be resolved. By default, this
      * attribute is the empty String (i.e. the server's local time zone will be used).
      *
+     *
+     * 时区
      * @return a zone id accepted by {@link java.util.TimeZone#getTimeZone(String)},
      * or an empty String to indicate the server's default time zone
      * @see org.springframework.scheduling.support.CronTrigger#CronTrigger(String, java.util.TimeZone)
@@ -94,6 +97,7 @@ public @interface Scheduled {
      * Execute the annotated method with a fixed period in milliseconds between the
      * end of the last invocation and the start of the next.
      *
+     * 固定时间
      * @return the delay in milliseconds
      */
     long fixedDelay() default -1;
@@ -112,6 +116,7 @@ public @interface Scheduled {
      * Execute the annotated method with a fixed period in milliseconds between
      * invocations.
      *
+     * 固定频率
      * @return the period in milliseconds
      */
     long fixedRate() default -1;

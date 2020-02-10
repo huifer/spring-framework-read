@@ -24,6 +24,7 @@ import org.springframework.lang.Nullable;
  * A representation of a scheduled task at runtime,
  * used as a return value for scheduling methods.
  *
+ * 定时任务对象
  * @author Juergen Hoeller
  * @see ScheduledTaskRegistrar#scheduleCronTask(CronTask)
  * @see ScheduledTaskRegistrar#scheduleFixedRateTask(FixedRateTask)
@@ -55,6 +56,7 @@ public final class ScheduledTask {
 
     /**
      * Trigger cancellation of this scheduled task.
+     * 取消定时任务
      */
     public void cancel() {
         ScheduledFuture<?> future = this.future;

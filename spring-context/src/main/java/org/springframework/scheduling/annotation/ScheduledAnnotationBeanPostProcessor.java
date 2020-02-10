@@ -88,6 +88,8 @@ import org.springframework.util.StringValueResolver;
  * control over task registration (e.g. registration of {@link Trigger} tasks.
  * See the @{@link EnableScheduling} javadocs for complete usage details.
  *
+ *
+ * {@link EnableScheduling}注解的解析类
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Chris Beams
@@ -118,16 +120,23 @@ public class ScheduledAnnotationBeanPostProcessor
     protected final Log logger = LogFactory.getLog(getClass());
 
     private final ScheduledTaskRegistrar registrar;
+
     private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+
     private final Map<Object, Set<ScheduledTask>> scheduledTasks = new IdentityHashMap<>(16);
+
     @Nullable
     private Object scheduler;
+
     @Nullable
     private StringValueResolver embeddedValueResolver;
+
     @Nullable
     private String beanName;
+
     @Nullable
     private BeanFactory beanFactory;
+
     @Nullable
     private ApplicationContext applicationContext;
 
@@ -162,6 +171,10 @@ public class ScheduledAnnotationBeanPostProcessor
         return (ch == 'P' || ch == 'p');
     }
 
+    /**
+     * order 注册顺序
+     * @return
+     */
     @Override
     public int getOrder() {
         return LOWEST_PRECEDENCE;
@@ -219,20 +232,27 @@ public class ScheduledAnnotationBeanPostProcessor
     @Override
     public void afterSingletonsInstantiated() {
         // Remove resolved singleton classes from cache
+        // 情况注解缓存
         this.nonAnnotatedClasses.clear();
 
         if (this.applicationContext == null) {
             // Not running in an ApplicationContext -> register tasks early...
+            // /
             finishRegistration();
         }
     }
 
+    /**
+     * application 事件
+     * @param event the event to respond to
+     */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (event.getApplicationContext() == this.applicationContext) {
             // Running in an ApplicationContext -> register tasks this late...
             // giving other ContextRefreshedEvent listeners a chance to perform
             // their work at the same time (e.g. Spring Batch's job registration).
+            // 注册定时任务
             finishRegistration();
         }
     }
@@ -343,10 +363,13 @@ public class ScheduledAnnotationBeanPostProcessor
             return bean;
         }
 
+        // 当前类
         Class<?> targetClass = AopProxyUtils.ultimateTargetClass(bean);
         if (!this.nonAnnotatedClasses.contains(targetClass)) {
+            // 方法扫描,存在 Scheduled、Schedules  注解的全部扫描
             Map<Method, Set<Scheduled>> annotatedMethods = MethodIntrospector.selectMethods(targetClass,
                     (MethodIntrospector.MetadataLookup<Set<Scheduled>>) method -> {
+
                         Set<Scheduled> scheduledMethods = AnnotatedElementUtils.getMergedRepeatableAnnotations(
                                 method, Scheduled.class, Schedules.class);
                         return (!scheduledMethods.isEmpty() ? scheduledMethods : null);
@@ -388,8 +411,11 @@ public class ScheduledAnnotationBeanPostProcessor
             Set<ScheduledTask> tasks = new LinkedHashSet<>(4);
 
             // Determine initial delay
+            // 是否延迟执行
             long initialDelay = scheduled.initialDelay();
+            // 延迟执行时间
             String initialDelayString = scheduled.initialDelayString();
+            // 是否有延迟执行的时间
             if (StringUtils.hasText(initialDelayString)) {
                 Assert.isTrue(initialDelay < 0, "Specify 'initialDelay' or 'initialDelayString', not both");
                 if (this.embeddedValueResolver != null) {
@@ -407,24 +433,32 @@ public class ScheduledAnnotationBeanPostProcessor
             }
 
             // Check cron expression
+            // 获取cron表达式
             String cron = scheduled.cron();
+            // cron表达式是否存在
             if (StringUtils.hasText(cron)) {
+                // 获取时区
                 String zone = scheduled.zone();
                 if (this.embeddedValueResolver != null) {
+                    // 字符串转换
                     cron = this.embeddedValueResolver.resolveStringValue(cron);
                     zone = this.embeddedValueResolver.resolveStringValue(zone);
                 }
                 if (StringUtils.hasLength(cron)) {
+                    // cron 是否延迟
                     Assert.isTrue(initialDelay == -1, "'initialDelay' not supported for cron triggers");
                     processedSchedule = true;
                     if (!Scheduled.CRON_DISABLED.equals(cron)) {
                         TimeZone timeZone;
                         if (StringUtils.hasText(zone)) {
+                            // 时区解析
                             timeZone = StringUtils.parseTimeZoneString(zone);
                         }
                         else {
+                            // 默认时区获取
                             timeZone = TimeZone.getDefault();
                         }
+                        // 创建任务
                         tasks.add(this.registrar.scheduleCronTask(new CronTask(runnable, new CronTrigger(cron, timeZone))));
                     }
                 }
@@ -436,12 +470,16 @@ public class ScheduledAnnotationBeanPostProcessor
             }
 
             // Check fixed delay
+            // 获取间隔调用时间
             long fixedDelay = scheduled.fixedDelay();
+            // 间隔时间>0
             if (fixedDelay >= 0) {
                 Assert.isTrue(!processedSchedule, errorMessage);
                 processedSchedule = true;
+                // 创建任务,间隔时间定时任务
                 tasks.add(this.registrar.scheduleFixedDelayTask(new FixedDelayTask(runnable, fixedDelay, initialDelay)));
             }
+            // 延迟时间
             String fixedDelayString = scheduled.fixedDelayString();
             if (StringUtils.hasText(fixedDelayString)) {
                 if (this.embeddedValueResolver != null) {
@@ -457,15 +495,18 @@ public class ScheduledAnnotationBeanPostProcessor
                         throw new IllegalArgumentException(
                                 "Invalid fixedDelayString value \"" + fixedDelayString + "\" - cannot parse into long");
                     }
+                    // 创建延迟时间任务
                     tasks.add(this.registrar.scheduleFixedDelayTask(new FixedDelayTask(runnable, fixedDelay, initialDelay)));
                 }
             }
 
             // Check fixed rate
+            // 获取调用频率
             long fixedRate = scheduled.fixedRate();
             if (fixedRate >= 0) {
                 Assert.isTrue(!processedSchedule, errorMessage);
                 processedSchedule = true;
+                // 创建调用频率的定时任务
                 tasks.add(this.registrar.scheduleFixedRateTask(new FixedRateTask(runnable, fixedRate, initialDelay)));
             }
             String fixedRateString = scheduled.fixedRateString();
@@ -492,6 +533,7 @@ public class ScheduledAnnotationBeanPostProcessor
 
             // Finally register the scheduled tasks
             synchronized (this.scheduledTasks) {
+                // 定时任务注册
                 Set<ScheduledTask> regTasks = this.scheduledTasks.computeIfAbsent(bean, key -> new LinkedHashSet<>(4));
                 regTasks.addAll(tasks);
             }
@@ -513,8 +555,11 @@ public class ScheduledAnnotationBeanPostProcessor
      * @since 5.1
      */
     protected Runnable createRunnable(Object target, Method method) {
+        // 没有参数列表
         Assert.isTrue(method.getParameterCount() == 0, "Only no-arg methods may be annotated with @Scheduled");
+        // 获取执行方法
         Method invocableMethod = AopUtils.selectInvocableMethod(method, target.getClass());
+        // 任务接口创建
         return new ScheduledMethodRunnable(target, invocableMethod);
     }
 
@@ -557,17 +602,24 @@ public class ScheduledAnnotationBeanPostProcessor
         }
     }
 
+    /**
+     * 摧毁方法
+     */
     @Override
     public void destroy() {
         synchronized (this.scheduledTasks) {
+            // 定时任务列表
             Collection<Set<ScheduledTask>> allTasks = this.scheduledTasks.values();
             for (Set<ScheduledTask> tasks : allTasks) {
                 for (ScheduledTask task : tasks) {
+                    // 定时任务关闭
                     task.cancel();
                 }
             }
+            // 任务列表清空
             this.scheduledTasks.clear();
         }
+        // 注册器摧毁
         this.registrar.destroy();
     }
 

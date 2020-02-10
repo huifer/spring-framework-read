@@ -192,6 +192,9 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
  * application context and any separate {@code DispatcherServlet} application contexts,
  * if you need to apply its behavior at multiple levels.
  *
+ *
+ * 开启定时任务注解,解析->{@link ScheduledAnnotationBeanPostProcessor}
+ * 开启定时的入口 ->{@link SchedulingConfiguration}
  * @author Chris Beams
  * @author Juergen Hoeller
  * @see Scheduled

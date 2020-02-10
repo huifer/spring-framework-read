@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  * e.g. the {@link Repository @Repository} annotation or AspectJ's
  * {@link org.aspectj.lang.annotation.Aspect @Aspect} annotation.
  *
+ * 组件注解 拓展->{@link Controller} {@link Service} {@link Repository}
  * @author Mark Fisher
  * @see Repository
  * @see Service

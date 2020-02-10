@@ -95,8 +95,11 @@ public class CronSequenceGenerator {
      * @throws IllegalArgumentException if the pattern cannot be parsed
      */
     public CronSequenceGenerator(String expression, TimeZone timeZone) {
+        // cron表达式
         this.expression = expression;
+        // 时区
         this.timeZone = timeZone;
+        // 解析表达式
         parse(expression);
     }
 
@@ -296,6 +299,7 @@ public class CronSequenceGenerator {
 
     /**
      * Parse the given pattern expression.
+     * 解析cron表达式
      */
     private void parse(String expression) throws IllegalArgumentException {
         String[] fields = StringUtils.tokenizeToStringArray(expression, " ");
@@ -306,6 +310,10 @@ public class CronSequenceGenerator {
         doParse(fields);
     }
 
+    /**
+     * cron表达式解析核心
+     * @param fields
+     */
     private void doParse(String[] fields) {
         setNumberHits(this.seconds, fields[0], 0, 60);
         setNumberHits(this.minutes, fields[1], 0, 60);

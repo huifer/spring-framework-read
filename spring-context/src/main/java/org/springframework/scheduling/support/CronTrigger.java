@@ -26,6 +26,7 @@ import org.springframework.scheduling.TriggerContext;
  * {@link Trigger} implementation for cron expressions.
  * Wraps a {@link CronSequenceGenerator}.
  *
+ * cron表达式触发器
  * @author Juergen Hoeller
  * @see CronSequenceGenerator
  * @since 3.0

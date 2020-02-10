@@ -889,6 +889,8 @@ public abstract class StringUtils {
     /**
      * Parse the given {@code timeZoneString} value into a {@link TimeZone}.
      *
+     *
+     * 时区解析
      * @param timeZoneString the time zone {@code String}, following {@link TimeZone#getTimeZone(String)}
      *                       but throwing {@link IllegalArgumentException} in case of an invalid time zone specification
      * @return a corresponding {@link TimeZone} instance

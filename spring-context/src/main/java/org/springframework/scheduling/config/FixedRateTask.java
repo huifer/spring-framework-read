@@ -19,6 +19,7 @@ package org.springframework.scheduling.config;
 /**
  * Specialization of {@link IntervalTask} for fixed-rate semantics.
  *
+ * 调用频率的定时任务
  * @author Juergen Hoeller
  * @see org.springframework.scheduling.annotation.Scheduled#fixedRate()
  * @see ScheduledTaskRegistrar#addFixedRateTask(IntervalTask)
