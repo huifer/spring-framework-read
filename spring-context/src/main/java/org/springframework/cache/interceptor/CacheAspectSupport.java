@@ -211,6 +211,10 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
     }
 
 
+    /**
+     * 初始化后执行,执行校验
+     * {@link CacheAspectSupport#getCacheOperationSource()}
+     */
     @Override
     public void afterPropertiesSet() {
         Assert.state(getCacheOperationSource() != null, "The 'cacheOperationSources' property is required: " +
@@ -223,6 +227,7 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
             // Lazily initialize cache resolver via default cache manager...
             Assert.state(this.beanFactory != null, "CacheResolver or BeanFactory must be set on cache aspect");
             try {
+                // 设置缓存管理对象,此处为xml中的缓存对象
                 setCacheManager(this.beanFactory.getBean(CacheManager.class));
             }
             catch (NoUniqueBeanDefinitionException ex) {

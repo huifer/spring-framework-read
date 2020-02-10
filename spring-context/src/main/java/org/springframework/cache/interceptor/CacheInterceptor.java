@@ -43,6 +43,12 @@ import org.springframework.lang.Nullable;
 @SuppressWarnings("serial")
 public class CacheInterceptor extends CacheAspectSupport implements MethodInterceptor, Serializable {
 
+    /**
+     * 拦截方法
+     * @param invocation the method invocation joinpoint
+     * @return
+     * @throws Throwable
+     */
     @Override
     @Nullable
     public Object invoke(final MethodInvocation invocation) throws Throwable {

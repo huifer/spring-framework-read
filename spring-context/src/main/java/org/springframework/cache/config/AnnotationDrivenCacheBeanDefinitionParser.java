@@ -105,6 +105,7 @@ class AnnotationDrivenCacheBeanDefinitionParser implements BeanDefinitionParser 
     @Nullable
     public BeanDefinition parse(Element element, ParserContext parserContext) {
         String mode = element.getAttribute("mode");
+        // 判断mode 是否位aspectj
         if ("aspectj".equals(mode)) {
             // mode="aspectj"
             registerCacheAspect(element, parserContext);
@@ -125,8 +126,11 @@ class AnnotationDrivenCacheBeanDefinitionParser implements BeanDefinitionParser 
     }
 
     private void registerCacheAdvisor(Element element, ParserContext parserContext) {
+        // 代理注册
         AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
+        // 注册换缓存切片
         SpringCachingConfigurer.registerCacheAdvisor(element, parserContext);
+        // 默认false
         if (jsr107Present && jcacheImplPresent) {
             JCacheCachingConfigurer.registerCacheAdvisor(element, parserContext);
         }
@@ -142,22 +146,29 @@ class AnnotationDrivenCacheBeanDefinitionParser implements BeanDefinitionParser 
                 Object eleSource = parserContext.extractSource(element);
 
                 // Create the CacheOperationSource definition.
+                // 注册根部bean AnnotationCacheOperationSource
                 RootBeanDefinition sourceDef = new RootBeanDefinition("org.springframework.cache.annotation.AnnotationCacheOperationSource");
                 sourceDef.setSource(eleSource);
                 sourceDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+                // 注册到容器,并且生产beanName
                 String sourceName = parserContext.getReaderContext().registerWithGeneratedName(sourceDef);
 
                 // Create the CacheInterceptor definition.
+                // 注册 CacheInterceptor
                 RootBeanDefinition interceptorDef = new RootBeanDefinition(CacheInterceptor.class);
                 interceptorDef.setSource(eleSource);
                 interceptorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+
                 parseCacheResolution(element, interceptorDef, false);
+                // 异常处理器
                 parseErrorHandler(element, interceptorDef);
+
                 CacheNamespaceHandler.parseKeyGenerator(element, interceptorDef);
                 interceptorDef.getPropertyValues().add("cacheOperationSources", new RuntimeBeanReference(sourceName));
                 String interceptorName = parserContext.getReaderContext().registerWithGeneratedName(interceptorDef);
 
                 // Create the CacheAdvisor definition.
+                // 注册 BeanFactoryCacheOperationSourceAdvisor
                 RootBeanDefinition advisorDef = new RootBeanDefinition(BeanFactoryCacheOperationSourceAdvisor.class);
                 advisorDef.setSource(eleSource);
                 advisorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);

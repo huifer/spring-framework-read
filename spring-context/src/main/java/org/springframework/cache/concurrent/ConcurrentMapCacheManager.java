@@ -42,6 +42,8 @@ import org.springframework.lang.Nullable;
  * {@link org.springframework.cache.ehcache.EhCacheCacheManager},
  * {@link org.springframework.cache.caffeine.CaffeineCacheManager}.
  *
+ *
+ * 缓存map管理器
  * @author Juergen Hoeller
  * @see ConcurrentMapCache
  * @since 3.1

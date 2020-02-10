@@ -55,9 +55,13 @@ public abstract class AopNamespaceUtils {
     public static void registerAutoProxyCreatorIfNecessary(
             ParserContext parserContext, Element sourceElement) {
 
+        // aop创建bean信息对象,注册xml标签到spring容器中
         BeanDefinition beanDefinition = AopConfigUtils.registerAutoProxyCreatorIfNecessary(
                 parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+        // 标签处理 proxy-target-class 和 expose-proxy 标签处理
         useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
+
+        // 注册发布事件
         registerComponentIfNecessary(beanDefinition, parserContext);
     }
 
@@ -105,8 +109,14 @@ public abstract class AopNamespaceUtils {
         }
     }
 
+    /**
+     * 注册组件(bean)SpringCachingConfigurer
+     * @param beanDefinition
+     * @param parserContext
+     */
     private static void registerComponentIfNecessary(@Nullable BeanDefinition beanDefinition, ParserContext parserContext) {
         if (beanDefinition != null) {
+            // 注册bean对象,发布事件
             parserContext.registerComponent(
                     new BeanComponentDefinition(beanDefinition, AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME));
         }

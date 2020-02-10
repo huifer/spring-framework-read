@@ -100,6 +100,7 @@ public abstract class BeanDefinitionReaderUtils {
      * Generate a bean name for the given bean definition, unique within the
      * given bean factory.
      *
+     * 生成 beanName
      * @param definition  the bean definition to generate a bean name for
      * @param registry    the bean factory that the definition is going to be
      *                    registered with (to check for existing bean names)

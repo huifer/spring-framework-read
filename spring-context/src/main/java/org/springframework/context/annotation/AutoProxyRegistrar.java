@@ -53,22 +53,30 @@ public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
      * annotation it finds -- as long as it exposes the right {@code mode} and
      * {@code proxyTargetClass} attributes, the APC can be registered and configured all
      * the same.
+     *
+     *
+     * 注册bean定义
      */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         boolean candidateFound = false;
+        // 获取注解
         Set<String> annTypes = importingClassMetadata.getAnnotationTypes();
         for (String annType : annTypes) {
+            // 注解属性
             AnnotationAttributes candidate = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);
             if (candidate == null) {
                 continue;
             }
+            // 获取 mode 属性
             Object mode = candidate.get("mode");
+            // 获取代理对象
             Object proxyTargetClass = candidate.get("proxyTargetClass");
             if (mode != null && proxyTargetClass != null && AdviceMode.class == mode.getClass() &&
                     Boolean.class == proxyTargetClass.getClass()) {
                 candidateFound = true;
                 if (mode == AdviceMode.PROXY) {
+                    // 注册
                     AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
                     if ((Boolean) proxyTargetClass) {
                         AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);

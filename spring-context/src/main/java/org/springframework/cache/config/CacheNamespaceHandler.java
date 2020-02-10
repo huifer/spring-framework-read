@@ -60,6 +60,9 @@ public class CacheNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         // 注册bean
+        /**
+         * {@link AnnotationDrivenCacheBeanDefinitionParser#parse(org.w3c.dom.Element, org.springframework.beans.factory.xml.ParserContext)}
+         */
         registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenCacheBeanDefinitionParser());
         registerBeanDefinitionParser("advice", new CacheAdviceParser());
     }
