@@ -36,6 +36,7 @@ public interface Cache {
 
     /**
      * Return the cache name.
+     * 获取名称
      */
     String getName();
 
@@ -49,6 +50,8 @@ public interface Cache {
      * <p>Returns {@code null} if the cache contains no mapping for this key;
      * otherwise, the cached value (which may be {@code null} itself) will
      * be returned in a {@link ValueWrapper}.
+     *
+     * 获取值
      *
      * @param key the key whose associated value is to be returned
      * @return the value to which this cache maps the specified key,
@@ -68,6 +71,8 @@ public interface Cache {
      * between a cached {@code null} value and no cache entry found at all.
      * Use the standard {@link #get(Object)} variant for that purpose instead.
      *
+     *
+     * 根据key 和类型获取值
      * @param key  the key whose associated value is to be returned
      * @param type the required type of the returned value (may be
      *             {@code null} to bypass a type check; in case of a {@code null}
@@ -94,6 +99,7 @@ public interface Cache {
      * <p>If the {@code valueLoader} throws an exception, it is wrapped in
      * a {@link ValueRetrievalException}
      *
+     * 获取数据
      * @param key the key whose associated value is to be returned
      * @return the value to which this cache maps the specified key
      * @throws ValueRetrievalException if the {@code valueLoader} throws an exception
@@ -108,6 +114,7 @@ public interface Cache {
      * <p>If the cache previously contained a mapping for this key, the old
      * value is replaced by the specified value.
      *
+     * 添加数据
      * @param key   the key with which the specified value is to be associated
      * @param value the value to be associated with the specified key
      */
@@ -130,6 +137,8 @@ public interface Cache {
      * presence and a subsequent put, in a non-atomic way. Check the documentation
      * of the native cache implementation that you are using for more details.
      *
+     *
+     * 添加key,value
      * @param key   the key with which the specified value is to be associated
      * @param value the value to be associated with the specified key
      * @return the value to which this cache maps the specified key (which may be
@@ -145,24 +154,29 @@ public interface Cache {
     /**
      * Evict the mapping for this key from this cache if it is present.
      *
+     * 删除一个key对应的缓存
      * @param key the key whose mapping is to be removed from the cache
      */
     void evict(Object key);
 
     /**
      * Clear the cache through removing all mappings.
+     * 清空缓存
      */
     void clear();
 
 
     /**
      * A (wrapper) object representing a cache value.
+     *
+     * 数据包装接口
      */
     @FunctionalInterface
     interface ValueWrapper {
 
         /**
          * Return the actual value in the cache.
+         * 获取缓存的数据值
          */
         @Nullable
         Object get();

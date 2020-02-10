@@ -39,15 +39,25 @@ import org.springframework.lang.Nullable;
  */
 public abstract class AbstractCacheManager implements CacheManager, InitializingBean {
 
+    /**
+     * 缓存map
+     */
     private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>(16);
 
+    /**
+     * 缓存名称
+     */
     private volatile Set<String> cacheNames = Collections.emptySet();
 
 
     // Early cache initialization on startup
 
+    /**
+     * 设置属性后执行
+     */
     @Override
     public void afterPropertiesSet() {
+        // 初始化缓存
         initializeCaches();
     }
 
@@ -60,14 +70,20 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
      * @since 4.2.2
      */
     public void initializeCaches() {
+        // 加载缓存
         Collection<? extends Cache> caches = loadCaches();
 
+        // 锁上
         synchronized (this.cacheMap) {
+            // 缓存名称获取
             this.cacheNames = Collections.emptySet();
+            // 缓存对象清空
             this.cacheMap.clear();
+            // 缓存名
             Set<String> cacheNames = new LinkedHashSet<>(caches.size());
             for (Cache cache : caches) {
                 String name = cache.getName();
+                // 缓存设置
                 this.cacheMap.put(name, decorateCache(cache));
                 cacheNames.add(name);
             }
@@ -79,12 +95,19 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
      * Load the initial caches for this cache manager.
      * <p>Called by {@link #afterPropertiesSet()} on startup.
      * The returned collection may be empty but must not be {@code null}.
+     *
+     * 加载缓存,子类实现
      */
     protected abstract Collection<? extends Cache> loadCaches();
 
 
     // Lazy cache initialization on access
 
+    /**
+     * 获取缓存,直接使用map#get()方法获取即可
+     * @param name the cache identifier (must not be {@code null})
+     * @return
+     */
     @Override
     @Nullable
     public Cache getCache(String name) {
@@ -95,13 +118,16 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
         }
 
         // The provider may support on-demand cache creation...
+        // 获取丢失的缓存
         Cache missingCache = getMissingCache(name);
         if (missingCache != null) {
             // Fully synchronize now for missing cache registration
             synchronized (this.cacheMap) {
                 cache = this.cacheMap.get(name);
                 if (cache == null) {
+                    // 获取删除的缓存
                     cache = decorateCache(missingCache);
+                    // 缓存更新
                     this.cacheMap.put(name, cache);
                     updateCacheNames(name);
                 }
@@ -137,6 +163,7 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
     /**
      * Dynamically register an additional Cache with this manager.
      *
+     * 添加缓存,方法废弃
      * @param cache the Cache to register
      * @deprecated as of Spring 4.3, in favor of {@link #getMissingCache(String)}
      */
@@ -156,6 +183,8 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
      * and effectively behaves like a {@code CopyOnWriteArraySet} with
      * preserved order but exposed as an unmodifiable reference.
      *
+     *
+     * 更新缓存
      * @param name the name of the cache to be added
      */
     private void updateCacheNames(String name) {
@@ -171,6 +200,7 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
     /**
      * Decorate the given Cache object if necessary.
      *
+     * 删除缓存
      * @param cache the Cache object to be added to this CacheManager
      * @return the decorated Cache object to be used instead,
      * or simply the passed-in Cache object by default
@@ -187,6 +217,7 @@ public abstract class AbstractCacheManager implements CacheManager, Initializing
      * subclass gets a chance to register such a cache at runtime. The returned cache
      * will be automatically added to this cache manager.
      *
+     * 获取找不到的缓存
      * @param name the name of the cache to retrieve
      * @return the missing cache, or {@code null} if no such cache exists or could be
      * created on demand

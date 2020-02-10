@@ -30,6 +30,8 @@ import org.springframework.util.StringUtils;
  * <p>This namespace handler is the central piece of functionality in the
  * Spring cache management facilities.
  *
+ *
+ * {@code <cache:annotation-driven/>} xml解析
  * @author Costin Leau
  * @since 3.1
  */
@@ -57,6 +59,7 @@ public class CacheNamespaceHandler extends NamespaceHandlerSupport {
 
     @Override
     public void init() {
+        // 注册bean
         registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenCacheBeanDefinitionParser());
         registerBeanDefinitionParser("advice", new CacheAdviceParser());
     }

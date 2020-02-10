@@ -14,6 +14,11 @@ public class CacheSourceCode {
 
         SimpleCacheManager bean1 = classPathXmlApplicationContext.getBean(SimpleCacheManager.class);
         Cache demoCache = bean1.getCache("demoCache");
+        DemoCache demoCache1 = demoCache.get(1, DemoCache.class);
+
+
+        System.out.println(bean1.getCacheNames());
+
         System.out.println();
     }
 }

@@ -36,6 +36,13 @@ public interface CacheManager {
      * <p>Note that the cache may be lazily created at runtime if the
      * native provider supports it.
      *
+     * 获取缓存名称 对应xml如下
+     * {@code
+     * <bean class="org.springframework.cache.concurrent.ConcurrentMapCacheFactoryBean">
+     * 					<property name="name" value="demoCache"/>
+     * 				</bean>
+     * }
+     * 想获取demoCache中的缓存传递参数 name = demoCache
      * @param name the cache identifier (must not be {@code null})
      * @return the associated cache, or {@code null} if such a cache
      * does not exist or could be not created
@@ -46,6 +53,7 @@ public interface CacheManager {
     /**
      * Get a collection of the cache names known by this manager.
      *
+     * 获取所有的缓存名称
      * @return the names of all caches known by the cache manager
      */
     Collection<String> getCacheNames();
