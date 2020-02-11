@@ -41,6 +41,8 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * <p>See implementations and associated unit tests for usage examples.
  *
+ *
+ * {@link Import} 注解的{@link Import#value()} 的注册
  * @author Chris Beams
  * @see Import
  * @see ImportSelector
@@ -56,6 +58,7 @@ public interface ImportBeanDefinitionRegistrar {
      * registered here, due to lifecycle constraints related to {@code @Configuration}
      * class processing.
      *
+     * 对import value属性的注册
      * @param importingClassMetadata annotation metadata of the importing class
      * @param registry               current bean definition registry
      */

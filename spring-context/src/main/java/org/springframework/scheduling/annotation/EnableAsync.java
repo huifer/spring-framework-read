@@ -147,6 +147,9 @@ import org.springframework.core.Ordered;
  * compile-time weaving or load-time weaving applying the aspect to the affected classes.
  * There is no proxy involved in such a scenario; local calls will be intercepted as well.
  *
+ *
+ * 启用异步注解
+ * 配置信息 -> {@link AsyncConfigurer}
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Stephane Nicoll

@@ -42,6 +42,7 @@ import java.lang.annotation.Target;
  * through: e.g. Spring's {@link AsyncResult}, EJB 3.1's {@link javax.ejb.AsyncResult},
  * or {@link java.util.concurrent.CompletableFuture#completedFuture(Object)}.
  *
+ * 给方法用的注解
  * @author Juergen Hoeller
  * @author Chris Beams
  * @see AnnotationAsyncExecutionInterceptor

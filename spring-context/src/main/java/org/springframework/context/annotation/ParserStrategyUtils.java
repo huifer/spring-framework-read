@@ -40,6 +40,8 @@ abstract class ParserStrategyUtils {
      * Invoke {@link BeanClassLoaderAware}, {@link BeanFactoryAware},
      * {@link EnvironmentAware}, and {@link ResourceLoaderAware} contracts
      * if implemented by the given object.
+     *
+     * 如果是{@link Aware} 接口则执行下面的方法
      */
     public static void invokeAwareMethods(Object parserStrategyBean, Environment environment,
                                           ResourceLoader resourceLoader, BeanDefinitionRegistry registry) {

@@ -145,8 +145,8 @@ class ConfigurationClassParser {
      * to populate the set of configuration classes.
      */
     public ConfigurationClassParser(MetadataReaderFactory metadataReaderFactory,
-                                    ProblemReporter problemReporter, Environment environment, ResourceLoader resourceLoader,
-                                    BeanNameGenerator componentScanBeanNameGenerator, BeanDefinitionRegistry registry) {
+            ProblemReporter problemReporter, Environment environment, ResourceLoader resourceLoader,
+            BeanNameGenerator componentScanBeanNameGenerator, BeanDefinitionRegistry registry) {
 
         this.metadataReaderFactory = metadataReaderFactory;
         this.problemReporter = problemReporter;
@@ -159,10 +159,16 @@ class ConfigurationClassParser {
     }
 
 
+    /**
+     *
+     * @param configCandidates
+     */
     public void parse(Set<BeanDefinitionHolder> configCandidates) {
+        // bean对象
         for (BeanDefinitionHolder holder : configCandidates) {
             BeanDefinition bd = holder.getBeanDefinition();
             try {
+                // 不同类型判断
                 if (bd instanceof AnnotatedBeanDefinition) {
                     parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
                 }
@@ -215,6 +221,11 @@ class ConfigurationClassParser {
     }
 
 
+    /**
+     * 解析{@link Configuration} 注解
+     * @param configClass
+     * @throws IOException
+     */
     protected void processConfigurationClass(ConfigurationClass configClass) throws IOException {
         if (this.conditionEvaluator.shouldSkip(configClass.getMetadata(), ConfigurationPhase.PARSE_CONFIGURATION)) {
             return;
@@ -252,6 +263,8 @@ class ConfigurationClassParser {
      * annotations, members and methods from the source class. This method can be called
      * multiple times as relevant sources are discovered.
      *
+     *
+     *       解析{@link Configuration} 注解
      * @param configClass the configuration class being build
      * @param sourceClass a source class
      * @return the superclass, or {@code null} if none found or previously processed
@@ -301,6 +314,7 @@ class ConfigurationClassParser {
         }
 
         // Process any @Import annotations
+        // 对注解 import 的解析
         processImports(configClass, sourceClass, getImports(sourceClass), true);
 
         // Process any @ImportResource annotations
@@ -509,8 +523,11 @@ class ConfigurationClassParser {
      * Returns {@code @Import} class, considering all meta-annotations.
      */
     private Set<SourceClass> getImports(SourceClass sourceClass) throws IOException {
+        // 导入类的信息
         Set<SourceClass> imports = new LinkedHashSet<>();
+        // 访问过类的信息
         Set<SourceClass> visited = new LinkedHashSet<>();
+        // 收集import注解信息
         collectImports(sourceClass, imports, visited);
         return imports;
     }
@@ -532,19 +549,23 @@ class ConfigurationClassParser {
     private void collectImports(SourceClass sourceClass, Set<SourceClass> imports, Set<SourceClass> visited)
             throws IOException {
 
+        // 判断当前类是否是访问过的
         if (visited.add(sourceClass)) {
+            // 帝国
             for (SourceClass annotation : sourceClass.getAnnotations()) {
                 String annName = annotation.getMetadata().getClassName();
+                // 注解获取
                 if (!annName.equals(Import.class.getName())) {
                     collectImports(annotation, imports, visited);
                 }
             }
+            // 注解信息存入
             imports.addAll(sourceClass.getAnnotationAttributes(Import.class.getName(), "value"));
         }
     }
 
     private void processImports(ConfigurationClass configClass, SourceClass currentSourceClass,
-                                Collection<SourceClass> importCandidates, boolean checkForCircularImports) {
+            Collection<SourceClass> importCandidates, boolean checkForCircularImports) {
 
         if (importCandidates.isEmpty()) {
             return;
@@ -557,18 +578,26 @@ class ConfigurationClassParser {
             this.importStack.push(configClass);
             try {
                 for (SourceClass candidate : importCandidates) {
+                    // 处理接口 ImportSelector
                     if (candidate.isAssignable(ImportSelector.class)) {
                         // Candidate class is an ImportSelector -> delegate to it to determine imports
+                        // 获取类
                         Class<?> candidateClass = candidate.loadClass();
+                        // 实例化 ImportSelector 对象
                         ImportSelector selector = BeanUtils.instantiateClass(candidateClass, ImportSelector.class);
+                        // 是否实现aware接口
                         ParserStrategyUtils.invokeAwareMethods(
                                 selector, this.environment, this.resourceLoader, this.registry);
+                        // 是否延迟
                         if (selector instanceof DeferredImportSelector) {
                             this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
                         }
                         else {
+                            // 获取类名
                             String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
+                            // 获取import类
                             Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames);
+                            // 处理获取到的类名
                             processImports(configClass, currentSourceClass, importSourceClasses, false);
                         }
                     }
@@ -587,6 +616,7 @@ class ConfigurationClassParser {
                         // process it as an @Configuration class
                         this.importStack.registerImport(
                                 currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
+                        // 对 Configuration 注解的解析
                         processConfigurationClass(candidate.asConfigClass(configClass));
                     }
                 }
