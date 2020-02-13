@@ -251,27 +251,34 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
      */
     public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
         List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
+        // 获取以及注册的beanName
         String[] candidateNames = registry.getBeanDefinitionNames();
 
+        // 循环beanName列表
         for (String beanName : candidateNames) {
             BeanDefinition beanDef = registry.getBeanDefinition(beanName);
+            // 判断 Configuration 属性是full 还是 lite
             if (ConfigurationClassUtils.isFullConfigurationClass(beanDef) ||
                     ConfigurationClassUtils.isLiteConfigurationClass(beanDef)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
                 }
             }
+            // 判断 bean是否是配置类
             else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+                // 是配置类添加到configCandidates中
                 configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
             }
         }
 
         // Return immediately if no @Configuration classes were found
+        // 判断配置类列表是否为空
         if (configCandidates.isEmpty()) {
             return;
         }
 
         // Sort by previously determined @Order value, if applicable
+        // 根据 order 排序
         configCandidates.sort((bd1, bd2) -> {
             int i1 = ConfigurationClassUtils.getOrder(bd1.getBeanDefinition());
             int i2 = ConfigurationClassUtils.getOrder(bd2.getBeanDefinition());
@@ -280,9 +287,11 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 
         // Detect any custom bean name generation strategy supplied through the enclosing application context
         SingletonBeanRegistry sbr = null;
+        // 判断类型是否为SingletonBeanRegistry
         if (registry instanceof SingletonBeanRegistry) {
             sbr = (SingletonBeanRegistry) registry;
             if (!this.localBeanNameGeneratorSet) {
+                // beanName生成器创建
                 BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(CONFIGURATION_BEAN_NAME_GENERATOR);
                 if (generator != null) {
                     this.componentScanBeanNameGenerator = generator;
@@ -292,20 +301,26 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
         }
 
         if (this.environment == null) {
+            // 环境
             this.environment = new StandardEnvironment();
         }
 
         // Parse each @Configuration class
+        // 创建 ConfigurationClassParser 解析@Configuration
         ConfigurationClassParser parser = new ConfigurationClassParser(
                 this.metadataReaderFactory, this.problemReporter, this.environment,
                 this.resourceLoader, this.componentScanBeanNameGenerator, registry);
 
+        // 去重configCandidates
         Set<BeanDefinitionHolder> candidates = new LinkedHashSet<>(configCandidates);
+        // 判断是否处理过 configuration
         Set<ConfigurationClass> alreadyParsed = new HashSet<>(configCandidates.size());
         do {
+            // 处理
             parser.parse(candidates);
             parser.validate();
 
+            // configuration 注解解析
             Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
             configClasses.removeAll(alreadyParsed);
 
@@ -341,10 +356,13 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
         while (!candidates.isEmpty());
 
         // Register the ImportRegistry as a bean in order to support ImportAware @Configuration classes
+        // 判断是否单例import
         if (sbr != null && !sbr.containsSingleton(IMPORT_REGISTRY_BEAN_NAME)) {
+            // 注册
             sbr.registerSingleton(IMPORT_REGISTRY_BEAN_NAME, parser.getImportRegistry());
         }
 
+        // 缓存清除
         if (this.metadataReaderFactory instanceof CachingMetadataReaderFactory) {
             // Clear cache in externally provided MetadataReaderFactory; this is a no-op
             // for a shared cache since it'll be cleared by the ApplicationContext.

@@ -60,6 +60,9 @@ abstract class ConfigurationClassUtils {
 
     private static final Log logger = LogFactory.getLog(ConfigurationClassUtils.class);
 
+    /**
+     * 基础注解列表
+     */
     private static final Set<String> candidateIndicators = new HashSet<>(8);
 
     static {
@@ -75,6 +78,8 @@ abstract class ConfigurationClassUtils {
      * (or a nested component class declared within a configuration/component class,
      * to be auto-registered as well), and mark it accordingly.
      *
+     *
+     * 判断是否是{@link Configuration} 类
      * @param beanDef               the bean definition to check
      * @param metadataReaderFactory the current factory in use by the caller
      * @return whether the candidate qualifies as (any kind of) configuration class
@@ -82,11 +87,14 @@ abstract class ConfigurationClassUtils {
     public static boolean checkConfigurationClassCandidate(
             BeanDefinition beanDef, MetadataReaderFactory metadataReaderFactory) {
 
+        // 获取类名
         String className = beanDef.getBeanClassName();
+        // 类名不存在或者没有工厂方法
         if (className == null || beanDef.getFactoryMethodName() != null) {
             return false;
         }
 
+        // 注解信息获取
         AnnotationMetadata metadata;
         if (beanDef instanceof AnnotatedBeanDefinition &&
                 className.equals(((AnnotatedBeanDefinition) beanDef).getMetadata().getClassName())) {
@@ -193,6 +201,8 @@ abstract class ConfigurationClassUtils {
     /**
      * Determine whether the given bean definition indicates a full {@code @Configuration}
      * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
+     *
+     * 判断是 configuration
      */
     public static boolean isFullConfigurationClass(BeanDefinition beanDef) {
         return CONFIGURATION_CLASS_FULL.equals(beanDef.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE));
@@ -201,6 +211,8 @@ abstract class ConfigurationClassUtils {
     /**
      * Determine whether the given bean definition indicates a lite {@code @Configuration}
      * class, through checking {@link #checkConfigurationClassCandidate}'s metadata marker.
+     *
+     * 判断是否带有{@link  Configuration}
      */
     public static boolean isLiteConfigurationClass(BeanDefinition beanDef) {
         return CONFIGURATION_CLASS_LITE.equals(beanDef.getAttribute(CONFIGURATION_CLASS_ATTRIBUTE));
