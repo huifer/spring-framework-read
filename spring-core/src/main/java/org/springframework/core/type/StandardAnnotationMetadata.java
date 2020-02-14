@@ -61,6 +61,8 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
      * form of {@link org.springframework.core.annotation.AnnotationAttributes} instead
      * of actual {@link Annotation} instances.
      *
+     *
+     * 注解相关
      * @param introspectedClass      the Class to introspect
      * @param nestedAnnotationsAsMap return nested annotations and annotation arrays as
      *                               {@link org.springframework.core.annotation.AnnotationAttributes} for compatibility
