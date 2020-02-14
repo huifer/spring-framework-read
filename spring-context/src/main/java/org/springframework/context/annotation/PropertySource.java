@@ -190,6 +190,8 @@ public @interface PropertySource {
      * for examples.
      * <p>Each location will be added to the enclosing {@code Environment} as its own
      * property source, and in the order declared.
+     *
+     * 路劲地址
      */
     String[] value();
 

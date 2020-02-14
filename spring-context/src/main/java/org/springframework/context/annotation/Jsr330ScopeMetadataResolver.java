@@ -33,6 +33,8 @@ import org.springframework.lang.Nullable;
  * in practice, you will typically use Spring's rich default scoping instead - or extend
  * this resolver with custom scoping annotations that point to extended Spring scopes.
  *
+ *
+ * jsr 330 作用域数据注册
  * @author Juergen Hoeller
  * @see #registerScope
  * @see #resolveScopeName
@@ -43,6 +45,7 @@ import org.springframework.lang.Nullable;
 public class Jsr330ScopeMetadataResolver implements ScopeMetadataResolver {
 
     private final Map<String, String> scopeMap = new HashMap<>();
+
 
 
     public Jsr330ScopeMetadataResolver() {

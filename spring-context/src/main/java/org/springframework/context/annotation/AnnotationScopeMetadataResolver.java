@@ -40,6 +40,9 @@ public class AnnotationScopeMetadataResolver implements ScopeMetadataResolver {
 
     private final ScopedProxyMode defaultProxyMode;
 
+    /**
+     * {@link Scope} 注解类
+     */
     protected Class<? extends Annotation> scopeAnnotationType = Scope.class;
 
 

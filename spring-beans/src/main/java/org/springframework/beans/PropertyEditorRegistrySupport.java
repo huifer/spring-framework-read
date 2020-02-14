@@ -43,6 +43,9 @@ import java.util.regex.Pattern;
  * Provides management of default editors and custom editors.
  * Mainly serves as base class for {@link BeanWrapperImpl}.
  *
+ *
+ *
+ * 属性编辑器注册,设置了默认的属性编辑器
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @see java.beans.PropertyEditorManager
@@ -59,6 +62,9 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 
     private boolean configValueEditorsActive = false;
 
+    /**
+     * 默认的属性编辑器,
+     */
     @Nullable
     private Map<Class<?>, PropertyEditor> defaultEditors;
 
@@ -67,7 +73,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 
     /**
      * key:数据类型
-     * value: 处理器
+     * value: 属性编辑器
      */
     @Nullable
     private Map<Class<?>, PropertyEditor> customEditors;
@@ -139,6 +145,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
      * Retrieve the default editor for the given property type, if any.
      * <p>Lazily registers the default editors, if they are active.
      *
+     * 获取默认的属性编辑器
      * @param requiredType type of the property
      * @return the default editor, or {@code null} if none found
      * @see #registerDefaultEditors
@@ -155,6 +162,7 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
             }
         }
         if (this.defaultEditors == null) {
+            // 创建默认编辑器
             createDefaultEditors();
         }
         return this.defaultEditors.get(requiredType);

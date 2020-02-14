@@ -80,6 +80,7 @@ public interface Environment extends PropertyResolver {
      * <p>If no profiles have explicitly been specified as active, then any
      * {@linkplain #getDefaultProfiles() default profiles} will automatically be activated.
      *
+     * 获取当前已知激活的 切面,从配置文件中 spring.profiles.active 获取
      * @see #getDefaultProfiles
      * @see ConfigurableEnvironment#setActiveProfiles
      * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
@@ -89,7 +90,7 @@ public interface Environment extends PropertyResolver {
     /**
      * Return the set of profiles to be active by default when no active profiles have
      * been set explicitly.
-     *
+     * 获得默认的切面
      * @see #getActiveProfiles
      * @see ConfigurableEnvironment#setDefaultProfiles
      * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
@@ -104,6 +105,7 @@ public interface Environment extends PropertyResolver {
      * For example, {@code env.acceptsProfiles("p1", "!p2")} will return {@code true} if
      * profile 'p1' is active or 'p2' is not active.
      *
+     * 是否接受这些切面
      * @throws IllegalArgumentException if called with zero arguments
      *                                  or if any profile is {@code null}, empty, or whitespace only
      * @see #getActiveProfiles
@@ -117,6 +119,8 @@ public interface Environment extends PropertyResolver {
     /**
      * Return whether the {@linkplain #getActiveProfiles() active profiles}
      * match the given {@link Profiles} predicate.
+     *
+     * 是否接收切面
      */
     boolean acceptsProfiles(Profiles profiles);
 

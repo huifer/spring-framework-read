@@ -41,6 +41,7 @@ public interface PropertyEditorRegistrar {
      * {@code PropertyEditors} instances for each invocation of this
      * method (since {@code PropertyEditors} are not threadsafe).
      *
+     * 属性编辑器注册方法
      * @param registry the {@code PropertyEditorRegistry} to register the
      *                 custom {@code PropertyEditors} with
      */

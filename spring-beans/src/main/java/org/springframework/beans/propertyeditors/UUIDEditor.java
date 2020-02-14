@@ -25,18 +25,28 @@ import java.util.UUID;
  * Editor for {@code java.util.UUID}, translating UUID
  * String representations into UUID objects and back.
  *
+ * uuid的属性编辑器
  * @author Juergen Hoeller
  * @see java.util.UUID
  * @since 3.0.1
  */
 public class UUIDEditor extends PropertyEditorSupport {
 
+    /**
+     * 获取文本
+     * @return
+     */
     @Override
     public String getAsText() {
         UUID value = (UUID) getValue();
         return (value != null ? value.toString() : "");
     }
 
+    /**
+     * 设置文本
+     * @param text
+     * @throws IllegalArgumentException
+     */
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
         if (StringUtils.hasText(text)) {

@@ -85,6 +85,8 @@ import org.springframework.core.env.Profiles;
  * {@code <beans>} element may be used. See the documentation in the
  * {@code spring-beans} XSD (version 3.1 or greater) for details.
  *
+ *
+ * 切面,默认 ${spring.profiles.default} 属性= default
  * @author Chris Beams
  * @author Phillip Webb
  * @author Sam Brannen

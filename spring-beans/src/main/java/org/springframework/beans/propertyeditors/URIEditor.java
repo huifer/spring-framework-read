@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
  * a valid protocol to be specified. Any scheme within a valid URI syntax
  * is allowed, even without a matching protocol handler being registered.
  *
+ * URI编辑器
  * @author Juergen Hoeller
  * @see java.net.URI
  * @see URLEditor
