@@ -42,6 +42,7 @@ import java.net.URL;
  * {@code java.io.File} access when the web application archive
  * is expanded.
  *
+ * servlet 资源
  * @author Juergen Hoeller
  * @see javax.servlet.ServletContext#getResourceAsStream
  * @see javax.servlet.ServletContext#getResource
@@ -50,8 +51,14 @@ import java.net.URL;
  */
 public class ServletContextResource extends AbstractFileResolvingResource implements ContextResource {
 
+    /**
+     * servlet 上下文
+     */
     private final ServletContext servletContext;
 
+    /**
+     * 地址
+     */
     private final String path;
 
 

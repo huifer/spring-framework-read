@@ -33,6 +33,8 @@ import java.util.Arrays;
  * Particularly useful for creating mail attachments from local content,
  * where JavaMail needs to be able to read the stream multiple times.
  *
+ *
+ * byte 资源
  * @author Juergen Hoeller
  * @author Sam Brannen
  * @see java.io.ByteArrayInputStream

@@ -69,6 +69,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
      * resource should be avoided, as far as possible. The result should
      * have set semantics.
      *
+     * 多个资源解析
      * @param locationPattern the location pattern to resolve
      * @return the corresponding Resource objects
      * @throws IOException in case of I/O errors

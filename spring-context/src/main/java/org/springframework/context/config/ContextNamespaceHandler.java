@@ -32,6 +32,10 @@ import org.springframework.context.annotation.ComponentScanBeanDefinitionParser;
  */
 public class ContextNamespaceHandler extends NamespaceHandlerSupport {
 
+
+    /**
+     * context 命名空间处理器
+     */
     @Override
     public void init() {
         // el

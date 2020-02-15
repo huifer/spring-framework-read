@@ -33,7 +33,7 @@ import org.springframework.util.ResourceUtils;
  * context's resource loading strategy.
  *
  *
- * 资源加载器
+ * 资源加载器,默认实现{@link DefaultResourceLoader}
  * @author Juergen Hoeller
  * @see Resource
  * @see org.springframework.core.io.support.ResourcePatternResolver
@@ -63,6 +63,8 @@ public interface ResourceLoader {
      * <p>Note that a Resource handle does not imply an existing resource;
      * you need to invoke {@link Resource#exists} to check for existence.
      *
+     *
+     * 获取资源 ,根据地址
      * @param location the resource location
      * @return a corresponding Resource handle (never {@code null})
      * @see #CLASSPATH_URL_PREFIX
@@ -77,6 +79,7 @@ public interface ResourceLoader {
      * in a uniform manner with the ResourceLoader, rather than relying
      * on the thread context ClassLoader.
      *
+     * 获取类加载器
      * @return the ClassLoader
      * (only {@code null} if even the system ClassLoader isn't accessible)
      * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
