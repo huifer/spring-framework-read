@@ -44,8 +44,10 @@ public interface AnnotatedTypeMetadata {
      * <p>If this method returns {@code true}, then
      * {@link #getAnnotationAttributes} will return a non-null Map.
      *
+     * 是否存在注解
      * @param annotationName the fully qualified class name of the annotation
      *                       type to look for
+     *                       注解全类名
      * @return whether a matching annotation is defined
      */
     boolean isAnnotated(String annotationName);
@@ -55,6 +57,7 @@ public interface AnnotatedTypeMetadata {
      * defined on the underlying element, as direct annotation or meta-annotation),
      * also taking attribute overrides on composed annotations into account.
      *
+     * 获取注解属性
      * @param annotationName the fully qualified class name of the annotation
      *                       type to look for
      * @return a Map of attributes, with the attribute name as key (e.g. "value")
@@ -69,6 +72,7 @@ public interface AnnotatedTypeMetadata {
      * defined on the underlying element, as direct annotation or meta-annotation),
      * also taking attribute overrides on composed annotations into account.
      *
+     * 获取注解属性
      * @param annotationName      the fully qualified class name of the annotation
      *                            type to look for
      * @param classValuesAsString whether to convert class references to String
