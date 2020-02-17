@@ -115,14 +115,20 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Serv
         this.servletContext = servletContext;
     }
 
+    /**
+     * 启动
+     */
     @Override
     public void start() {
+        // 是否运行判断
         if (!isRunning()) {
             this.running = true;
             try {
                 if (this.factory == null) {
+                    // 创建工厂
                     this.factory = new WebSocketServerFactory(this.servletContext, this.policy);
                 }
+                // 工厂设置
                 this.factory.setCreator((request, response) -> {
                     WebSocketHandlerContainer container = containerHolder.get();
                     Assert.state(container != null, "Expected WebSocketHandlerContainer");
@@ -130,6 +136,7 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Serv
                     response.setExtensions(container.getExtensionConfigs());
                     return container.getHandler();
                 });
+                // 工厂启动
                 this.factory.start();
             }
             catch (Throwable ex) {
@@ -144,6 +151,7 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Serv
             this.running = false;
             if (this.factory != null) {
                 try {
+                    // 停止
                     this.factory.stop();
                 }
                 catch (Throwable ex) {
@@ -153,6 +161,10 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Serv
         }
     }
 
+    /**
+     * 是否运行
+     * @return
+     */
     @Override
     public boolean isRunning() {
         return this.running;

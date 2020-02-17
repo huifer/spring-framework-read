@@ -73,6 +73,8 @@ public abstract class AbstractSubProtocolEvent extends ApplicationEvent {
      * headers.getSessionAttributes();
      * headers.getPrincipal();
      * </pre>
+     *
+     * 获取消息体
      */
     public Message<byte[]> getMessage() {
         return this.message;

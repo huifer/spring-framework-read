@@ -61,7 +61,7 @@ public abstract class BeanUtils {
 
     /**
      * Convenience method to instantiate a class using its no-arg constructor.
-     *
+     * 反射创建实体
      * @param clazz class to instantiate
      * @return the new instance
      * @throws BeanInstantiationException if the bean cannot be instantiated
@@ -149,6 +149,7 @@ public abstract class BeanUtils {
      * non-accessible (that is, non-public) constructor, and supports Kotlin classes
      * with optional parameters and default values.
      *
+     * 反射创建实体
      * @param ctor the constructor to instantiate
      * @param args the constructor arguments to apply (use {@code null} for an unspecified
      *             parameter if needed for Kotlin classes with optional parameters and default values)

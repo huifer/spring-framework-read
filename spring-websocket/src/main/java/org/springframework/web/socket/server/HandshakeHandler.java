@@ -37,6 +37,7 @@ public interface HandshakeHandler {
     /**
      * Initiate the handshake.
      *
+     * 握手
      * @param request    the current request
      * @param response   the current response
      * @param wsHandler  the handler to process WebSocket messages; see

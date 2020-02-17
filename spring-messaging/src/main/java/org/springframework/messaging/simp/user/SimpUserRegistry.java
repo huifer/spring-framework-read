@@ -31,6 +31,7 @@ public interface SimpUserRegistry {
     /**
      * Get the user for the given name.
      *
+     * 获取一个用户,根据名字
      * @param userName the name of the user to look up
      * @return the user, or {@code null} if not connected
      */
@@ -41,6 +42,7 @@ public interface SimpUserRegistry {
      * Return a snapshot of all connected users.
      * <p>The returned set is a copy and will not reflect further changes.
      *
+     * 获取所有的用户列表
      * @return the connected users, or an empty set if none
      */
     Set<SimpUser> getUsers();
@@ -48,6 +50,8 @@ public interface SimpUserRegistry {
     /**
      * Return the count of all connected users.
      *
+     *
+     * 获取用户数量
      * @return the number of connected users
      * @since 4.3.5
      */
@@ -56,6 +60,7 @@ public interface SimpUserRegistry {
     /**
      * Find subscriptions with the given matcher.
      *
+     * 根据匹配器 {@link SimpSubscriptionMatcher} 找到订阅信息
      * @param matcher the matcher to use
      * @return a set of matching subscriptions, or an empty set if none
      */
