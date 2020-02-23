@@ -1060,6 +1060,8 @@ public abstract class ClassUtils {
      * Determine the name of the package of the given fully-qualified class name,
      * e.g. "java.lang" for the {@code java.lang.String} class name.
      *
+     *
+     * 获取包名
      * @param fqClassName the fully-qualified class name
      * @return the package name, or the empty String if the class
      * is defined in the default package
@@ -1355,18 +1357,23 @@ public abstract class ClassUtils {
      * @since 5.1
      */
     public static Method getInterfaceMethodIfPossible(Method method) {
+        // 是否 public修饰 是否是接口
         if (Modifier.isPublic(method.getModifiers()) && !method.getDeclaringClass().isInterface()) {
+            // 获取类
             Class<?> current = method.getDeclaringClass();
             while (current != null && current != Object.class) {
+                // 获取借口
                 Class<?>[] ifcs = current.getInterfaces();
                 for (Class<?> ifc : ifcs) {
                     try {
+                        // 获取方法
                         return ifc.getMethod(method.getName(), method.getParameterTypes());
                     }
                     catch (NoSuchMethodException ex) {
                         // ignore
                     }
                 }
+                // 父类
                 current = current.getSuperclass();
             }
         }

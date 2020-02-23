@@ -367,6 +367,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
                 });
                 try {
                     AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () ->
+                            // 执行
                             destroyMethod.invoke(this.bean, args), this.acc);
                 }
                 catch (PrivilegedActionException pax) {
@@ -375,6 +376,7 @@ class DisposableBeanAdapter implements DisposableBean, Runnable, Serializable {
             }
             else {
                 ReflectionUtils.makeAccessible(destroyMethod);
+                // 执行销毁方法
                 destroyMethod.invoke(this.bean, args);
             }
         }
