@@ -847,6 +847,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
      * @see org.springframework.context.support.DefaultLifecycleProcessor
      */
     protected void initLifecycleProcessor() {
+        // 获取beanFactory
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         if (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) {
             this.lifecycleProcessor =
@@ -859,6 +860,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             DefaultLifecycleProcessor defaultProcessor = new DefaultLifecycleProcessor();
             defaultProcessor.setBeanFactory(beanFactory);
             this.lifecycleProcessor = defaultProcessor;
+            // 注册 lifecycleProcessor
             beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, this.lifecycleProcessor);
             if (logger.isTraceEnabled()) {
                 logger.trace("No '" + LIFECYCLE_PROCESSOR_BEAN_NAME + "' bean, using " +
@@ -961,6 +963,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
         clearResourceCaches();
 
         // Initialize lifecycle processor for this context.
+        /**
+         * {@link Lifecycle}
+         */
         initLifecycleProcessor();
 
         /**
@@ -1101,6 +1106,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
             // Stop all Lifecycle beans, to avoid delays during individual destruction.
             if (this.lifecycleProcessor != null) {
                 try {
+                    // 关闭
                     this.lifecycleProcessor.onClose();
                 }
                 catch (Throwable ex) {
@@ -1465,6 +1471,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
     // Implementation of Lifecycle interface
     //---------------------------------------------------------------------
 
+    /**
+     * 和 {@link Lifecycle} 相关操作
+     */
     @Override
     public void start() {
         getLifecycleProcessor().start();

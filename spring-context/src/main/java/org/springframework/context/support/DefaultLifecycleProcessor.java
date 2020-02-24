@@ -16,35 +16,24 @@
 
 package org.springframework.context.support;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ApplicationContextException;
-import org.springframework.context.Lifecycle;
-import org.springframework.context.LifecycleProcessor;
-import org.springframework.context.Phased;
-import org.springframework.context.SmartLifecycle;
+import org.springframework.context.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Default implementation of the {@link LifecycleProcessor} strategy.
+ * <p>
+ * {@link LifecycleProcessor} 的默认实现
  *
  * @author Mark Fisher
  * @author Juergen Hoeller
@@ -71,6 +60,11 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
         this.timeoutPerShutdownPhase = timeoutPerShutdownPhase;
     }
 
+    /**
+     * 获取BeanFactory
+     *
+     * @return
+     */
     private ConfigurableListableBeanFactory getBeanFactory() {
         ConfigurableListableBeanFactory beanFactory = this.beanFactory;
         Assert.state(beanFactory != null, "No BeanFactory available");
@@ -137,10 +131,22 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
 
     // Internal helpers
 
+    /**
+     * 开始 beans
+     *
+     * @param autoStartupOnly
+     */
     private void startBeans(boolean autoStartupOnly) {
+        // 获取 Lifecycle , key: beanName ,value: Lifecycle 的实现类
         Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
+
         Map<Integer, LifecycleGroup> phases = new HashMap<>();
         lifecycleBeans.forEach((beanName, bean) -> {
+            /**
+             * 1. autoStartupOnly == true
+             * 2. 类型判断 {@link SmartLifecycle}
+             * 3. isAutoStartup 方法判断
+             */
             if (!autoStartupOnly || (bean instanceof SmartLifecycle && ((SmartLifecycle) bean).isAutoStartup())) {
                 int phase = getPhase(bean);
                 LifecycleGroup group = phases.get(phase);
@@ -192,11 +198,16 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
         }
     }
 
+    /**
+     * 停止beans?
+     */
     private void stopBeans() {
         Map<String, Lifecycle> lifecycleBeans = getLifecycleBeans();
         Map<Integer, LifecycleGroup> phases = new HashMap<>();
         lifecycleBeans.forEach((beanName, bean) -> {
+            // 获取 phase 值用来关闭的时候使用
             int shutdownPhase = getPhase(bean);
+            // 从map中获取
             LifecycleGroup group = phases.get(shutdownPhase);
             if (group == null) {
                 group = new LifecycleGroup(shutdownPhase, this.timeoutPerShutdownPhase, lifecycleBeans, false);
@@ -204,6 +215,7 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
             }
             group.add(beanName, bean);
         });
+
         if (!phases.isEmpty()) {
             List<Integer> keys = new ArrayList<>(phases.keySet());
             keys.sort(Collections.reverseOrder());
@@ -279,18 +291,25 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
      * @return the Map of applicable beans, with bean names as keys and bean instances as values
      */
     protected Map<String, Lifecycle> getLifecycleBeans() {
+        // 获取beanFactory
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        // key:实例名称,value:实例对象
         Map<String, Lifecycle> beans = new LinkedHashMap<>();
+        // beanNames
         String[] beanNames = beanFactory.getBeanNamesForType(Lifecycle.class, false, false);
         for (String beanName : beanNames) {
             String beanNameToRegister = BeanFactoryUtils.transformedBeanName(beanName);
+            // 判断是否是工厂bean
             boolean isFactoryBean = beanFactory.isFactoryBean(beanNameToRegister);
+            // 根据是否为工厂bean进行名字设置
             String beanNameToCheck = (isFactoryBean ? BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
             if ((beanFactory.containsSingleton(beanNameToRegister) &&
                     (!isFactoryBean || matchesBeanType(Lifecycle.class, beanNameToCheck, beanFactory))) ||
                     matchesBeanType(SmartLifecycle.class, beanNameToCheck, beanFactory)) {
+                // 获取bean
                 Object bean = beanFactory.getBean(beanNameToCheck);
                 if (bean != this && bean instanceof Lifecycle) {
+                    // 添加到map集合中
                     beans.put(beanNameToRegister, (Lifecycle) bean);
                 }
             }
@@ -308,6 +327,8 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
      * <p>The default implementation checks for the {@link Phased} interface, using
      * a default of 0 otherwise. Can be overridden to apply other/further policies.
      *
+     *
+     * 获取 phase 值 , 从{@link Phased#getPhase()}中获取
      * @param bean the bean to introspect
      * @return the phase (an integer value)
      * @see Phased#getPhase()
@@ -321,6 +342,8 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
     /**
      * Helper class for maintaining a group of Lifecycle beans that should be started
      * and stopped together based on their 'phase' value (or the default value of 0).
+     *
+     * 生命周期组
      */
     private class LifecycleGroup {
 
