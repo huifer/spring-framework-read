@@ -383,6 +383,7 @@ public class ScheduledAnnotationBeanPostProcessor
             else {
                 // Non-empty set of methods
                 annotatedMethods.forEach((method, scheduledMethods) ->
+                        // 处理 scheduled 相关信息
                         scheduledMethods.forEach(scheduled -> processScheduled(scheduled, method, bean)));
                 if (logger.isTraceEnabled()) {
                     logger.trace(annotatedMethods.size() + " @Scheduled methods processed on bean '" + beanName +
