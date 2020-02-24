@@ -28,7 +28,7 @@ public interface MessageHandler {
 
     /**
      * Handle the given message.
-     *
+     * 处理消息
      * @param message the message to be handled
      * @throws MessagingException if the handler failed to process the message
      */

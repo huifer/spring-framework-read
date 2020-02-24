@@ -35,6 +35,7 @@ import org.springframework.messaging.MessageHeaders;
  * The exception is caught and an error message produced that contains both the original
  * message, and the transformed message that failed.
  *
+ * 异常的信息
  * @author Mark Fisher
  * @author Oleg Zhurakousky
  * @author Gary Russell

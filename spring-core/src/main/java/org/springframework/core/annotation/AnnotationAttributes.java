@@ -36,6 +36,8 @@ import java.util.Map;
  * code as well as convenience methods for looking up annotation attributes
  * in a type-safe fashion.
  *
+ *
+ * 注解的属性
  * @author Chris Beams
  * @author Sam Brannen
  * @author Juergen Hoeller

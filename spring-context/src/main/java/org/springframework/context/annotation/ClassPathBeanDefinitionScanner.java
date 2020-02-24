@@ -50,6 +50,8 @@ import org.springframework.util.PatternMatchUtils;
  * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
  * JSR-330's {@link javax.inject.Named} annotations, if available.
  *
+ *
+ * 类路径的扫描器
  * @author Mark Fisher
  * @author Juergen Hoeller
  * @author Chris Beams

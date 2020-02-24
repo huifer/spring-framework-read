@@ -235,13 +235,17 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
     private void doStop(Map<String, ? extends Lifecycle> lifecycleBeans, final String beanName,
                         final CountDownLatch latch, final Set<String> countDownBeanNames) {
 
+        // 获取删除的 beanName
         Lifecycle bean = lifecycleBeans.remove(beanName);
         if (bean != null) {
+            // 获取这个bean 的依赖项
             String[] dependentBeans = getBeanFactory().getDependentBeans(beanName);
             for (String dependentBean : dependentBeans) {
+                // 关闭
                 doStop(lifecycleBeans, dependentBean, latch, countDownBeanNames);
             }
             try {
+                // 是否属于运行状态
                 if (bean.isRunning()) {
                     if (bean instanceof SmartLifecycle) {
                         if (logger.isTraceEnabled()) {
@@ -317,6 +321,13 @@ public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactor
         return beans;
     }
 
+    /**
+     * 比较beanType
+     * @param targetType
+     * @param beanName
+     * @param beanFactory
+     * @return
+     */
     private boolean matchesBeanType(Class<?> targetType, String beanName, BeanFactory beanFactory) {
         Class<?> beanType = beanFactory.getType(beanName);
         return (beanType != null && targetType.isAssignableFrom(beanType));

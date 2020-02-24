@@ -83,6 +83,7 @@ public class IdTimestampMessageHeaderInitializer implements MessageHeaderInitial
 
     @Override
     public void initHeaders(MessageHeaderAccessor headerAccessor) {
+        // ID 生成器
         IdGenerator idGenerator = getIdGenerator();
         if (idGenerator != null) {
             headerAccessor.setIdGenerator(idGenerator);

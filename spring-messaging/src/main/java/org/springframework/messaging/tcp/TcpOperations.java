@@ -30,6 +30,7 @@ public interface TcpOperations<P> {
     /**
      * Open a new connection.
      *
+     * 打开一个新的链接
      * @param connectionHandler a handler to manage the connection
      * @return a ListenableFuture that can be used to determine when and if the
      * connection is successfully established
@@ -49,6 +50,7 @@ public interface TcpOperations<P> {
     /**
      * Shut down and close any open connections.
      *
+     * 关闭连接
      * @return a ListenableFuture that can be used to determine when and if the
      * connection is successfully closed
      */

@@ -33,6 +33,7 @@ public interface TcpConnection<P> extends Closeable {
     /**
      * Send the given message.
      *
+     * 发送消息
      * @param message the message
      * @return a ListenableFuture that can be used to determine when and if the
      * message was successfully sent
@@ -57,6 +58,8 @@ public interface TcpConnection<P> extends Closeable {
 
     /**
      * Close the connection.
+     *
+     * 关闭连接
      */
     @Override
     void close();

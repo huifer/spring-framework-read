@@ -399,6 +399,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     /**
      * Return the names of all beans which depend on the specified bean, if any.
      *
+     * 返回beanName 所需要的依赖
      * @param beanName the name of the bean
      * @return the array of dependent bean names, or an empty array if none
      * @since 2.5

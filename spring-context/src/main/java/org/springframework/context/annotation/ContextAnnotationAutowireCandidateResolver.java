@@ -52,8 +52,14 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
         return (isLazy(descriptor) ? buildLazyResolutionProxy(descriptor, beanName) : null);
     }
 
+    /**
+     * 是否懒加载
+     * @param descriptor
+     * @return
+     */
     protected boolean isLazy(DependencyDescriptor descriptor) {
         for (Annotation ann : descriptor.getAnnotations()) {
+            // 获取注解信息
             Lazy lazy = AnnotationUtils.getAnnotation(ann, Lazy.class);
             if (lazy != null && lazy.value()) {
                 return true;
@@ -91,6 +97,7 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
             public Object getTarget() {
                 Object target = beanFactory.doResolveDependency(descriptor, beanName, null, null);
                 if (target == null) {
+                    // 如果是 null 创建空对象
                     Class<?> type = getTargetClass();
                     if (Map.class == type) {
                         return Collections.emptyMap();

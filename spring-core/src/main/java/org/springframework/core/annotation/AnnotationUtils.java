@@ -151,6 +151,7 @@ public abstract class AnnotationUtils {
      * For support for arbitrary levels of meta-annotations, use one of the
      * {@code find*()} methods instead.
      *
+     * 获取注解
      * @param annotation     the Annotation to check
      * @param annotationType the annotation type to look for, both locally and as a meta-annotation
      * @return the first matching annotation, or {@code null} if not found

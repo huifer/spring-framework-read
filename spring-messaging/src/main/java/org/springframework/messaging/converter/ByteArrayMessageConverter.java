@@ -25,6 +25,7 @@ import org.springframework.util.MimeTypeUtils;
  * A {@link MessageConverter} that supports MIME type "application/octet-stream" with the
  * payload converted to and from a byte[].
  *
+ * byte数组消息转换器
  * @author Rossen Stoyanchev
  * @since 4.0
  */
