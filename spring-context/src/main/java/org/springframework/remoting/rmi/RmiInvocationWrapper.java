@@ -70,6 +70,8 @@ class RmiInvocationWrapper implements RmiInvocationHandler {
     /**
      * Delegates the actual invocation handling to the RMI exporter.
      *
+     *
+     * 远程调用的时候会执行
      * @see RmiBasedExporter#invoke(org.springframework.remoting.support.RemoteInvocation, Object)
      */
     @Override

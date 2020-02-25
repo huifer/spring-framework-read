@@ -16,20 +16,16 @@
 
 package org.springframework.remoting.rmi;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.NoSuchObjectException;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.lang.Nullable;
+
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
-
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.lang.Nullable;
 
 /**
  * RMI exporter that exposes the specified service as RMI object with the specified name.
@@ -68,30 +64,58 @@ import org.springframework.lang.Nullable;
  */
 public class RmiServiceExporter extends RmiBasedExporter implements InitializingBean, DisposableBean {
 
+    /**
+     * 服务名称,rmi的服务名,在Spring中使用ref指向impl实现类
+     */
     private String serviceName;
 
+    /**
+     *
+     */
     private int servicePort = 0;  // anonymous port
 
+    /**
+     * 进行远程对象调用的Socket工厂
+     */
     private RMIClientSocketFactory clientSocketFactory;
 
+    /**
+     * 接收远程调用服务端的Socket工厂
+     */
     private RMIServerSocketFactory serverSocketFactory;
 
     private Registry registry;
 
+    /**
+     * 注册的IP地址
+     */
     private String registryHost;
 
+    /**
+     * 注册的端口
+     */
     private int registryPort = Registry.REGISTRY_PORT;
 
     private RMIClientSocketFactory registryClientSocketFactory;
 
     private RMIServerSocketFactory registryServerSocketFactory;
 
+    /**
+     * true: 该参数在获取{@link Registry}时测试是否建立连接,如果建立连接则直接使用,否则创建新连接
+     * 是否总是创建{@link Registry}
+     */
     private boolean alwaysCreateRegistry = false;
 
+    /**
+     * 设置替换RMI注册表中的绑定关系
+     */
     private boolean replaceExistingBinding = true;
 
     private Remote exportedObject;
 
+    /**
+     * 创建{@link Registry}
+     */
     private boolean createdRegistry = false;
 
 
@@ -243,12 +267,15 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
      * @throws RemoteException if service registration failed
      */
     public void prepare() throws RemoteException {
+        // 校验service
         checkService();
 
+        // 服务名称校验
         if (this.serviceName == null) {
             throw new IllegalArgumentException("Property 'serviceName' is required");
         }
 
+        // socketFactory 相关校验
         // Check socket factories for exported object.
         if (this.clientSocketFactory instanceof RMIServerSocketFactory) {
             this.serverSocketFactory = (RMIServerSocketFactory) this.clientSocketFactory;
@@ -272,12 +299,14 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
         // Determine RMI registry to use.
         if (this.registry == null) {
+            // registry 获取
             this.registry = getRegistry(this.registryHost, this.registryPort,
                     this.registryClientSocketFactory, this.registryServerSocketFactory);
             this.createdRegistry = true;
         }
 
         // Initialize and cache exported object.
+        // 初始化并且获取缓存的object
         this.exportedObject = getObjectToExport();
 
         if (logger.isDebugEnabled()) {
@@ -285,6 +314,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
         }
 
         // Export RMI object.
+        // 导出RMI object
         if (this.clientSocketFactory != null) {
             UnicastRemoteObject.exportObject(
                     this.exportedObject, this.servicePort, this.clientSocketFactory, this.serverSocketFactory);
@@ -294,6 +324,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
         }
 
         // Bind RMI object to registry.
+        // 对象绑定,把serviceName 和 到处的RMI对象进行绑定,JDK实现
         try {
             if (this.replaceExistingBinding) {
                 this.registry.rebind(this.serviceName, this.exportedObject);
@@ -336,6 +367,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
             if (logger.isDebugEnabled()) {
                 logger.debug("Looking for RMI registry at port '" + registryPort + "' of host [" + registryHost + "]");
             }
+            // 通过 host port socket创建
             Registry reg = LocateRegistry.getRegistry(registryHost, registryPort, clientSocketFactory);
             testRegistry(reg);
             return reg;
@@ -370,7 +402,9 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
             synchronized (LocateRegistry.class) {
                 try {
                     // Retrieve existing registry.
+                    // 创建registry
                     Registry reg = LocateRegistry.getRegistry(null, registryPort, clientSocketFactory);
+                    // 测试 Registry
                     testRegistry(reg);
                     return reg;
                 }
@@ -391,6 +425,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
     /**
      * Locate or create the RMI registry for this exporter.
      *
+     * 本地的 RMI 服务
      * @param registryPort the registry port to use
      * @return the RMI registry
      * @throws RemoteException if the registry couldn't be located or created
@@ -458,6 +493,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
     /**
      * Unexport the registered RMI object, logging any exception that arises.
+     *  取消rmi object 的导出
      */
     private void unexportObjectSilently() {
         try {

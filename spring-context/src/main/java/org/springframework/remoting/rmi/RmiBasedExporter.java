@@ -52,6 +52,7 @@ public abstract class RmiBasedExporter extends RemoteInvocationBasedExporter {
         if (getService() instanceof Remote &&
                 (getServiceInterface() == null || Remote.class.isAssignableFrom(getServiceInterface()))) {
             // conventional RMI service
+            // 获取service
             return (Remote) getService();
         }
         else {
@@ -59,6 +60,11 @@ public abstract class RmiBasedExporter extends RemoteInvocationBasedExporter {
             if (logger.isDebugEnabled()) {
                 logger.debug("RMI service [" + getService() + "] is an RMI invoker");
             }
+            // RMI 包装类
+            /**
+             * 1. getProxyForService() 获取代理的接口
+             * 2. 创建RMI包装对象 RmiInvocationWrapper
+             */
             return new RmiInvocationWrapper(getProxyForService(), this);
         }
     }

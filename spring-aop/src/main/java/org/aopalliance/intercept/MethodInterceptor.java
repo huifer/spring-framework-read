@@ -47,6 +47,8 @@ public interface MethodInterceptor extends Interceptor {
      * after the invocation. Polite implementations would certainly
      * like to invoke {@link Joinpoint#proceed()}.
      *
+     *
+     * 切面接口实现函数
      * @param invocation the method invocation joinpoint
      * @return the result of the call to {@link Joinpoint#proceed()};
      * might be intercepted by the interceptor
