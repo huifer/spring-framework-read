@@ -209,6 +209,7 @@ public abstract class BeanUtils {
      * {@code findDeclaredMethod}. This allows to find public methods
      * without issues even in environments with restricted Java security settings.
      *
+     * 寻找函数{@link Method}
      * @param clazz      the class to check
      * @param methodName the name of the method to find
      * @param paramTypes the parameter types of the method to find
@@ -232,6 +233,7 @@ public abstract class BeanUtils {
      * protected, package access, or private method.
      * <p>Checks {@code Class.getDeclaredMethod}, cascading upwards to all superclasses.
      *
+     * 寻找函数
      * @param clazz      the class to check
      * @param methodName the name of the method to find
      * @param paramTypes the parameter types of the method to find
@@ -259,6 +261,7 @@ public abstract class BeanUtils {
      * {@code findDeclaredMethodWithMinimalParameters}. This allows for finding public
      * methods without issues even in environments with restricted Java security settings.
      *
+     * 找出参数最少的函数
      * @param clazz      the class to check
      * @param methodName the name of the method to find
      * @return the Method object, or {@code null} if not found
@@ -306,6 +309,7 @@ public abstract class BeanUtils {
      * Find a method with the given method name and minimal parameters (best case: none)
      * in the given list of methods.
      *
+     * 找出参数最少的函数
      * @param methods    the methods to check
      * @param methodName the name of the method to find
      * @return the Method object, or {@code null} if not found
@@ -319,7 +323,9 @@ public abstract class BeanUtils {
         Method targetMethod = null;
         int numMethodsFoundWithCurrentMinimumArgs = 0;
         for (Method method : methods) {
+            // 函数名比较是否相同
             if (method.getName().equals(methodName)) {
+                // 参数数量
                 int numParams = method.getParameterCount();
                 if (targetMethod == null || numParams < targetMethod.getParameterCount()) {
                     targetMethod = method;
@@ -359,6 +365,7 @@ public abstract class BeanUtils {
      * means the method called {@code methodName} with exactly 0 arguments.
      * <p>If no method can be found, then {@code null} is returned.
      *
+     * 函数签名解析
      * @param signature the method signature as String representation
      * @param clazz     the class to resolve the method signature against
      * @return the resolved Method

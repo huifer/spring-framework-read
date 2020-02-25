@@ -104,6 +104,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
     protected final Log logger = LogFactory.getLog(getClass());
 
+    /**
+     * 自动装配的注解类型
+     */
     private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
     private final Set<String> lookupMethodsChecked = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
     private final Map<Class<?>, Constructor<?>[]> candidateConstructorsCache = new ConcurrentHashMap<>(256);
@@ -123,6 +126,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
      */
     @SuppressWarnings("unchecked")
     public AutowiredAnnotationBeanPostProcessor() {
+        // 设置自动装配的注解类型
         this.autowiredAnnotationTypes.add(Autowired.class);
         this.autowiredAnnotationTypes.add(Value.class);
         try {

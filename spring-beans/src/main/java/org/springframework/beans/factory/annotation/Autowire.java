@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
  * <p>Available for use in annotation-based configurations, such as for the
  * AspectJ AnnotationBeanConfigurer aspect.
  *
+ * 自动装配类型枚举
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see org.springframework.beans.factory.annotation.Configurable
@@ -41,11 +42,13 @@ public enum Autowire {
 
     /**
      * Constant that indicates autowiring bean properties by name.
+     * 根据名称自动装配
      */
     BY_NAME(AutowireCapableBeanFactory.AUTOWIRE_BY_NAME),
 
     /**
      * Constant that indicates autowiring bean properties by type.
+     * 根据类型自动装配
      */
     BY_TYPE(AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
 
