@@ -71,7 +71,9 @@ public class ProxyFactory extends ProxyCreatorSupport {
      * @param interceptor    the interceptor that the proxy should invoke
      */
     public ProxyFactory(Class<?> proxyInterface, Interceptor interceptor) {
+        // 添加接口
         addInterface(proxyInterface);
+        // 添加切面
         addAdvice(interceptor);
     }
 

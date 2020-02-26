@@ -27,6 +27,10 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public abstract class UrlBasedRemoteAccessor extends RemoteAccessor implements InitializingBean {
 
+    /**
+     * 服务的url地址
+     * rmi://host:port/${rmi_service_name}
+     */
     private String serviceUrl;
 
     /**
@@ -44,6 +48,9 @@ public abstract class UrlBasedRemoteAccessor extends RemoteAccessor implements I
         this.serviceUrl = serviceUrl;
     }
 
+    /**
+     * 判断服务地址是否为空
+     */
     @Override
     public void afterPropertiesSet() {
         if (getServiceUrl() == null) {

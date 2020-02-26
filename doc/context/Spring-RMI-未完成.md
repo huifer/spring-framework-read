@@ -368,6 +368,7 @@ public class RMIClientSourceCode {
 
 
 #### rebind 和 bind 
+- 绑定和重新绑定
 - 这部分源码在: `sun.rmi.registry.RegistryImpl`
 ```java
     public void rebind(String var1, Remote var2) throws RemoteException, AccessException {
@@ -391,3 +392,66 @@ public class RMIClientSourceCode {
     }
 ```
 - 共同维护`    private Hashtable<String, Remote> bindings = new Hashtable(101);`这个对象
+
+#### unexportObjectSilently
+- 出现异常时候调用方法
+```java
+
+    private void unexportObjectSilently() {
+        try {
+            UnicastRemoteObject.unexportObject(this.exportedObject, true);
+        }
+        catch (NoSuchObjectException ex) {
+            if (logger.isInfoEnabled()) {
+                logger.info("RMI object for service '" + this.serviceName + "' is not exported anymore", ex);
+            }
+        }
+    }
+
+```
+---
+## 客户端初始化
+
+### RmiProxyFactoryBean
+
+![image-20200225104850528](assets/image-20200225104850528.png)
+
+
+
+- 该类实现了`InitializingBean`接口直接看`afterPropertiesSet`方法
+
+- `org.springframework.remoting.rmi.RmiProxyFactoryBean`
+
+  - ```java
+        @Override
+        public void afterPropertiesSet() {
+            super.afterPropertiesSet();
+            Class<?> ifc = getServiceInterface();
+            Assert.notNull(ifc, "Property 'serviceInterface' is required");
+            this.serviceProxy = new ProxyFactory(ifc, this).getProxy(getBeanClassLoader());
+        }
+    ```
+
+  - `org.springframework.remoting.rmi.RmiClientInterceptor#afterPropertiesSet`
+
+    - ```java
+          @Override
+          public void afterPropertiesSet() {
+              super.afterPropertiesSet();
+              prepare();
+          }
+      ```
+
+    - `org.springframework.remoting.support.UrlBasedRemoteAccessor#afterPropertiesSet`
+
+      - ```java
+            @Override
+            public void afterPropertiesSet() {
+                if (getServiceUrl() == null) {
+                    throw new IllegalArgumentException("Property 'serviceUrl' is required");
+                }
+            }
+        
+        ```
+
+        

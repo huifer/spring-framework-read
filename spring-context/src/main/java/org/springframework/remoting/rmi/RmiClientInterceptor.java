@@ -16,6 +16,16 @@
 
 package org.springframework.remoting.rmi;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.remoting.RemoteConnectFailureException;
+import org.springframework.remoting.RemoteInvocationFailureException;
+import org.springframework.remoting.RemoteLookupFailureException;
+import org.springframework.remoting.support.RemoteInvocationBasedAccessor;
+import org.springframework.remoting.support.RemoteInvocationUtils;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -29,17 +39,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
-
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-
-import org.springframework.aop.support.AopUtils;
-import org.springframework.lang.Nullable;
-import org.springframework.remoting.RemoteConnectFailureException;
-import org.springframework.remoting.RemoteInvocationFailureException;
-import org.springframework.remoting.RemoteLookupFailureException;
-import org.springframework.remoting.support.RemoteInvocationBasedAccessor;
-import org.springframework.remoting.support.RemoteInvocationUtils;
 
 /**
  * {@link org.aopalliance.intercept.MethodInterceptor} for accessing conventional
@@ -72,10 +71,22 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
         implements MethodInterceptor {
 
     private final Object stubMonitor = new Object();
+    /**
+     * spring ioc 容器初始化阶段是否需要远程查找
+     */
     private boolean lookupStubOnStartup = true;
+    /**
+     * 是否还存
+     */
     private boolean cacheStub = true;
+    /**
+     * 断线重连
+     */
     private boolean refreshStubOnConnectFailure = false;
     private RMIClientSocketFactory registryClientSocketFactory;
+    /**
+     * 远程对象
+     */
     private Remote cachedStub;
 
     /**
@@ -182,18 +193,25 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
                 // Unfortunately, due to RMI API limitations, this means
                 // that we need to parse the RMI URL ourselves and perform
                 // straight LocateRegistry.getRegistry/Registry.lookup calls.
+                // 通过 serviceUrl 创建 URL
                 URL url = new URL(null, getServiceUrl(), new DummyURLStreamHandler());
+                // url 的协议
                 String protocol = url.getProtocol();
                 if (protocol != null && !"rmi".equals(protocol)) {
                     throw new MalformedURLException("Invalid URL scheme '" + protocol + "'");
                 }
+                // 获取host
                 String host = url.getHost();
+                // 获取port
                 int port = url.getPort();
+                // 获取serviceName
                 String name = url.getPath();
                 if (name != null && name.startsWith("/")) {
                     name = name.substring(1);
                 }
+                // 创建 Registry
                 Registry registry = LocateRegistry.getRegistry(host, port, this.registryClientSocketFactory);
+                // 获取Remote
                 stub = registry.lookup(name);
             }
             else {
