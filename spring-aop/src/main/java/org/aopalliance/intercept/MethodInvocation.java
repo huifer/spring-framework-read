@@ -35,6 +35,7 @@ public interface MethodInvocation extends Invocation {
      * <p>This method is a friendly implementation of the
      * {@link Joinpoint#getStaticPart()} method (same result).
      *
+     * 获取函数 , 和AOP相关
      * @return the method being called
      */
     Method getMethod();

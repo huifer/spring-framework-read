@@ -454,4 +454,338 @@ public class RMIClientSourceCode {
         
         ```
 
-        
+
+
+
+### org.springframework.remoting.support.UrlBasedRemoteAccessor#afterPropertiesSet
+
+- 该方法对 `serviceUrl`进行空判断，如果是空的抛出异常
+
+
+
+```java
+    /**
+     * 判断服务地址是否为空
+     */
+    @Override
+    public void afterPropertiesSet() {
+        if (getServiceUrl() == null) {
+            throw new IllegalArgumentException("Property 'serviceUrl' is required");
+        }
+    }
+```
+
+
+
+### org.springframework.remoting.rmi.RmiClientInterceptor#afterPropertiesSet
+
+
+
+```java
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+        prepare();
+    }
+```
+
+1. 调用父类的`afterPropertiesSet`方法判断`serviceUrl`是否为空
+2. 执行`prepare()`方法
+
+
+
+```JAVA
+    public void prepare() throws RemoteLookupFailureException {
+        // Cache RMI stub on initialization?
+        if (this.lookupStubOnStartup) {
+            // 获取remote对象
+            Remote remoteObj = lookupStub();
+            if (logger.isDebugEnabled()) {
+                if (remoteObj instanceof RmiInvocationHandler) {
+                    logger.debug("RMI stub [" + getServiceUrl() + "] is an RMI invoker");
+                }
+                else if (getServiceInterface() != null) {
+                    // 是否接口
+                    boolean isImpl = getServiceInterface().isInstance(remoteObj);
+                    logger.debug("Using service interface [" + getServiceInterface().getName() +
+                            "] for RMI stub [" + getServiceUrl() + "] - " +
+                            (!isImpl ? "not " : "") + "directly implemented");
+                }
+            }
+            if (this.cacheStub) {
+                this.cachedStub = remoteObj;
+            }
+        }
+    }
+
+```
+
+#### org.springframework.remoting.rmi.RmiClientInterceptor#lookupStub
+
+```JAVA
+protected Remote lookupStub() throws RemoteLookupFailureException {
+        try {
+            Remote stub = null;
+            if (this.registryClientSocketFactory != null) {
+                // RMIClientSocketFactory specified for registry access.
+                // Unfortunately, due to RMI API limitations, this means
+                // that we need to parse the RMI URL ourselves and perform
+                // straight LocateRegistry.getRegistry/Registry.lookup calls.
+                // 通过 serviceUrl 创建 URL
+                URL url = new URL(null, getServiceUrl(), new DummyURLStreamHandler());
+                // url 的协议
+                String protocol = url.getProtocol();
+                if (protocol != null && !"rmi".equals(protocol)) {
+                    throw new MalformedURLException("Invalid URL scheme '" + protocol + "'");
+                }
+                // 获取host
+                String host = url.getHost();
+                // 获取port
+                int port = url.getPort();
+                // 获取serviceName
+                String name = url.getPath();
+                if (name != null && name.startsWith("/")) {
+                    name = name.substring(1);
+                }
+                // 创建 Registry
+                Registry registry = LocateRegistry.getRegistry(host, port, this.registryClientSocketFactory);
+                // 获取Remote
+                stub = registry.lookup(name);
+            }
+            else {
+                // Can proceed with standard RMI lookup API...
+                stub = Naming.lookup(getServiceUrl());
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Located RMI stub with URL [" + getServiceUrl() + "]");
+            }
+            return stub;
+        }
+        catch (MalformedURLException ex) {
+            throw new RemoteLookupFailureException("Service URL [" + getServiceUrl() + "] is invalid", ex);
+        }
+        catch (NotBoundException ex) {
+            throw new RemoteLookupFailureException(
+                    "Could not find RMI service [" + getServiceUrl() + "] in RMI registry", ex);
+        }
+        catch (RemoteException ex) {
+            throw new RemoteLookupFailureException("Lookup of RMI stub failed", ex);
+        }
+    }
+```
+
+
+
+### org.springframework.remoting.rmi.RmiProxyFactoryBean#afterPropertiesSet
+
+```java
+    @Override
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+        // 获取 服务提供的接口
+        Class<?> ifc = getServiceInterface();
+        // 如果服务接口不为空
+        Assert.notNull(ifc, "Property 'serviceInterface' is required");
+        // 创建服务代理
+        this.serviceProxy = new ProxyFactory(ifc, this).getProxy(getBeanClassLoader());
+    }
+
+```
+
+
+
+
+### 增强调用
+
+- 通过类图我们可以知道`RmiProxyFactoryBean`实现了`MethodInterceptor`,具体实现方法在`org.springframework.remoting.rmi.RmiClientInterceptor#invoke`
+
+```JAVA
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        // 获取remote
+        Remote stub = getStub();
+        try {
+            // 真正的invoke调用
+            return doInvoke(invocation, stub);
+        }
+        catch (RemoteConnectFailureException ex) {
+            return handleRemoteConnectFailure(invocation, ex);
+        }
+        catch (RemoteException ex) {
+            if (isConnectFailure(ex)) {
+                return handleRemoteConnectFailure(invocation, ex);
+            }
+            else {
+                throw ex;
+            }
+        }
+    }
+
+```
+
+
+
+
+
+```JAVA
+    protected Remote getStub() throws RemoteLookupFailureException {
+        if (!this.cacheStub || (this.lookupStubOnStartup && !this.refreshStubOnConnectFailure)) {
+            // 如果缓存stub存在直接获取,否则创建
+            return (this.cachedStub != null ? this.cachedStub : lookupStub());
+        }
+        else {
+            synchronized (this.stubMonitor) {
+                if (this.cachedStub == null) {
+                    this.cachedStub = lookupStub();
+                }
+                return this.cachedStub;
+            }
+        }
+    }
+```
+
+
+
+- `org.springframework.remoting.rmi.RmiClientInterceptor#doInvoke(org.aopalliance.intercept.MethodInvocation, org.springframework.remoting.rmi.RmiInvocationHandler)`
+
+  
+
+```JAVA
+    @Nullable
+    protected Object doInvoke(MethodInvocation methodInvocation, RmiInvocationHandler invocationHandler)
+            throws RemoteException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        if (AopUtils.isToStringMethod(methodInvocation.getMethod())) {
+            return "RMI invoker proxy for service URL [" + getServiceUrl() + "]";
+        }
+
+        /**
+         * 1. 参数组装成对象{@link RemoteInvocationBasedAccessor#createRemoteInvocation(org.aopalliance.intercept.MethodInvocation)}
+         * 2. invoke 执行 简单来说就是调用{@link RmiInvocationHandler#invoke(RemoteInvocation)}方法
+         */
+        return invocationHandler.invoke(createRemoteInvocation(methodInvocation));
+    }
+```
+
+- `RmiInvocationHandler`类图
+
+![image-20200226082614312](assets/image-20200226082614312.png)
+
+
+
+最后的`invoke`方法
+
+- `org.springframework.remoting.rmi.RmiInvocationWrapper#invoke`
+
+  ```JAVA
+      /**
+       * Delegates the actual invocation handling to the RMI exporter.
+       *
+       *
+       * 远程调用的时候会执行
+       * @see RmiBasedExporter#invoke(org.springframework.remoting.support.RemoteInvocation, Object)
+       */
+      @Override
+      @Nullable
+      public Object invoke(RemoteInvocation invocation)
+              throws RemoteException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+  
+          return this.rmiExporter.invoke(invocation, this.wrappedObject);
+      }
+  ```
+
+  - 继续跟踪`org.springframework.remoting.rmi.RmiBasedExporter#invoke`
+
+    ```JAVA
+        @Override
+        protected Object invoke(RemoteInvocation invocation, Object targetObject)
+                throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    
+            return super.invoke(invocation, targetObject);
+        }
+    ```
+
+    - 继续跟踪`org.springframework.remoting.support.RemoteInvocationBasedExporter#invoke`
+
+      ```JAVA
+          protected Object invoke(RemoteInvocation invocation, Object targetObject)
+                  throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+      
+              if (logger.isTraceEnabled()) {
+                  logger.trace("Executing " + invocation);
+              }
+              try {
+                  return getRemoteInvocationExecutor().invoke(invocation, targetObject);
+              }
+              catch (NoSuchMethodException ex) {
+                  if (logger.isDebugEnabled()) {
+                      logger.debug("Could not find target method for " + invocation, ex);
+                  }
+                  throw ex;
+              }
+              catch (IllegalAccessException ex) {
+                  if (logger.isDebugEnabled()) {
+                      logger.debug("Could not access target method for " + invocation, ex);
+                  }
+                  throw ex;
+              }
+              catch (InvocationTargetException ex) {
+                  if (logger.isDebugEnabled()) {
+                      logger.debug("Target method failed for " + invocation, ex.getTargetException());
+                  }
+                  throw ex;
+              }
+          }
+      
+      ```
+
+      
+
+- 关键语句**`return getRemoteInvocationExecutor().invoke(invocation, targetObject);`**
+
+类图
+
+![image-20200226083247784](assets/image-20200226083247784.png)
+
+
+
+```JAVA
+public class DefaultRemoteInvocationExecutor implements RemoteInvocationExecutor {
+
+    @Override
+    public Object invoke(RemoteInvocation invocation, Object targetObject)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        Assert.notNull(invocation, "RemoteInvocation must not be null");
+        Assert.notNull(targetObject, "Target object must not be null");
+        return invocation.invoke(targetObject);
+    }
+
+}
+```
+
+```JAVA
+    public Object invoke(Object targetObject)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+
+        Method method = targetObject.getClass().getMethod(this.methodName, this.parameterTypes);
+        return method.invoke(targetObject, this.arguments);
+    }
+```
+
+- 这部分流程相对清晰,从对象中获取函数,调用这个函数
+
+
+
+---
+
+
+
+## 服务端debug
+
+
+
+
+
+## 客户端debug
+

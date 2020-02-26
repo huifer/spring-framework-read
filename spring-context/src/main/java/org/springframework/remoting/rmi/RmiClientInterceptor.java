@@ -23,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.remoting.RemoteConnectFailureException;
 import org.springframework.remoting.RemoteInvocationFailureException;
 import org.springframework.remoting.RemoteLookupFailureException;
+import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationBasedAccessor;
 import org.springframework.remoting.support.RemoteInvocationUtils;
 
@@ -154,13 +155,16 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
      */
     public void prepare() throws RemoteLookupFailureException {
         // Cache RMI stub on initialization?
+
         if (this.lookupStubOnStartup) {
+            // 获取remote对象
             Remote remoteObj = lookupStub();
             if (logger.isDebugEnabled()) {
                 if (remoteObj instanceof RmiInvocationHandler) {
                     logger.debug("RMI stub [" + getServiceUrl() + "] is an RMI invoker");
                 }
                 else if (getServiceInterface() != null) {
+                    // 是否接口
                     boolean isImpl = getServiceInterface().isInstance(remoteObj);
                     logger.debug("Using service interface [" + getServiceInterface().getName() +
                             "] for RMI stub [" + getServiceUrl() + "] - " +
@@ -168,6 +172,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
                 }
             }
             if (this.cacheStub) {
+                // 缓存 remote 对象
                 this.cachedStub = remoteObj;
             }
         }
@@ -249,6 +254,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
      */
     protected Remote getStub() throws RemoteLookupFailureException {
         if (!this.cacheStub || (this.lookupStubOnStartup && !this.refreshStubOnConnectFailure)) {
+            // 如果缓存stub存在直接获取,否则创建
             return (this.cachedStub != null ? this.cachedStub : lookupStub());
         }
         else {
@@ -276,8 +282,10 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
      */
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
+        // 获取remote
         Remote stub = getStub();
         try {
+            // 真正的invoke调用
             return doInvoke(invocation, stub);
         }
         catch (RemoteConnectFailureException ex) {
@@ -389,6 +397,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
         else {
             // traditional RMI stub
             try {
+                // RMI客户端工具类执行
                 return RmiClientInterceptorUtils.invokeRemoteMethod(invocation, stub);
             }
             catch (InvocationTargetException ex) {
@@ -426,6 +435,10 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
             return "RMI invoker proxy for service URL [" + getServiceUrl() + "]";
         }
 
+        /**
+         * 1. 参数组装成对象{@link RemoteInvocationBasedAccessor#createRemoteInvocation(org.aopalliance.intercept.MethodInvocation)}
+         * 2. invoke 执行 简单来说就是调用{@link RmiInvocationHandler#invoke(RemoteInvocation)}方法
+         */
         return invocationHandler.invoke(createRemoteInvocation(methodInvocation));
     }
 

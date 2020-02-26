@@ -16,25 +16,19 @@
 
 package org.springframework.remoting.rmi;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.SocketException;
-import java.rmi.ConnectException;
-import java.rmi.ConnectIOException;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.rmi.StubNotFoundException;
-import java.rmi.UnknownHostException;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.remoting.RemoteConnectFailureException;
 import org.springframework.remoting.RemoteProxyFailureException;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.SocketException;
+import java.rmi.*;
 
 /**
  * Factored-out methods for performing invocations within an RMI client.
@@ -53,6 +47,10 @@ public abstract class RmiClientInterceptorUtils {
     /**
      * Perform a raw method invocation on the given RMI stub,
      * letting reflection exceptions through as-is.
+     * <p>
+     * 主要流程:
+     * 1. 获取函数
+     * 2. 执行这个函数
      *
      * @param invocation the AOP MethodInvocation
      * @param stub       the RMI stub
@@ -63,14 +61,17 @@ public abstract class RmiClientInterceptorUtils {
     public static Object invokeRemoteMethod(MethodInvocation invocation, Object stub)
             throws InvocationTargetException {
 
+        // 获取函数
         Method method = invocation.getMethod();
         try {
             if (method.getDeclaringClass().isInstance(stub)) {
                 // directly implemented
+                // 函数执行
                 return method.invoke(stub, invocation.getArguments());
             }
             else {
                 // not directly implemented
+
                 Method stubMethod = stub.getClass().getMethod(method.getName(), method.getParameterTypes());
                 return stubMethod.invoke(stub, invocation.getArguments());
             }
