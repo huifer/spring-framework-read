@@ -70,9 +70,9 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
         try {
             // 从request中获取序列化对象 RemoteInvocation
             RemoteInvocation invocation = readRemoteInvocation(request);
-            // 执行
+            // 执行并且创建结果
             RemoteInvocationResult result = invokeAndCreateResult(invocation, getProxy());
-            // 写出response
+            // 写出远程调用结果到response
             writeRemoteInvocationResult(request, response, result);
         }
         catch (ClassNotFoundException ex) {
@@ -85,6 +85,7 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
      * <p>Delegates to {@link #readRemoteInvocation(HttpServletRequest, InputStream)} with
      * the {@link HttpServletRequest#getInputStream() servlet request's input stream}.
      *
+     * 从request中获取序列化对象 RemoteInvocation
      * @param request current HTTP request
      * @return the RemoteInvocation object
      * @throws IOException            in case of I/O failure
@@ -93,6 +94,7 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
     protected RemoteInvocation readRemoteInvocation(HttpServletRequest request)
             throws IOException, ClassNotFoundException {
 
+        // 读取远程对象
         return readRemoteInvocation(request, request.getInputStream());
     }
 
@@ -104,6 +106,7 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
      * and calls {@link #doReadRemoteInvocation} to actually read the object.
      * <p>Can be overridden for custom serialization of the invocation.
      *
+     * 读取远程对象
      * @param request current HTTP request
      * @param is      the InputStream to read from
      * @return the RemoteInvocation object
@@ -142,6 +145,7 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
     /**
      * Write the given RemoteInvocationResult to the given HTTP response.
      *
+     * 写出远程调用结果到response
      * @param request  current HTTP request
      * @param response current HTTP response
      * @param result   the RemoteInvocationResult object

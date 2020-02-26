@@ -37,6 +37,8 @@ public abstract class RemoteInvocationUtils {
      * {@code StackTraceElement} array with the current client-side stack
      * trace, provided that we run on JDK 1.4+.
      *
+     *
+     * 异常堆栈信息,解析{@link Throwable} 将异常堆栈存储
      * @param ex the exception to update
      * @see Throwable#getStackTrace()
      * @see Throwable#setStackTrace(StackTraceElement[])

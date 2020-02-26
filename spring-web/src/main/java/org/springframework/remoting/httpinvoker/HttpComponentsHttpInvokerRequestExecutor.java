@@ -101,6 +101,7 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 
 
     private static HttpClient createDefaultHttpClient() {
+        // httpClient.jar 的处理
         Registry<ConnectionSocketFactory> schemeRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.getSocketFactory())
                 .register("https", SSLConnectionSocketFactory.getSocketFactory())
@@ -214,6 +215,8 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
      * <p>The default implementation creates a standard HttpPost with
      * "application/x-java-serialized-object" as "Content-Type" header.
      *
+     *
+     * 创建 httpPost
      * @param config the HTTP invoker configuration that specifies the
      *               target service
      * @return the HttpPost instance
@@ -222,6 +225,7 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
     protected HttpPost createHttpPost(HttpInvokerClientConfiguration config) throws IOException {
         HttpPost httpPost = new HttpPost(config.getServiceUrl());
 
+        // 创建请求配置星系
         RequestConfig requestConfig = createRequestConfig(config);
         if (requestConfig != null) {
             httpPost.setConfig(requestConfig);
@@ -255,28 +259,38 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
      */
     @Nullable
     protected RequestConfig createRequestConfig(HttpInvokerClientConfiguration config) {
+
         HttpClient client = getHttpClient();
         if (client instanceof Configurable) {
+            // 从 HttpClient 中获取
             RequestConfig clientRequestConfig = ((Configurable) client).getConfig();
             return mergeRequestConfig(clientRequestConfig);
         }
         return this.requestConfig;
     }
 
+    /***
+     * 请求配置信息合并
+     * @param defaultRequestConfig
+     * @return
+     */
     private RequestConfig mergeRequestConfig(RequestConfig defaultRequestConfig) {
         if (this.requestConfig == null) {  // nothing to merge
             return defaultRequestConfig;
         }
 
         RequestConfig.Builder builder = RequestConfig.copy(defaultRequestConfig);
+        // 指客户端和服务器建立连接的timeout，
         int connectTimeout = this.requestConfig.getConnectTimeout();
         if (connectTimeout >= 0) {
             builder.setConnectTimeout(connectTimeout);
         }
+        // 指从连接池获取连接的timeout
         int connectionRequestTimeout = this.requestConfig.getConnectionRequestTimeout();
         if (connectionRequestTimeout >= 0) {
             builder.setConnectionRequestTimeout(connectionRequestTimeout);
         }
+        // 指客户端和服务器建立连接后，客户端从服务器读取数据的timeout，超出后会抛出SocketTimeOutException
         int socketTimeout = this.requestConfig.getSocketTimeout();
         if (socketTimeout >= 0) {
             builder.setSocketTimeout(socketTimeout);
@@ -335,6 +349,7 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
             throws IOException {
 
         StatusLine status = response.getStatusLine();
+        // 状态骂
         if (status.getStatusCode() >= 300) {
             throw new NoHttpResponseException(
                     "Did not receive successful HTTP response: status code = " + status.getStatusCode() +
@@ -371,6 +386,8 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
      * <p>The default implementation checks whether the HTTP "Content-Encoding"
      * header contains "gzip" (in any casing).
      *
+     *
+     * 是不是 GZIP 的response
      * @param httpResponse the resulting HttpResponse to check
      * @return whether the given response indicates a GZIP response
      */

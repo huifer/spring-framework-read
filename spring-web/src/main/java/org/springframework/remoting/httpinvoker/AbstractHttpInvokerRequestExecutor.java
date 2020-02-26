@@ -45,6 +45,9 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
      * Default content type: "application/x-java-serialized-object".
      */
     public static final String CONTENT_TYPE_SERIALIZED_OBJECT = "application/x-java-serialized-object";
+    /**
+     * HTTP方法POST
+     */
     protected static final String HTTP_METHOD_POST = "POST";
     protected static final String HTTP_HEADER_ACCEPT_LANGUAGE = "Accept-Language";
     protected static final String HTTP_HEADER_ACCEPT_ENCODING = "Accept-Encoding";
@@ -119,6 +122,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
             logger.debug("Sending HTTP invoker request for service at [" + config.getServiceUrl() +
                     "], with size " + baos.size());
         }
+        // 获取执行结果
         return doExecuteRequest(config, baos);
     }
 
@@ -216,6 +220,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
      * calls {@code doReadRemoteInvocationResult} to actually read the object.
      * <p>Can be overridden for custom serialization of the invocation.
      *
+     * 输入流和url的对象封装
      * @param is          the InputStream to read from
      * @param codebaseUrl the codebase URL to load classes from if not found locally
      * @return the RemoteInvocationResult object
@@ -230,6 +235,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 
         ObjectInputStream ois = createObjectInputStream(decorateInputStream(is), codebaseUrl);
         try {
+            // 从输入流中获取远程调用结果
             return doReadRemoteInvocationResult(ois);
         }
         finally {
@@ -272,6 +278,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
      * Can be overridden for deserialization of a custom wrapper object rather
      * than the plain invocation, for example an encryption-aware holder.
      *
+     * 从输入流中获取远程调用结果
      * @param ois the ObjectInputStream to read from
      * @return the RemoteInvocationResult object
      * @throws IOException            if thrown by I/O methods

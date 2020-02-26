@@ -43,9 +43,15 @@ public class RemoteInvocationResult implements Serializable {
     private static final long serialVersionUID = 2138555143707773549L;
 
 
+    /**
+     * 执行结果
+     */
     @Nullable
     private Object value;
 
+    /**
+     * 异常
+     */
     @Nullable
     private Throwable exception;
 
@@ -165,6 +171,7 @@ public class RemoteInvocationResult implements Serializable {
                 exToThrow = ((InvocationTargetException) this.exception).getTargetException();
             }
             RemoteInvocationUtils.fillInClientStackTraceIfPossible(exToThrow);
+            // 异常
             throw exToThrow;
         }
         else {

@@ -89,16 +89,23 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
             throws IOException, ClassNotFoundException {
         // 建立 http url 链接
         HttpURLConnection con = openConnection(config);
+        // 准备连接
         prepareConnection(con, baos.size());
+        // 写请求体
         writeRequestBody(config, con, baos);
+        // 验证请求结果
         validateResponse(config, con);
+        // 获取结果
         InputStream responseBody = readResponseBody(config, con);
-
+        // 结果对象封装
         return readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
     }
 
     /**
      * Open an {@link HttpURLConnection} for the given remote invocation request.
+     * <p>
+     * <p>
+     * 开启一个 {@link HttpURLConnection} 为了远程服务使用
      *
      * @param config the HTTP invoker configuration that specifies the
      *               target service
@@ -120,6 +127,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      * <p>The default implementation specifies POST as method,
      * "application/x-java-serialized-object" as "Content-Type" header,
      * and the given content length as "Content-Length" header.
+     * 准备连接
      *
      * @param connection    the HTTP connection to prepare
      * @param contentLength the length of the content to send
@@ -136,12 +144,16 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
         }
 
         connection.setDoOutput(true);
+        // 设置请求方式 POST
         connection.setRequestMethod(HTTP_METHOD_POST);
+        // 设置类型
         connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, getContentType());
+        // 设置长度
         connection.setRequestProperty(HTTP_HEADER_CONTENT_LENGTH, Integer.toString(contentLength));
 
         LocaleContext localeContext = LocaleContextHolder.getLocaleContext();
         if (localeContext != null) {
+            // 设置 locale
             Locale locale = localeContext.getLocale();
             if (locale != null) {
                 connection.setRequestProperty(HTTP_HEADER_ACCEPT_LANGUAGE, locale.toLanguageTag());
@@ -149,6 +161,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
         }
 
         if (isAcceptGzipEncoding()) {
+            // 设置压缩方式
             connection.setRequestProperty(HTTP_HEADER_ACCEPT_ENCODING, ENCODING_GZIP);
         }
     }
@@ -159,6 +172,8 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      * HttpURLConnection's OutputStream. This can be overridden, for example, to write
      * a specific encoding and potentially set appropriate HTTP request headers.
      *
+     *
+     * 写请求体
      * @param config the HTTP invoker configuration that specifies the target service
      * @param con    the HttpURLConnection to write the request body to
      * @param baos   the ByteArrayOutputStream that contains the serialized
@@ -180,6 +195,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      * <p>Default implementation rejects any HTTP status code beyond 2xx, to avoid
      * parsing the response body and trying to deserialize from a corrupted stream.
      *
+     * 验证请求结果
      * @param config the HTTP invoker configuration that specifies the target service
      * @param con    the HttpURLConnection to validate
      * @throws IOException if validation failed
@@ -187,7 +203,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      */
     protected void validateResponse(HttpInvokerClientConfiguration config, HttpURLConnection con)
             throws IOException {
-
+        // 响应状态码大于等于300 认为错误
         if (con.getResponseCode() >= 300) {
             throw new IOException(
                     "Did not receive successful HTTP response: status code = " + con.getResponseCode() +
@@ -202,6 +218,8 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      * from the HttpURLConnection's InputStream. If the response is recognized
      * as GZIP response, the InputStream will get wrapped in a GZIPInputStream.
      *
+     * 获取结果
+     *
      * @param config the HTTP invoker configuration that specifies the target service
      * @param con    the HttpURLConnection to read the response body from
      * @return an InputStream for the response body
@@ -215,6 +233,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
     protected InputStream readResponseBody(HttpInvokerClientConfiguration config, HttpURLConnection con)
             throws IOException {
 
+        // Content-Encoding 是否为GZIP
         if (isGzipResponse(con)) {
             // GZIP response found - need to unzip.
             return new GZIPInputStream(con.getInputStream());
@@ -230,6 +249,7 @@ public class SimpleHttpInvokerRequestExecutor extends AbstractHttpInvokerRequest
      * <p>Default implementation checks whether the HTTP "Content-Encoding"
      * header contains "gzip" (in any casing).
      *
+     * Content-Encoding 是否为GZIP
      * @param con the HttpURLConnection to check
      */
     protected boolean isGzipResponse(HttpURLConnection con) {

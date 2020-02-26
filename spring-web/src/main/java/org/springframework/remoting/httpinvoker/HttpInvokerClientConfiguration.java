@@ -30,6 +30,8 @@ public interface HttpInvokerClientConfiguration {
 
     /**
      * Return the HTTP URL of the target service.
+     *
+     * 获取服务的url
      */
     String getServiceUrl();
 

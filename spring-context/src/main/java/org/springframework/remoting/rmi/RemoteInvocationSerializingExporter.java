@@ -132,6 +132,7 @@ public abstract class RemoteInvocationSerializingExporter extends RemoteInvocati
      * Can be overridden for deserialization of a custom wrapper object rather
      * than the plain invocation, for example an encryption-aware holder.
      *
+     * 返回 RemoteInvocation 对象, 类型判断后强制转换
      * @param ois the ObjectInputStream to read from
      * @return the RemoteInvocationResult object
      * @throws java.io.IOException    in case of I/O failure

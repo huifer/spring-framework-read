@@ -32,6 +32,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 
+    /**
+     * 远程调用执行器
+     */
     private RemoteInvocationExecutor remoteInvocationExecutor = new DefaultRemoteInvocationExecutor();
 
     /**
@@ -74,6 +77,10 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
             logger.trace("Executing " + invocation);
         }
         try {
+            /**
+             * 1. 获取远程调用执行器{@link RemoteInvocationBasedExporter#getRemoteInvocationExecutor()}
+             * 2. 执行方法 {@link RemoteInvocationExecutor#invoke(org.springframework.remoting.support.RemoteInvocation, java.lang.Object)}
+             */
             return getRemoteInvocationExecutor().invoke(invocation, targetObject);
         }
         catch (NoSuchMethodException ex) {
@@ -103,6 +110,7 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
      * <p>Can be overridden in subclasses for custom invocation behavior,
      * for example to return additional context information. Note that this
      * is not covered by the RemoteInvocationExecutor strategy!
+     * 执行并且创建结果
      *
      * @param invocation   the remote invocation
      * @param targetObject the target object to apply the invocation to
@@ -116,6 +124,7 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
             return new RemoteInvocationResult(value);
         }
         catch (Throwable ex) {
+            // 异常结果封装
             return new RemoteInvocationResult(ex);
         }
     }
