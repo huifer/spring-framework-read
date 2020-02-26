@@ -36,8 +36,14 @@ import org.springframework.util.Assert;
  */
 class RmiInvocationWrapper implements RmiInvocationHandler {
 
+    /**
+     * 包装对象,源对象
+     */
     private final Object wrappedObject;
 
+    /**
+     * RMI 信息
+     */
     private final RmiBasedExporter rmiExporter;
 
 

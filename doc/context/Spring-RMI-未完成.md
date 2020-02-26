@@ -783,9 +783,95 @@ public class DefaultRemoteInvocationExecutor implements RemoteInvocationExecutor
 
 ## 服务端debug
 
+- `org.springframework.remoting.rmi.RmiServiceExporter#afterPropertiesSet`打上断点
+
+![image-20200226084056993](assets/image-20200226084056993.png)
+
+可以看到此时的数据字段和我们的xml配置中一致
 
 
 
+- `org.springframework.remoting.rmi.RmiServiceExporter#prepare`断点
+
+  ![image-20200226084200428](assets/image-20200226084200428.png)
+
+  往下一直走
+
+  ![image-20200226084400939](assets/image-20200226084400939.png)
+
+  ​	这一行是jdk的就不进去看了
+
+  执行完成就创建出了 `Registry`
+
+  ![image-20200226084514795](assets/image-20200226084514795.png)
+
+- `org.springframework.remoting.rmi.RmiBasedExporter#getObjectToExport`
+
+  直接看结果对象
+
+  ![image-20200226084640683](assets/image-20200226084640683.png)
+
+
+
+- 执行bind
+
+  ![image-20200226084923783](assets/image-20200226084923783.png)
+
+  ![image-20200226084914000](assets/image-20200226084914000.png)
+
+- 此时服务端信息已经成功记录并且启动
 
 ## 客户端debug
 
+![image-20200226085433130](assets/image-20200226085433130.png)
+
+![image-20200226085440865](assets/image-20200226085440865.png)
+
+
+
+remote 对象
+
+![image-20200226085727426](assets/image-20200226085727426.png)
+
+- 服务提供接口
+
+![image-20200226085839496](assets/image-20200226085839496.png)
+
+
+
+- serviceProxy
+
+  ![image-20200226090042946](assets/image-20200226090042946.png)
+
+
+
+- 方法调用
+  - 使用的是AOP技术进行的，AOP相关技术不在此处展开
+
+![image-20200226090315865](assets/image-20200226090315865.png)
+
+stub 对象
+
+![image-20200226090432052](assets/image-20200226090432052.png)
+
+
+
+
+
+![image-20200226090650154](assets/image-20200226090650154.png)
+
+- `invocation`
+
+  ![image-20200226090719108](assets/image-20200226090719108.png)
+
+- `targetObject`
+
+  ![image-20200226090827849](assets/image-20200226090827849.png)
+
+
+
+- 反射执行`method`结束整个调用
+
+  ![image-20200226090945418](assets/image-20200226090945418.png)
+
+  此时得到结果RMI调用结束

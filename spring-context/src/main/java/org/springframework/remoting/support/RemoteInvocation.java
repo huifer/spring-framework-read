@@ -55,10 +55,19 @@ public class RemoteInvocation implements Serializable {
     private static final long serialVersionUID = 6876024250231820554L;
 
 
+    /**
+     * 函数名
+     */
     private String methodName;
 
+    /**
+     * 参数类型
+     */
     private Class<?>[] parameterTypes;
 
+    /**
+     * 参数具体数据
+     */
     private Object[] arguments;
 
     private Map<String, Serializable> attributes;
