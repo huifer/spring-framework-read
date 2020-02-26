@@ -79,6 +79,7 @@ public interface HttpRequestHandler {
     /**
      * Process the given request, generating a response.
      *
+     * 处理请求
      * @param request  current HTTP request
      * @param response current HTTP response
      * @throws ServletException in case of general errors

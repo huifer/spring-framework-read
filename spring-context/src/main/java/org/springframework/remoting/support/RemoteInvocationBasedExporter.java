@@ -112,6 +112,7 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
     protected RemoteInvocationResult invokeAndCreateResult(RemoteInvocation invocation, Object targetObject) {
         try {
             Object value = invoke(invocation, targetObject);
+            // 执行后结果封装
             return new RemoteInvocationResult(value);
         }
         catch (Throwable ex) {

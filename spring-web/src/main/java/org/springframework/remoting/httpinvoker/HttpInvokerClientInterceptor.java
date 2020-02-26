@@ -146,11 +146,12 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
         if (AopUtils.isToStringMethod(methodInvocation.getMethod())) {
             return "HTTP invoker proxy for service URL [" + getServiceUrl() + "]";
         }
-
+        // 对象封装
         RemoteInvocation invocation = createRemoteInvocation(methodInvocation);
         RemoteInvocationResult result;
 
         try {
+            // 远程调用
             result = executeRequest(invocation, methodInvocation);
         }
         catch (Throwable ex) {
@@ -159,6 +160,7 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
         }
 
         try {
+            // 组装对象
             return recreateRemoteInvocationResult(result);
         }
         catch (Throwable ex) {

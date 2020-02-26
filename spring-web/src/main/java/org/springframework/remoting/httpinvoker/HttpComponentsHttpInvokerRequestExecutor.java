@@ -191,12 +191,17 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
             HttpInvokerClientConfiguration config, ByteArrayOutputStream baos)
             throws IOException, ClassNotFoundException {
 
+        // 创建 httpPost 第三方的库
         HttpPost postMethod = createHttpPost(config);
         setRequestBody(config, postMethod, baos);
         try {
+            // 执行方法
             HttpResponse response = executeHttpPost(config, getHttpClient(), postMethod);
+            // 校验response
             validateResponse(config, response);
+            // 获取输入流
             InputStream responseBody = getResponseBody(config, response);
+            // 提取结果
             return readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
         }
         finally {

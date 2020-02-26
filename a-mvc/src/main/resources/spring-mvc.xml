@@ -54,4 +54,12 @@
 <!--                     max-age="3600" />-->
 
 <!--    </mvc:cors>-->
+
+    <bean name="helloExporter"
+          class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name="service" ref="helloService"></property>
+        <property name="serviceInterface" value="com.huifer.source.httpinvoker.IHttpInvokerService">
+        </property>
+    </bean>
+    <bean id="helloService" class="com.huifer.source.httpinvoker.IHttpInvokerServiceImpl"/>
 </beans>
