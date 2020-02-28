@@ -95,7 +95,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
     @Override
     public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
         this.readerContext = readerContext;
-        // 真正的注册bean定义的方法
+            // 真正的注册bean定义的方法
         doRegisterBeanDefinitions(doc.getDocumentElement());
     }
 

@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * dynamically through {@link ConcurrentMapCacheManager}.
  *
  *
- * mmap缓存工厂bean
+ * map缓存工厂bean
  * @author Costin Leau
  * @author Juergen Hoeller
  * @since 3.1

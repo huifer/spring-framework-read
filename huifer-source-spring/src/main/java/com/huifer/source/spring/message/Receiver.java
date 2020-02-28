@@ -1,8 +1,13 @@
 package com.huifer.source.spring.message;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
+import javax.jms.Connection;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
-import javax.jms.*;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class Receiver {
     public static void main(String[] args) throws Exception {
@@ -26,5 +31,6 @@ public class Receiver {
 
         session.close();
         connection.close();
+
     }
 }
